@@ -11,3 +11,75 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(255)
+  email     String   @unique @db.VarChar(255)
+  password  String
+  role      Role     @default(client)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  address Address[]
+  reviews Review[]
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  street       String   @db.VarChar(255)
+  number       String?  @db.VarChar(10)
+  complement   String?  @db.VarChar(200)
+  neighborhood String   @db.VarChar(150)
+  city         String   @db.VarChar(100)
+  state        String   @db.VarChar(100)
+  zipCode      String   @db.VarChar(20)
+  isPrimary    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  price       Decimal  @db.Decimal(10, 2)
+  description String   @db.Text
+  stock       Int      @db.SmallInt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reviews Review[]
+}
+
+model Category {
+  id   String @id @default(uuid())
+  name String @db.VarChar(100)
+  slug String @unique @db.VarChar(100)
+}
+
+model Review {
+  id String @
+  rating    Int
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  userId String
+  productId String
+
+  user User @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId],  references: [id])
+
+  @@unique([userId,productId])
+}
+
+enum Role {
+  admin
+  client
+  manager
+}
