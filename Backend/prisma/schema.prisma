@@ -22,7 +22,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   address Address[]
+  cart    Cart?
   reviews Review[]
+  orders  Order[]
 }
 
 model Address {
@@ -40,7 +42,8 @@ model Address {
 
   userId String
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders Order[]
 }
 
 model Product {
@@ -53,33 +56,120 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  reviews Review[]
+  images            ProductImages[]
+  reviews           Review[]
+  productCategories ProductCategory[]
+  carts             ProductCart[]
+  orders            OrderProducts[]
+}
+
+model ProductImages {
+  id    String  @id @default(uuid())
+  url   String
+  ordem Int
+  capa  Boolean
+
+  productId String
+
+  product Product @relation(fields: [productId], references: [id])
 }
 
 model Category {
   id   String @id @default(uuid())
   name String @db.VarChar(100)
   slug String @unique @db.VarChar(100)
+
+  productCategories ProductCategory[]
+}
+
+model ProductCategory {
+  productId  String
+  categoryId String
+
+  product  Product  @relation(fields: [productId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@id([productId, categoryId])
+}
+
+model Cart {
+  id String @id @default(uuid())
+
+  userId String @unique
+
+  user     User          @relation(fields: [userId], references: [id])
+  products ProductCart[]
+}
+
+model ProductCart {
+  id       String @id @default(uuid())
+  quantity Int
+
+  productId String
+  cartId    String
+
+  product Product @relation(fields: [productId], references: [id])
+  cart    Cart    @relation(fields: [cartId], references: [id])
+
+  @@unique([productId, cartId])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  total     Decimal     @db.Decimal(10, 2)
+  status    OrderStatus @default(pending)
+  createdAt DateTime    @default(now())
+
+  userId    String
+  addressId String
+
+  user    User    @relation(fields: [userId], references: [id])
+  address Address @relation(fields: [addressId], references: [id])
+
+  products OrderProducts[]
+}
+
+model OrderProducts {
+  id            String  @id @default(uuid())
+  quantity      Int
+  priceSnapshot Decimal @db.Decimal(10, 2)
+
+  orderId   String
+  productId String
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([orderId, productId])
 }
 
 model Review {
-  id String @
+  id        String   @id @default(uuid())
   rating    Int
   comment   String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
-  userId String
+
+  userId    String
   productId String
 
-  user User @relation(fields: [userId], references: [id])
-  product Product @relation(fields: [productId],  references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
 
-  @@unique([userId,productId])
+  @@unique([userId, productId])
 }
 
 enum Role {
   admin
   client
   manager
+}
+
+enum OrderStatus {
+  pending
+  paid
+  processing
+  shipped
+  delivered
+  cancelled
 }
