@@ -1,6 +1,8 @@
-import type { Role, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
 import type { CreateUserInput, SafeUserReturn, UpdateUserInput } from "../../Schema/UserSchema.js";
+import { Mapper } from "../../helpers/mappers.js";
+import { da } from "zod/locales";
 
 export class UserPrisma {
     constructor() { }
@@ -39,15 +41,10 @@ export class UserPrisma {
 
 
     async updateUser(id: string, data: UpdateUserInput): Promise<User> {
-        const update = {
-        ...(data.name !== undefined && { name: data.name }),
-            ...(data.email !== undefined && { email: data.email }),
-            ...(data.password !== undefined && { password: data.password }),
-        };
 
         return prisma.user.update({
             where: { id },
-            data: update 
+            data: Mapper.toUpdate(data)
         });
     }
 

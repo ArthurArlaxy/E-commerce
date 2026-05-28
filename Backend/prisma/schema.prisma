@@ -66,8 +66,8 @@ model Product {
 model ProductImages {
   id    String  @id @default(uuid())
   url   String
-  ordem Int
-  capa  Boolean
+  order Int
+  isCover  Boolean
 
   productId String
 
@@ -75,9 +75,12 @@ model ProductImages {
 }
 
 model Category {
-  id   String @id @default(uuid())
-  name String @db.VarChar(100)
-  slug String @unique @db.VarChar(100)
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(100)
+  slug      String   @unique @db.VarChar(100)
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   productCategories ProductCategory[]
 }
