@@ -3,8 +3,8 @@ import { createUserSchema, loginSchema, updateUserSchema } from "../Schema/UserS
 import type { UserService } from "../Service/UserService.js";
 import { HttpError } from "../Error/HttpError.js";
 
-export class AuthController {
-    constructor(private userService: UserService) { }
+export class UserController {
+    constructor(private  userService: UserService) { }
 
     login: Handler = async (req, res, next) => {
         const data = loginSchema.parse(req.body);
@@ -66,10 +66,11 @@ export class AuthController {
         }
     }
     getUserById: Handler = async (req, res, next) => {
-        if (!req.user) throw new HttpError("Invalid token", 401)
+        if (!req.params.id) throw new HttpError("Invalid id", 401)
+        const id = String(req.params.id)
 
         try {
-            const user = await this.userService.getUserById((req.user as any).id);
+            const user = await this.userService.getUserById(id);
             return res.json(user);
         } catch (error) {
             next(error)

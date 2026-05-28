@@ -77,9 +77,10 @@ export class UserService {
 
     async updateUser(id: string, data: UpdateUserInput) {
         const userExists = await this.userRepository.getUserById(id);
-        if (userExists) {
-            throw new Error("User with this email already exists");
+        if (!userExists) {
+            throw new Error("User not found");
         }
+        if(data.password) data.password = bcrypt.hashSync(data.password, 10);
 
         try {
             return this.userRepository.updateUser(id, data);

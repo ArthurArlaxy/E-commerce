@@ -47,7 +47,7 @@ export class UserPrisma {
 
         return prisma.user.update({
             where: { id },
-            data: { update }
+            data: update 
         });
     }
 
