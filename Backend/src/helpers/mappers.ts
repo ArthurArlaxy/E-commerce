@@ -1,23 +1,13 @@
-export class Mapper {
-    static toCreate<T extends Record<string, unknown>>(data: T) {
-        const result: any = {}
+export function toCreate<T extends Record<string, unknown>>(data: T) {
+    // Object.fromEntries perde a tipagem — o cast acontece no repositório
+    return Object.fromEntries(
+        Object.entries(data).map(([key, value]) => [key, value ?? null])
+    ) as any
+}
 
-        for (const key in data) {
-            result[key] = data[key] ?? null
-        }
-
-        return result
-    }
-
-    static toUpdate<T extends Record<string, unknown>>(data: T) {
-        const result: any = {}
-
-        for (const key in data) {
-            if (data[key] !== undefined) {
-                result[key] = data[key]
-            }
-        }
-
-        return result
-    }
+export function toUpdate<T extends Record<string, unknown>>(data: T) {
+    // Object.fromEntries perde a tipagem — o cast acontece no repositório
+    return Object.fromEntries(
+        Object.entries(data).filter(([_, value]) => value !== undefined)
+    ) as any
 }

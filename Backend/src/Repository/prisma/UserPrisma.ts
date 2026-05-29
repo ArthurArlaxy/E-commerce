@@ -1,8 +1,8 @@
 import type { User } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
 import type { CreateUserInput, SafeUserReturn, UpdateUserInput } from "../../Schema/UserSchema.js";
-import { Mapper } from "../../helpers/mappers.js";
-import { da } from "zod/locales";
+import { toUpdate } from "../../helpers/mappers.js";
+
 
 export class UserPrisma {
     constructor() { }
@@ -44,7 +44,7 @@ export class UserPrisma {
 
         return prisma.user.update({
             where: { id },
-            data: Mapper.toUpdate(data)
+            data: toUpdate(data)
         });
     }
 

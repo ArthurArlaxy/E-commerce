@@ -68,7 +68,7 @@ export class UserService {
     async getUserById(id: string) {
         const user = await this.userRepository.getUserById(id);
         if (!user) {
-            throw new Error("User not found");
+            throw new HttpError("User not found", 404);
         }
         return user
     }
@@ -78,9 +78,15 @@ export class UserService {
     async updateUser(id: string, data: UpdateUserInput) {
         const userExists = await this.userRepository.getUserById(id);
         if (!userExists) {
-            throw new Error("User not found");
+            throw new HttpError("User not found", 404);
         }
-        if(data.password) data.password = bcrypt.hashSync(data.password, 10);
+
+        if (data.password) {
+            if (!bcrypt.compareSync(data.currentPassword!, userExists.password)) {
+                throw new HttpError("Invalid password", 401)
+            }
+            data.password = bcrypt.hashSync(data.password, 10);
+        }
 
         try {
             return this.userRepository.updateUser(id, data);

@@ -59,7 +59,7 @@ export class UserController {
         if (!req.user) throw new HttpError("Invalid token", 401)
 
         try {
-            const user = await this.userService.getUserByEmail((req.user as any).email);
+            const user = await this.userService.getUserByEmail(req.user.email);
             return res.json(user);
         } catch (error) {
             next(error)
@@ -83,7 +83,7 @@ export class UserController {
         const data = updateUserSchema.parse(req.body)
 
         try {
-            const updatedUser = await this.userService.updateUser((req.user as any).id, data)
+            const updatedUser = await this.userService.updateUser(req.user.id, data)
             res.status(200).json(updatedUser)
         } catch (error) {
             next(error)
@@ -95,7 +95,7 @@ export class UserController {
         if (!req.user) throw new HttpError("Invalid token", 401)
 
         try {
-            await this.userService.deleteUser((req.user as any).id)
+            await this.userService.deleteUser(req.user.id)
             res.status(200).json("User deleted sussecsfuly")
         } catch (error) {
             next(error)
