@@ -8,7 +8,7 @@ export const createAddressSchema = z.object({
     city: z.string(),
     state: z.string(),
     zipCode: z.string(),
-    isPrimary: z.boolean().default(false),
+    isPrimary: z.boolean().default(false).optional(),
     userId: z.string()
 })
 

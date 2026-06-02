@@ -32,9 +32,9 @@ export class AddressController {
             next(error)
         }
     }
-    getAddresses: Handler = async (req, res, next) => {
+    getAllAddresses: Handler = async (req, res, next) => {
         try {
-            const addresses = await this.addressService.getAddresses()
+            const addresses = await this.addressService.getAllAddresses()
 
             res.json(addresses)
         } catch (error) {
@@ -69,7 +69,7 @@ export class AddressController {
 
             const data = updateAddressSchema.parse(req.body)
 
-            const address = await this.addressService.updateAddress(id,data)
+            const address = await this.addressService.updateAddress(id, data)
             res.status(200).json(address)
         } catch (error) {
             next(error)

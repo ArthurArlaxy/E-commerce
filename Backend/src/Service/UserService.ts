@@ -81,6 +81,14 @@ export class UserService {
             throw new HttpError("User not found", 404);
         }
 
+        if (data.email) {
+            const userEmailExist = await this.userRepository.getUserByEmail(data.email)
+
+            if(userEmailExist){
+                throw new HttpError("You can't use this email", 400)
+            }
+        }
+
         if (data.password) {
             if (!bcrypt.compareSync(data.currentPassword!, userExists.password)) {
                 throw new HttpError("Invalid password", 401)

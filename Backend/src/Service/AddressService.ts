@@ -29,8 +29,8 @@ export class AddressService {
         return await this.addressRepository.getUserAddresses(userId)
     }
 
-    async getAddresses() {
-        return await this.addressRepository.getAddresses()
+    async getAllAddresses() {
+        return await this.addressRepository.getAllAddresses()
     }
 
     async getAddress(id: string) {

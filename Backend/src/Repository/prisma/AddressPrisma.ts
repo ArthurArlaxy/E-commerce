@@ -43,7 +43,7 @@ export class AddressPrisma {
         })
     }
 
-    async getAddresses(): Promise<Address[]> {
+    async getAllAddresses(): Promise<Address[]> {
         return prisma.address.findMany()
     }
 
