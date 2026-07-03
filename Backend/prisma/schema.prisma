@@ -78,7 +78,6 @@ model Category {
   id        String   @id @default(uuid())
   name      String   @db.VarChar(100)
   slug      String   @unique @db.VarChar(100)
-  isPrimary Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
