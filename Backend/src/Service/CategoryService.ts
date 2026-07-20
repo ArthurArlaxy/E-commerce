@@ -29,7 +29,7 @@ export class CategoryService {
         return category
     }
 
-    async getCategoryBySlug(slug: string) {
+    async getCategoryBySlug(slug: string){
         const category = await this.categoryRepository.getCategoryBySlug(slug)
 
         if (!category) throw new HttpError("Category not found", 404)

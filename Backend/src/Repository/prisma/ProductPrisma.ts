@@ -46,16 +46,25 @@ export class ProductPrisma {
         })
     }
 
-    async getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<Product[]> {
-        return await prisma.product.findMany({
-            where: filter,
-            orderBy: { [orderBy]: order },
-            skip,
-            take
-        })
+    async getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number) {
+        const [items, total] = await prisma.$transaction([
+            prisma.product.findMany({
+                where: filter,
+                orderBy: { [orderBy]: order },
+                skip,
+                take,
+                include: {
+                    images: {
+                        where: { isCover: true },
+                        take: 1
+                    }
+                }}),
+            prisma.product.count({ where: filter })
+        ])
+        return { items, total }
     }
 
-    async getProductsById(id: string): Promise<Product | null> {
+    async getProductById(id: string): Promise<Product | null> {
         return await prisma.product.findUnique({
             where: { id }
         })
@@ -106,7 +115,7 @@ export class ProductPrisma {
         })
     }
 
-    async deleteImageFromProduct(id: string): Promise<ProductImages>{
+    async deleteImageFromProduct(id: string): Promise<ProductImages> {
         return await prisma.productImages.delete({
             where: { id }
         })

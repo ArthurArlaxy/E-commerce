@@ -41,7 +41,7 @@ export const productQuerySchema = z.object({
     minPrice: z.number().optional(),
     category: z.string().optional(),
     inStock: z.boolean().optional(),    // só produtos disponíveis
-    orderBy: z.enum(["price", "name", "createdAt"]).optional(),
+    orderBy: z.enum(["price", "name", "createdAt"]).optional().default("name"),
     order: z.enum(["asc", "desc"]).optional(),
     page: z.number().int().min(1).optional(),
     limit: z.number().int().min(1).max(100).optional(),
