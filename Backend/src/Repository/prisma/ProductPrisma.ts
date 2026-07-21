@@ -1,6 +1,6 @@
 import type { Prisma, Product, ProductCategory, ProductImages } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
-import type { CreateProductInput, ImagesProductInput, ProductQueryInput, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
+import type { CreateProductInput, ImagesProductInput, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
 import { toCreate, toUpdate } from "../../helpers/mappers.js";
 
 export class ProductPrisma {
@@ -46,7 +46,7 @@ export class ProductPrisma {
         })
     }
 
-    async getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number) {
+    async getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{items: Product[], total:number}> {
         const [items, total] = await prisma.$transaction([
             prisma.product.findMany({
                 where: filter,
