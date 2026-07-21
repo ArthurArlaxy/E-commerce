@@ -47,6 +47,27 @@ export const productQuerySchema = z.object({
     limit: z.number().int().min(1).max(100).optional(),
 })
 
+export const idParamSchema = z.object({
+    id: z.string().min(1),
+})
+
+export const slugParamSchema = z.object({
+    slug: z.string().min(1),
+})
+
+export const productCategoryParamSchema = z.object({
+    productId: z.string().min(1),
+    categoryId: z.string().min(1),
+})
+
+export const addCategoriesToProductSchema = z.object({
+    categoryIds: z.array(z.string().uuid()).min(1),
+})
+
+export const addImagesToProductSchema = z.array(imagesProductSchema).min(1)
+
+export const updateImagesFromProductSchema = z.array(updateImagesProductSchema).min(1)
+
 export type CreateProductInput = z.infer<typeof createProductSchema>
 export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type ProductQueryInput = z.infer<typeof productQuerySchema>
