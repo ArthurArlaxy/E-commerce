@@ -1,6 +1,6 @@
 import type { Handler } from "express";
 import type { CartService } from "../Service/CartService.js";
-import { addProductToCartSchema, updateCartItemSchema, cartItemIdParamSchema } from "../Schema/CartSchema.js";
+import { addProductToCartSchema, updateCartItemSchema, cartItemIdParamSchema, updateCartItemSelectionSchema } from "../Schema/CartSchema.js";
 import { HttpError } from "../Error/HttpError.js";
 
 export class CartController {
@@ -37,6 +37,19 @@ export class CartController {
         const body = updateCartItemSchema.parse(req.body)
 
         const response = await this.cartService.updateCartItem(req.user.id, id, body)
+
+        return res.json(response)
+    }
+
+    updateCartItemSelection: Handler = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401)
+        }
+
+        const { id } = cartItemIdParamSchema.parse(req.params)
+        const { selected } = updateCartItemSelectionSchema.parse(req.body)
+
+        const response = await this.cartService.updateCartItemSelection(req.user.id, id, selected)
 
         return res.json(response)
     }

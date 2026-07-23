@@ -18,6 +18,9 @@ import { ReviewController } from "./Controller/ReviewController.js";
 import { CartPrisma } from "./Repository/prisma/CartPrisma.js";
 import { CartService } from "./Service/CartService.js";
 import { CartController } from "./Controller/CartController.js";
+import { OrderPrisma } from "./Repository/prisma/OrderPrisma.js";
+import { OrderService } from "./Service/OrderService.js";
+import { OrderController } from "./Controller/OrderController.js";
 
 export const router = Router()
 
@@ -28,8 +31,7 @@ const categoryPrisma = new CategoryPrisma()
 const productPrisma = new ProductPrisma()
 const reviewPrisma = new ReviewPrisma()
 const cartPrisma = new CartPrisma()
-
-
+const orderPrisma = new OrderPrisma()
 
 // Instancias do Service
 const userService = new UserService(userPrisma)
@@ -38,6 +40,7 @@ const categoryService = new CategoryService(categoryPrisma)
 const productService = new ProductService(productPrisma)
 const reviewService = new ReviewService(reviewPrisma)
 const cartService = new CartService(cartPrisma, productPrisma) 
+const orderService = new OrderService(orderPrisma, cartPrisma, addressPrisma)
 
 // Instancias do Controller
 const userController = new UserController(userService)
@@ -46,6 +49,7 @@ const categoryController = new CategoryController(categoryService)
 const productController = new ProductController(productService)
 const reviewController = new ReviewController(reviewService)
 const cartController = new CartController(cartService)
+const orderController = new OrderController(orderService)
 
 // Rotas de Autenticação
 router.post("/register", userController.register)
@@ -98,5 +102,12 @@ router.delete("/reviews/:id", AuthMiddleware.authenticate, reviewController.dele
 router.get("/cart", AuthMiddleware.authenticate, cartController.getCart)
 router.post("/cart/items", AuthMiddleware.authenticate, cartController.addProductToCart)
 router.put("/cart/items/:id", AuthMiddleware.authenticate, cartController.updateCartItem)
+router.patch("/cart/items/:id/selection", AuthMiddleware.authenticate, cartController.updateCartItemSelection)
 router.delete("/cart/items/:id", AuthMiddleware.authenticate, cartController.removeProductFromCart)
 router.delete("/cart", AuthMiddleware.authenticate, cartController.clearCart)
+
+// Rotas de Pedidos
+router.post("/orders", AuthMiddleware.authenticate, orderController.createOrder)
+router.get("/orders", AuthMiddleware.authenticate, orderController.getOrders)
+router.get("/orders/:id", AuthMiddleware.authenticate, orderController.getOrderById)
+router.put("/orders/:id/status", AuthMiddleware.authenticate, AuthMiddleware.admin, orderController.updateOrderStatus)

@@ -64,10 +64,10 @@ model Product {
 }
 
 model ProductImages {
-  id    String  @id @default(uuid())
-  url   String
-  order Int
-  isCover  Boolean
+  id      String  @id @default(uuid())
+  url     String
+  order   Int
+  isCover Boolean
 
   productId String
 
@@ -104,8 +104,9 @@ model Cart {
 }
 
 model ProductCart {
-  id       String @id @default(uuid())
+  id       String  @id @default(uuid())
   quantity Int
+  selected Boolean @default(true)
 
   productId String
   cartId    String

@@ -18,6 +18,7 @@ export interface CartRepository {
     getCartItem(cartId: string, productId: string): Promise<ProductCart | null>
     addProductToCart(cartId: string, data: AddProductToCartInput): Promise<ProductCart>
     updateCartItemQuantity(id: string, quantity: number): Promise<ProductCart>
+    updateCartItemSelection(id: string, selected: boolean): Promise<ProductCart>
     removeProductFromCart(id: string): Promise<ProductCart>
     clearCart(cartId: string): Promise<void>
 }

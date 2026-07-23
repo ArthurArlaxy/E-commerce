@@ -14,11 +14,11 @@ export class CartService {
         const cart = await this.cartRepository.getCartByUserId(userId)
 
         if (!cart) {
-            return { id: null, items: [], total: "0.00" }
+            return { id: null, items: [], total: "0.00", selectedTotal: "0.00" }
         }
 
         const items = cart.products.map((item) => {
-            const price = new Decimal(item.product.price)
+            const price = new Decimal(item.product.price as any)
             const subtotal = price.times(item.quantity)
 
             return {
@@ -27,6 +27,7 @@ export class CartService {
                 name: item.product.name,
                 price: price.toFixed(2),
                 quantity: item.quantity,
+                selected: item.selected,
                 subtotal: subtotal.toFixed(2)
             }
         })
@@ -36,9 +37,34 @@ export class CartService {
             new Decimal(0)
         )
 
-        return { id: cart.id, items, total: total.toFixed(2) }
+        const selectedTotal = items
+            .filter((item) => item.selected)
+            .reduce((acc, item) => acc.plus(item.subtotal), new Decimal(0))
+
+        return {
+            id: cart.id,
+            items,
+            total: total.toFixed(2),
+            selectedTotal: selectedTotal.toFixed(2)
+        }
     }
-    
+
+    async updateCartItemSelection(userId: string, itemId: string, selected: boolean) {
+        const cart = await this.cartRepository.getCartByUserId(userId)
+
+        if (!cart) {
+            throw new HttpError("Cart not found", 404)
+        }
+
+        const item = cart.products.find((product) => product.id === itemId)
+
+        if (!item) {
+            throw new HttpError("Item not found in your cart", 404)
+        }
+
+        return await this.cartRepository.updateCartItemSelection(itemId, selected)
+    }
+
     async addProductToCart(userId: string, data: AddProductToCartInput) {
         const product = await this.productRepository.getProductById(data.productId)
 

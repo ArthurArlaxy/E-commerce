@@ -13,5 +13,9 @@ export const cartItemIdParamSchema = z.object({
     id: z.string().min(1),
 })
 
+export const updateCartItemSelectionSchema = z.object({
+    selected: z.boolean(),
+})
+
 export type AddProductToCartInput = z.infer<typeof addProductToCartSchema>
 export type UpdateCartItemInput = z.infer<typeof updateCartItemSchema>

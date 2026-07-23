@@ -59,6 +59,13 @@ export class CartPrisma {
         })
     }
 
+    async updateCartItemSelection(id: string, selected: boolean): Promise<ProductCart> {
+    return await prisma.productCart.update({
+        where: { id },
+        data: { selected }
+    })
+}
+
     async removeProductFromCart(id: string): Promise<ProductCart> {
         return await prisma.productCart.delete({ where: { id } })
     }
