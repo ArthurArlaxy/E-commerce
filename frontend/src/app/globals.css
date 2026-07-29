@@ -1,0 +1,54 @@
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --tertiary: #979797;
+}
+
+*, body, html{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html{
+  background: var(--background);
+  color: var(--foreground);
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+.container{
+  height: 100vh;
+  width: 100%;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+}
+
+a{
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+.authTitle{
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+hr{
+  color: var(--tertiary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --tertiary: #757575;
+  }
+}
+
