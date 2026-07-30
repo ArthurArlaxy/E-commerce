@@ -1,21 +1,23 @@
 import AuthForm from "@/components/authForm";
-import styles from "./style.module.css"
-
+import { registerAction } from "@/app/actions/auth";
 
 export default function Page() {
     return (
         <div className="container">
-            <header >
+            <header>
                 <h1 className="authTitle">Tech E-Commerce</h1>
             </header>
-            <main >
+            <main>
                 <AuthForm
                     authType="Registrar"
                     action="criar a"
                     buttonAction="Criar"
                     secondAction="Entrar em uma"
-                    buttonSecondAction="Entrar" />
+                    buttonSecondAction="Entrar"
+                    hrefPage="/login"
+                    formAction={registerAction}
+                />
             </main>
         </div>
-    )   
+    )
 }

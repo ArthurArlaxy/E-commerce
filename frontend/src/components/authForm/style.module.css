@@ -22,6 +22,10 @@
     font-weight: 400;
 }
 
+.errorText{
+    color:red;
+}
+
 .section{
     display: flex;
     flex-direction: column;

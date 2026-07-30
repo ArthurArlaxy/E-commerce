@@ -1,7 +1,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --tertiary: #979797;
+  --tertiary: #999898;
 }
 
 *, body, html{
@@ -19,6 +19,10 @@ button, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
+}
+
+input{
+  color: var(--tertiary);
 }
 
 .container{

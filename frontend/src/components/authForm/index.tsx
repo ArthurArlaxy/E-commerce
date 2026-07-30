@@ -1,10 +1,13 @@
 "use client"
 
-
 import FormInput from "@/components/formInput";
 import styles from "./style.module.css"
 import Button from "../Button";
-import { useState } from "react";
+import { useActionState } from "react";
+
+interface AuthState {
+    error?: string;
+}
 
 interface AuthFormProps {
     authType: string;
@@ -12,46 +15,51 @@ interface AuthFormProps {
     secondAction: string;
     buttonAction: string;
     buttonSecondAction: string;
+    hrefPage: string;
+    formAction: (prevState: AuthState, formData: FormData) => Promise<AuthState>;
 }
 
-export default function AuthForm({ authType, action, buttonAction, secondAction, buttonSecondAction }: AuthFormProps) {
-        const [email, setEmail] = useState("");
-        const [password, setPassword] = useState("");
+const initialState: AuthState = {};
 
-        async function handleSubmit(e: React.FormEvent) {
-            e.preventDefault();
+export default function AuthForm({
+    authType,
+    action,
+    buttonAction,
+    secondAction,
+    buttonSecondAction,
+    hrefPage,
+    formAction,
+}: AuthFormProps) {
+    const [state, formActionHandler, isPending] = useActionState(formAction, initialState);
 
-            console.log(email, password);
+    return (
+        <>
+            <form className={styles.form} action={formActionHandler}>
+                <h2 className={styles.subTitle}>{authType}</h2>
+                <p className={styles.p}>Insira e-mail e senha para {action} sua conta.</p>
 
-            // aqui você chama sua API
-        }
-        return (
-            <>
-                <form className={styles.form} onSubmit={handleSubmit}>
-                    <h2 className={styles.subTitle}>{authType}</h2>
-                    <p className={styles.p}>Insira e-mail e senha para {action} sua conta.</p>
-                    <FormInput
-                        inputName="Email"
-                        placeholder="Email@dominio.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                {authType === "Registrar" && (
+                    <FormInput inputName="name" placeholder="Digite seu Nome" />
+                )}
+                <FormInput inputName="email" placeholder="Email@dominio.com" />
+                <FormInput inputName="password" placeholder="Insira uma senha" />
 
-                    <FormInput
-                        inputName="Senha"
-                        placeholder="Insira uma senha"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <p className={styles.termoText}>Ao clicar em continuar, você concorda com os nossos <strong><a href="/termo">Termos de Serviço</a></strong> e com a <strong><a href="/termo">Política de Privacidade</a></strong></p>
-                    <Button text={buttonAction} />
-                </form>
-                <hr />
-                <div className={styles.section}>
-                    <p className={styles.p}>OU</p>
-                    <p className={styles.p}>{secondAction} conta</p>
-                    <Button text={buttonSecondAction} />
-                </div>
-            </>
-        )
-    }
+                {state?.error && <p className={styles.errorText}>{state.error}</p>}
+
+                <p className={styles.termoText}>
+                    Ao clicar em continuar, você concorda com os nossos{" "}
+                    <strong><a href="/termo">Termos de Serviço</a></strong> e com a{" "}
+                    <strong><a href="/termo">Política de Privacidade</a></strong>
+                </p>
+
+                <Button text={isPending ? "Aguarde..." : buttonAction} />
+            </form>
+            <hr />
+            <div className={styles.section}>
+                <p className={styles.p}>OU</p>
+                <p className={styles.p}>{secondAction} conta</p>
+                <Button text={buttonSecondAction} href={hrefPage} />
+            </div>
+        </>
+    )
+}

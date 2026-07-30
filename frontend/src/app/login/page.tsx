@@ -1,5 +1,6 @@
 import AuthForm from "@/components/authForm";
 import styles from "./style.module.css"
+import { loginAction } from "../actions/auth";
 
 
 export default function Page() {
@@ -14,8 +15,11 @@ export default function Page() {
                     action="entrar na"
                     buttonAction="Entrar"
                     secondAction="Cria uma"
-                    buttonSecondAction="Criar" />
+                    buttonSecondAction="Criar"
+                    hrefPage="/register"
+                    formAction={loginAction}
+                />
             </main>
         </div>
-    )   
+    )
 }
