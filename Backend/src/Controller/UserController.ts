@@ -4,7 +4,7 @@ import type { UserService } from "../Service/UserService.js";
 import { HttpError } from "../Error/HttpError.js";
 
 export class UserController {
-    constructor(private  userService: UserService) { }
+    constructor(private userService: UserService) { }
 
     login: Handler = async (req, res, next) => {
         const data = loginSchema.parse(req.body);
@@ -12,14 +12,8 @@ export class UserController {
         try {
             const response = await this.userService.login(data);
 
-            res.cookie("token", response, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-                maxAge: 24 * 60 * 60 * 1000, // 1 day
-            })
+            return res.json({ token: response })
 
-            return res.status(201).json({ message: "Login sucessfuly" })
         } catch (error) {
             next(error)
         }
@@ -31,14 +25,7 @@ export class UserController {
 
             const response = await this.userService.createUser(data);
 
-            res.cookie("token", response, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-                maxAge: 24 * 60 * 60 * 1000, // 1 day
-            })
-
-            return res.status(201).json({ message: "Register sucessfuly" })
+            return res.json({ token: response })
 
         } catch (error) {
             next(error)
