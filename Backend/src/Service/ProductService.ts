@@ -25,6 +25,7 @@ export class ProductService {
             }
         }
 
+
         return await this.productRepository.createProduct(data)
     }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import "dotenv/config"
 
 export const montserratFont = Montserrat({
   subsets: ["latin"],

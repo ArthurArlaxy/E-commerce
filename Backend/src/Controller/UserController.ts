@@ -2,6 +2,7 @@ import type { Handler } from "express";
 import { createUserSchema, loginSchema, updateUserSchema } from "../Schema/UserSchema.js";
 import type { UserService } from "../Service/UserService.js";
 import { HttpError } from "../Error/HttpError.js";
+import cookieParser from "cookie-parser";
 
 export class UserController {
     constructor(private userService: UserService) { }
@@ -11,6 +12,12 @@ export class UserController {
 
         try {
             const response = await this.userService.login(data);
+            res.cookie("token", response, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+            });
 
             return res.json({ token: response })
 
@@ -24,6 +31,12 @@ export class UserController {
         try {
 
             const response = await this.userService.createUser(data);
+            res.cookie("token", response, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+            });
 
             return res.json({ token: response })
 
@@ -42,7 +55,6 @@ export class UserController {
     }
 
     getUserByEmail: Handler = async (req, res, next) => {
-        7
         if (!req.user) throw new HttpError("Invalid token", 401)
 
         try {

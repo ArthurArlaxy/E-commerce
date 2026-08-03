@@ -1,5 +1,5 @@
 import AuthForm from "@/components/authForm";
-import { registerAction } from "@/app/actions/auth";
+import { registerAction } from "@/actions/auth";
 
 export default function Page() {
     return (

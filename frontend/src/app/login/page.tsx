@@ -1,6 +1,6 @@
 import AuthForm from "@/components/authForm";
 import styles from "./style.module.css"
-import { loginAction } from "../actions/auth";
+import { loginAction } from "../../actions/auth";
 
 
 export default function Page() {

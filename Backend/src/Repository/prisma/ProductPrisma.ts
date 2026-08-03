@@ -2,6 +2,7 @@ import type { Prisma, Product, ProductCategory, ProductImages } from "@prisma/cl
 import { prisma } from "../../Database/index.js";
 import type { CreateProductInput, ImagesProductInput, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
 import { toCreate, toUpdate } from "../../helpers/mappers.js";
+import { tr } from "zod/locales";
 
 export class ProductPrisma {
     constructor() { }
@@ -46,7 +47,7 @@ export class ProductPrisma {
         })
     }
 
-    async getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{items: Product[], total:number}> {
+    async getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{ items: Product[], total: number }> {
         const [items, total] = await prisma.$transaction([
             prisma.product.findMany({
                 where: filter,
@@ -58,7 +59,8 @@ export class ProductPrisma {
                         where: { isCover: true },
                         take: 1
                     }
-                }}),
+                }
+            }),
             prisma.product.count({ where: filter })
         ])
         return { items, total }
@@ -66,13 +68,36 @@ export class ProductPrisma {
 
     async getProductById(id: string): Promise<Product | null> {
         return await prisma.product.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                images: true,
+                productCategories: {
+                    select: {
+                        category: true
+                    }
+                }
+            }
         })
     }
 
     async getProductBySlug(slug: string): Promise<Product | null> {
         return await prisma.product.findUnique({
-            where: { slug }
+            where: { slug },
+            include: {
+                images: true,
+                productCategories: {
+                    select: {
+                        category: true
+                    },
+                },
+                reviews:{
+                    select:{
+                        rating:true,
+                        comment: true,
+                        createdAt:true
+                    }
+                }
+            }
         })
     }
 
