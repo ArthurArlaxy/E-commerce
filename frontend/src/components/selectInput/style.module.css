@@ -1,0 +1,21 @@
+.select{
+    border: 1px var(--tertiary) solid;
+    border-radius: .5rem;
+    padding: .4rem .8rem ;
+    width: 100%;
+    color: var(--tertiary);
+}
+
+.option {
+    background-color: var(--background);
+}
+
+.option:checked {
+    border-radius: .2rem;
+    border: 1px var(--tertiary) solid;
+    background-color: #b3b1b1;
+}
+
+.option:hover {
+    background-color: #b3b1b1;
+}
