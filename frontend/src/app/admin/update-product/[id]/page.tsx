@@ -1,10 +1,10 @@
-import FormInputLabel from "@/components/formInputLabel";
-import SelectInputLabel from "@/components/selectInput";
+import FormInputLabel from "@/components/inputs/formInputLabel";
+import SelectInputLabel from "@/components/inputs/selectInput";
 import Image from "next/image";
 import styles from "./style.module.css"
 import { getCategories } from "@/actions/categories";
-import FormTextAreaLabel from "@/components/formTextAreaLabel";
-import ImageUpload from "@/components/imageUpload";
+import FormTextAreaLabel from "@/components/inputs/formTextAreaLabel";
+import ImageUpload from "@/components/inputs/imageUpload";
 import Button from "@/components/Button";
 
 export default function Page() {

@@ -1,10 +1,10 @@
 "use client"
 
-import FormInputLabel from "@/components/formInputLabel";
-import SelectInputLabel, { Category } from "@/components/selectInput";
+import FormInputLabel from "@/components/inputs/formInputLabel";
+import SelectInputLabel, { Category } from "@/components/inputs/selectInput";
 import styles from "./style.module.css"
-import FormTextAreaLabel from "@/components/formTextAreaLabel";
-import ImageUpload from "@/components/imageUpload";
+import FormTextAreaLabel from "@/components/inputs/formTextAreaLabel";
+import ImageUpload from "@/components/inputs/imageUpload";
 import Button from "@/components/Button";
 import { productCreateForm, ProductState } from "@/actions/product";
 import { useActionState } from "react";

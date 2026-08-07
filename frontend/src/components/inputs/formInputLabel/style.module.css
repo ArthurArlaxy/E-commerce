@@ -1,7 +1,7 @@
 .input {
     border: 1px var(--tertiary) solid;
     border-radius: .5rem;
-    color: var(--foreground);
+    color: var(--tertiary);
     padding: .55rem .8rem;
     width: 100%;
 }

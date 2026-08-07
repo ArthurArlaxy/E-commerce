@@ -1,8 +1,8 @@
 "use client"
 
-import FormInput from "@/components/formInput";
+import FormInput from "@/components/inputs/formInput";
 import styles from "./style.module.css"
-import Button from "../Button";
+import Button from "../../Button";
 import { useActionState } from "react";
 
 interface AuthState {

@@ -1,4 +1,4 @@
-import AuthForm from "@/components/authForm";
+import AuthForm from "@/components/forms/authForm";
 import styles from "./style.module.css"
 import { loginAction } from "../../actions/auth";
 

@@ -1,5 +1,5 @@
 import { getCategories } from "@/actions/categories"
-import CreateProductForm from "@/components/createProductForm"
+import CreateProductForm from "@/components/forms/createProductForm"
 
 
 export default async function Page() {
