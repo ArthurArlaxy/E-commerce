@@ -25,7 +25,6 @@ export async function productCreateForm(
 
     const cookieStore = await cookies()
     const cookieHeader = cookieStore.toString()
-    console.log("Cookie header:", cookieHeader)
 
     if (!cookieHeader) {
         return { error: "Sessão expirada, faça login novamente" }
@@ -33,13 +32,14 @@ export async function productCreateForm(
 
     const name = formData.get("name")
     const slug = formData.get("slug")
+    const description = formData.get("description")
     const price = formData.get("price")
     const categories = formData.getAll("categories")
     const images = formData.getAll("images") as File[]
     const stock = formData.get("stock")
     const coverIndex = formData.get("coverIndex")
 
-    if (!name || !slug || !price || !categories || !images || !stock) {
+    if (!name || !slug || !description || !price || !categories || !images || !stock || !coverIndex) {
         return { error: "Todos os campos precisam ser preenchidos" }
     }
 
@@ -48,11 +48,10 @@ export async function productCreateForm(
     backendFormData.append("slug", slug)
     backendFormData.append("price", price)
     backendFormData.append("stock", stock)
+    backendFormData.append("description", description)
     backendFormData.append("coverIndex", coverIndex)
-    categories.forEach((categorie) => backendFormData.append("categories", categorie))
+    categories.forEach((category) => backendFormData.append("categoriesIds", category))
     images.forEach((image) => backendFormData.append("images", image))
-
-    console.log({ name, slug, price, categories, images, stock })
 
     const response = await fetch(`${process.env.API_URL}/products`, {
         method: "POST",
@@ -64,9 +63,9 @@ export async function productCreateForm(
     })
 
     if (!response.ok) {
-        console.log(response)
         return { error: "Erro o criar o produto" }
     }
+    
     const data = await response.json()
 
     redirect(`/products/${data.id}`)

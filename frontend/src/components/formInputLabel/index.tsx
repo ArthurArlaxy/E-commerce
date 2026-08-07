@@ -1,6 +1,7 @@
 import styles from "./style.module.css"
 
 interface FormInputProps {
+    type: string
     inputName: string;
     label: string;
     placeholder?: string;

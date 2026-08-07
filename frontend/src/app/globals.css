@@ -4,28 +4,54 @@
   --tertiary: #999898;
 }
 
-*, body, html{
+*,
+body,
+html {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
 
-html{
+html {
   background: var(--background);
   color: var(--foreground);
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
 }
 
-input{
+input {
   color: var(--tertiary);
 }
 
-.container{
+.nav-inner {
+  display: flex;
+  overflow-x: scroll;
+  padding: 1rem 1rem .6rem 1rem;
+  gap: .3rem;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-admin-item {
+  text-align: center;
+  border-radius: .5rem;
+  padding: .2rem .8rem;
+  
+  white-space: none;
+  text-wrap: nowrap;
+  border: 1px var(--foreground) solid;
+}
+
+.container {
   height: 100vh;
   width: 100%;
   display: grid;
@@ -33,18 +59,23 @@ input{
   gap: 1rem;
 }
 
-a{
+.active{
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+a {
   text-decoration: none;
   color: var(--foreground);
 }
 
-.authTitle{
+.title {
   text-align: center;
   font-size: 1.5rem;
   font-weight: bold;
 }
 
-hr{
+hr {
   color: var(--tertiary);
 }
 
@@ -55,4 +86,3 @@ hr{
     --tertiary: #757575;
   }
 }
-

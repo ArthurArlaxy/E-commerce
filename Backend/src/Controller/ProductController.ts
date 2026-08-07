@@ -11,6 +11,7 @@ import {
     addImagesToProductSchema,
     updateImagesFromProductSchema,
 } from "../Schema/ProductSchema.js";
+import { HttpError } from "../Error/HttpError.js";
 
 export class ProductController {
     constructor(private productService: ProductService) { }
@@ -18,7 +19,13 @@ export class ProductController {
     createProducts: Handler = async (req, res, next) => {
         const body = createProductSchema.parse(req.body)
 
-        const response = await this.productService.createProduct(body)
+        if(!req.files){
+            return new HttpError("Erro ao receber imagens", 400)
+        }
+
+        const files = req.files as Express.Multer.File[]
+
+        const response = await this.productService.createProduct(body, files)
 
         return res.status(201).json(response)
     }

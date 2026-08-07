@@ -1,17 +1,36 @@
+
 import z from "zod"
 
 export const createProductSchema = z.object({
     name: z.string().min(1),
-    price: z.number().positive(),
+    price: z.coerce.number().positive(),
     slug: z.string().min(1).optional(),
     description: z.string().min(1),
-    stock: z.number().int().min(0),
-    categoryIds: z.array(z.string().uuid()).min(1),
+    stock: z.coerce.number().int().min(0),
+    categoriesIds: z.preprocess((val) => {
+        if (typeof val === 'string') return [val];
+
+        if (Array.isArray(val)) return val;
+
+        return [];
+    }, z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria")),
+    coverIndex: z.coerce.number().int().min(0)
+})
+
+
+export const productCreateData = z.object({
+    name: z.string().min(1),
+    price: z.coerce.number().positive(),
+    slug: z.string().min(1).optional(),
+    description: z.string().min(1),
+    stock: z.coerce.number().int().min(0),
+    categoriesIds: z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria"),
+    coverIndex: z.number(),
     images: z.array(z.object({
         url: z.string(),
-        order: z.number().int().min(0),
         isCover: z.boolean(),
-    })).min(1),
+        order: z.number().min(0)
+    })).min(1)
 })
 
 export const imagesProductSchema = z.object({
@@ -28,11 +47,11 @@ export const updateImagesProductSchema = z.object({
 })
 
 export const updateProductSchema = z.object({
-    name: z.string().min(1).optional(),
+    name: z.string().min(1),
+    price: z.coerce.number().positive(),
     slug: z.string().min(1).optional(),
-    price: z.number().positive().optional(),
-    description: z.string().min(1).optional(),
-    stock: z.number().int().min(0).optional(),
+    description: z.string().min(1),
+    stock: z.coerce.number().int().min(0),
 })
 
 export const productQuerySchema = z.object({
@@ -40,7 +59,14 @@ export const productQuerySchema = z.object({
     maxPrice: z.number().optional(),
     minPrice: z.number().optional(),
     category: z.string().optional(),
-    inStock: z.boolean().optional(),    // só produtos disponíveis
+    inStock: z.boolean().optional(), 
+    isActive: z.preprocess((val) => {
+        if(val === "false"){
+            return false
+        }
+
+        return val
+    }, z.boolean().optional().default(true)),
     orderBy: z.enum(["price", "name", "createdAt"]).optional().default("name"),
     order: z.enum(["asc", "desc"]).optional(),
     page: z.number().int().min(1).optional(),
@@ -73,3 +99,4 @@ export type UpdateProductInput = z.infer<typeof updateProductSchema>
 export type ProductQueryInput = z.infer<typeof productQuerySchema>
 export type ImagesProductInput = z.infer<typeof imagesProductSchema>
 export type UpdateImagesProductInput = z.infer<typeof updateImagesProductSchema>
+export type ProductCreateData = z.infer<typeof productCreateData>

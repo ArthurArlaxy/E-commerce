@@ -1,13 +1,14 @@
 import type { Prisma, Product, ProductCategory, ProductImages } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
-import type { CreateProductInput, ImagesProductInput, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
+import type { CreateProductInput, ImagesProductInput, ProductCreateData, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
 import { toCreate, toUpdate } from "../../helpers/mappers.js";
 import { tr } from "zod/locales";
+import { response } from "express";
 
 export class ProductPrisma {
     constructor() { }
 
-    async createProduct(serviceData: CreateProductInput): Promise<Product | null> {
+    async createProduct(serviceData: ProductCreateData): Promise<Product | null> {
         const data = toCreate(serviceData)
 
         return prisma.$transaction(async (transaction) => {
@@ -31,7 +32,7 @@ export class ProductPrisma {
             })
 
             await transaction.productCategory.createMany({
-                data: data.categoryIds.map((categoryId: string) => ({
+                data: data.categoriesIds.map((categoryId: string) => ({
                     categoryId,
                     productId: product.id
                 }))
@@ -90,11 +91,11 @@ export class ProductPrisma {
                         category: true
                     },
                 },
-                reviews:{
-                    select:{
-                        rating:true,
+                reviews: {
+                    select: {
+                        rating: true,
                         comment: true,
-                        createdAt:true
+                        createdAt: true
                     }
                 }
             }
@@ -102,7 +103,10 @@ export class ProductPrisma {
     }
 
     async deleteProduct(id: string): Promise<Product> {
-        return await prisma.product.delete({ where: { id } })
+        return await prisma.product.update({
+            where: { id },
+            data: { isActive: false, deletedAt: new Date() },
+        });
     }
 
     async updateProduct(id: string, serviceData: UpdateProductInput): Promise<Product> {

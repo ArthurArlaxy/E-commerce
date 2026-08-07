@@ -5,7 +5,7 @@ export default function Page() {
     return (
         <div className="container">
             <header>
-                <h1 className="authTitle">Tech E-Commerce</h1>
+                <h1 className="title">Tech E-Commerce</h1>
             </header>
             <main>
                 <AuthForm

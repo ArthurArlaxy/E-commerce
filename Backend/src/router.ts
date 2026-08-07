@@ -21,6 +21,7 @@ import { CartController } from "./Controller/CartController.js";
 import { OrderPrisma } from "./Repository/prisma/OrderPrisma.js";
 import { OrderService } from "./Service/OrderService.js";
 import { OrderController } from "./Controller/OrderController.js";
+import { imageMiddleware } from "./Middleware/ImageMiddleware.js";
 
 export const router = Router()
 
@@ -82,7 +83,7 @@ router.delete("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.adm
 router.get("/products", AuthMiddleware.authenticate, productController.getProducts)
 router.get("/products/id/:id", AuthMiddleware.authenticate, productController.getProductById)
 router.get("/products/:slug", AuthMiddleware.authenticate, productController.getProductBySlug)
-router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.createProducts)
+router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images',8), productController.createProducts)
 router.put("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.updateProduct)
 router.delete("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteProduct)
 router.post("/products/:id/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addCategoriesToProduct)

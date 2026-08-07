@@ -1,87 +1,208 @@
-.previewItem {
-    position: relative;
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+.hiddenInput {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Dropzone */
+
+.dropzone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    border: 1.5px dashed #d4d4d8;
+    border-radius: 10px;
+    background-color: #fafafa;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dropzone:hover {
+    border-color: #a1a1aa;
+    background-color: #f4f4f5;
+}
+
+.dropzone:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+.dragging {
+    border-color: #6366f1;
+    border-style: solid;
+    background-color: #eef2ff;
+}
+
+.placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-align: center;
+    pointer-events: none;
+}
+
+.placeholder p {
+    margin: 0;
+    font-size: 14px;
+    color: #3f3f46;
+}
+
+.placeholder p strong {
+    color: #18181b;
+    font-weight: 600;
+}
+
+.placeholder span {
+    font-size: 12.5px;
+    color: #a1a1aa;
+}
+
+/* Grid de pré-visualização */
+
+.previewGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.previewItem {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f4f4f5;
+    border: 1.5px solid transparent;
+}
+
+.previewImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Item marcado como capa */
+
 .coverItem {
-    outline: 2px solid #4f46e5; /* destaque visual pra capa */
+    border-color: #f59e0b;
+    box-shadow: 0 0 0 1px #f59e0b;
 }
 
 .coverBadge {
     position: absolute;
-    top: 4px;
-    left: 4px;
-    background: #4f46e5;
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
+    top: 6px;
+    left: 6px;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #78350f;
+    background-color: #fbbf24;
+    border-radius: 999px;
+    z-index: 2;
 }
+
+/* Botão de remover */
+
+.removeButton {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(24, 24, 27, 0.6);
+    color: #fff;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+    transition: background-color 0.15s ease;
+}
+
+.removeButton:hover {
+    background-color: #dc2626;
+}
+
+/* Controles inferiores (mover / definir capa) */
 
 .imageControls {
     position: absolute;
-    bottom: 4px;
-    left: 4px;
-    right: 4px;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     gap: 4px;
+    padding: 6px 4px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.previewItem:hover .imageControls,
+.previewItem:focus-within .imageControls {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .controlButton {
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-}
-
-.controlButton:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
-
-.previewItem {
-    position: relative;
-}
-
-.coverItem {
-    outline: 2px solid #4f46e5; /* destaque visual pra capa */
-}
-
-.coverBadge {
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    background: #4f46e5;
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-}
-
-.imageControls {
-    position: absolute;
-    bottom: 4px;
-    left: 4px;
-    right: 4px;
     display: flex;
-    justify-content: space-between;
-    gap: 4px;
-}
-
-.controlButton {
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: none;
-    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
     width: 24px;
     height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #27272a;
+    font-size: 12px;
     cursor: pointer;
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.controlButton:hover:not(:disabled) {
+    background-color: #fff;
 }
 
 .controlButton:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
+    opacity: 0.35;
+    cursor: default;
+}
+
+.controlButton:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 1px;
+}
+
+/* Telas menores: controles sempre visíveis (sem hover em touch) */
+
+@media (hover: none) {
+    .imageControls {
+        opacity: 1;
+        transform: none;
+    }
 }

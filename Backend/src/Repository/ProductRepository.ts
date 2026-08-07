@@ -1,8 +1,8 @@
 import type { Prisma, Product, ProductImages } from "@prisma/client";
-import type { CreateProductInput, ImagesProductInput, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
+import type { ImagesProductInput, ProductCreateData, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
 
 export interface ProductRepository {
-    createProduct(data: CreateProductInput): Promise<Product | null>
+    createProduct(data: ProductCreateData): Promise<Product | null>
     getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{items: Product[], total:number}>
     getProductById(id: string): Promise<Product | null>
     getProductBySlug(slug: string): Promise<Product | null>

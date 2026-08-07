@@ -3,6 +3,7 @@ import express from "express"
 import cookieParser from "cookie-parser"
 import { router } from "./router.js"
 
+
 const app = express()
 
 app.use(express.json())

@@ -2,31 +2,59 @@ import { Prisma } from "@prisma/client";
 import { HttpError } from "../Error/HttpError.js";
 import { slugCreator, uniqueSlug } from "../helpers/slugFunctions.js";
 import type { ProductRepository } from "../Repository/ProductRepository.js";
-import type { CreateProductInput, ImagesProductInput, ProductQueryInput, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
+import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductQueryInput, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
+import fs from "fs"
 
 export class ProductService {
     constructor(private productRepository: ProductRepository) { }
 
-    async createProduct(data: CreateProductInput) {
+    async createProduct(data: CreateProductInput, files: Express.Multer.File[]) {
         const baseSlug = slugCreator(data.slug ?? data.name)
 
         data.slug = await uniqueSlug(baseSlug, async (slug) => {
             return Boolean(await this.productRepository.getProductBySlug(slug))
         })
 
-        let coverCount: number = 0
+        const uploadedImages: { url: string, order: number, isCover: boolean }[] = []
+        let orderImage: number = 0
 
-        for (const image of data.images) {
-            if (image.isCover) {
-                coverCount++
-                if (coverCount > 1) {
-                    throw new HttpError("More than one image cover", 400)
+        for (const image of files) {
+            const buffer = fs.readFileSync(image.path)
+            fs.rmSync(image.path)
+            const base64Image = buffer.toString("base64")
+            const formData = new FormData()
+            formData.append('image', base64Image)
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?expiration=600&key=${process.env.IMGBB_KEY}`, {
+                    method: "POST",
+                    body: formData
+                })
+
+                if (!response.ok) {
+                    throw new Error(`Erro no ImgBB: ${response.statusText}`)
                 }
+
+                const result = await response.json()
+                
+                const url = result.data.url
+                const order  = orderImage
+                const isCover =  orderImage === data.coverIndex ? true : false 
+                orderImage++
+
+                uploadedImages.push({ url, order, isCover })
+
+            } catch (error) {
+                return new HttpError(`${error}`, 400)
             }
         }
 
 
-        return await this.productRepository.createProduct(data)
+        const serviceData: ProductCreateData = {
+            ...data,
+            images: [...uploadedImages]
+        }
+
+        return this.productRepository.createProduct(serviceData)
     }
 
     async getProducts(query: ProductQueryInput) {
@@ -58,6 +86,10 @@ export class ProductService {
             filter.stock = {
                 gt: 0
             }
+        }
+
+        if(query.isActive){
+            filter.isActive = query.isActive
         }
 
         const take = query.limit ?? 20
