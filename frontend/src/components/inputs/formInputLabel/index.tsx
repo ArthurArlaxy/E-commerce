@@ -5,9 +5,10 @@ interface FormInputProps {
     inputName: string;
     label: string;
     placeholder?: string;
+    value?: string;
 }
 
-export default function FormInput({ inputName, label, placeholder }: FormInputProps) {
+export default function FormInput({ inputName, label, placeholder, value }: FormInputProps) {
     return (
         <>
             <label htmlFor={inputName} className={styles.label}>{label}</label>
@@ -18,6 +19,7 @@ export default function FormInput({ inputName, label, placeholder }: FormInputPr
                 placeholder={placeholder}
                 required
                 className={styles.input}
+                value={value}
             />
         </>
     )
