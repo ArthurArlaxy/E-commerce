@@ -35,7 +35,7 @@ export async function registerAction(
         }
 
         data = await response.json();
-        
+
     } catch {
         return { error: "Erro de conexão. Tente novamente." };
     }
@@ -82,7 +82,6 @@ export async function loginAction(
         }
 
         data = await response.json();
-        console.log(data)
 
     } catch (error) {
         return { error: "Erro de conexão. Tente novamente." };
@@ -101,4 +100,4 @@ export async function loginAction(
     })
 
     redirect("/")
-};
+}
