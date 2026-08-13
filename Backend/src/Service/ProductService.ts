@@ -127,6 +127,11 @@ export class ProductService {
     }
     async updateProduct(id: string, data: UpdateProductInput, files: Express.Multer.File[]) {
 
+        const baseSlug = slugCreator(data.slug || data.name )
+        data.slug = await uniqueSlug(baseSlug, async (slug) => {
+            return Boolean(await this.productRepository.getProductBySlug(slug))
+        })
+
         if (typeof id !== "string") {
             throw new HttpError("Invalid Product ID", 400)
         }
