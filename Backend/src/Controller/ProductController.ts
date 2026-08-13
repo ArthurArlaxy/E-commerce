@@ -57,8 +57,9 @@ export class ProductController {
     updateProduct: Handler = async (req, res, next) => {
         const { id } = idParamSchema.parse(req.params)
         const body = updateProductSchema.parse(req.body)
+        const files = req.files as Express.Multer.File[]
 
-        const response = await this.productService.updateProduct(id, body)
+        const response = await this.productService.updateProduct(id, body, files)
 
         return res.json(response)
     }
