@@ -1,4 +1,5 @@
 
+import type { Prisma } from "@prisma/client";
 import z from "zod"
 
 export const createProductSchema = z.object({
@@ -33,6 +34,35 @@ export const productCreateData = z.object({
     })).min(1)
 })
 
+export const getProduct = z.object({
+    name: z.string(),
+    price: z.number(),
+    slug: z.string(),
+    description: z.string(),
+    stock: z.number(),
+    id: z.string(),
+    isActive: z.boolean(),
+    createdAt: z.date(),
+    deletedAt: z.date().optional(),
+    updatedAt: z.date(),
+    images: z.array(z.object({
+        url: z.string(),
+        isCover: z.boolean(),
+        order: z.number(),
+        id: z.string(),
+        productId: z.string()
+    })),
+    productCategories: z.array(z.object({
+        category: z.object({
+            id: z.string(),
+            name: z.string(),
+            slug: z.string(),
+            createdAt: z.date(),
+            updatedAt: z.date()
+        })
+    }))
+})
+
 export const imagesProductSchema = z.object({
     url: z.string(),
     order: z.number().int().min(0),
@@ -52,6 +82,29 @@ export const updateProductSchema = z.object({
     slug: z.string().min(1).optional(),
     description: z.string().min(1),
     stock: z.coerce.number().int().min(0),
+    categoriesIds: z.preprocess((val) => {
+        if (typeof val === 'string') return [val];
+
+        if (Array.isArray(val)) return val;
+
+        return [];
+    }, z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria")),
+    coverIndex: z.coerce.number()
+})
+
+export const productUpdateData = z.object({
+    name: z.string().min(1),
+    price: z.coerce.number().positive(),
+    slug: z.string().min(1).optional(),
+    description: z.string().min(1),
+    stock: z.coerce.number().int().min(0),
+    coverIndex: z.number(),
+    categoriesIds: z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria"),
+    images: z.array(z.object({
+        url: z.string(),
+        isCover: z.boolean(),
+        order: z.number().min(0)
+    })).min(1)
 })
 
 export const productQuerySchema = z.object({
@@ -59,9 +112,9 @@ export const productQuerySchema = z.object({
     maxPrice: z.number().optional(),
     minPrice: z.number().optional(),
     category: z.string().optional(),
-    inStock: z.boolean().optional(), 
+    inStock: z.boolean().optional(),
     isActive: z.preprocess((val) => {
-        if(val === "false"){
+        if (val === "false") {
             return false
         }
 
@@ -100,3 +153,5 @@ export type ProductQueryInput = z.infer<typeof productQuerySchema>
 export type ImagesProductInput = z.infer<typeof imagesProductSchema>
 export type UpdateImagesProductInput = z.infer<typeof updateImagesProductSchema>
 export type ProductCreateData = z.infer<typeof productCreateData>
+export type ProductUpdateData = z.infer<typeof productUpdateData>
+export type GetProductSchema = z.infer<typeof getProduct>
