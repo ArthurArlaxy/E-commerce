@@ -125,3 +125,57 @@ export async function getProductById(id: string) {
 
     return product
 }
+
+export async function updateCreateForm(
+    prevState: ProductState,
+    formData: FormData
+): Promise<ProductState> {
+
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+
+    if (!cookieHeader) {
+        return { error: "Sessão expirada, faça login novamente" }
+    }
+
+    const id = formData.get("id")
+    const name = formData.get("name")
+    const slug = formData.get("slug")
+    const description = formData.get("description")
+    const price = formData.get("price")
+    const categories = formData.getAll("categories")
+    const images = formData.getAll("images") as File[]
+    const stock = formData.get("stock")
+    const coverIndex = formData.get("coverIndex")
+
+    if (!id || !name || !slug || !description || !price || !categories || !images || !stock || !coverIndex) {
+        return { error: "Todos os campos precisam ser preenchidos" }
+    }
+
+    const backendFormData = new FormData()
+    backendFormData.append("name", name)
+    backendFormData.append("slug", slug)
+    backendFormData.append("price", price)
+    backendFormData.append("stock", stock)
+    backendFormData.append("description", description)
+    backendFormData.append("coverIndex", coverIndex)
+    categories.forEach((category) => backendFormData.append("categoriesIds", category))
+    images.forEach((image) => backendFormData.append("images", image))
+
+    const response = await fetch(`${process.env.API_URL}/products/${id}`, {
+        method: "PUT",
+        body: backendFormData,
+        headers: {
+            "Cookie": cookieHeader,
+        },
+        cache: "no-store"
+    })
+
+    if (!response.ok) {
+        return { error: "Erro o criar o produto" }
+    }
+
+    const data = await response.json()
+
+    redirect(`/products/${data.id}`)
+}
