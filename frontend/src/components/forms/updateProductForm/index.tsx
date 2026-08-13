@@ -42,7 +42,7 @@ export default function UpdateProductForm({ categories, product }: UpdateProduct
                     }))}
                 />
                 {state?.error && <p className={styles.errorText}>{state.error}</p>}
-                <Button text={isPending ? "...Aguarde" : "Criar Produto"} />
+                <Button text={isPending ? "...Aguarde" : "Atualizar Produto"} />
             </form>
         </>
     );
