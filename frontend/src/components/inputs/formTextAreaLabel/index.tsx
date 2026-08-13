@@ -4,9 +4,10 @@ interface FormTextAreaProps {
     textAreaName: string;
     label: string;
     placeholder?: string;
+    value?: string
 }
 
-export default function FormTextAreaLabel({ textAreaName, label, placeholder }: FormTextAreaProps) {
+export default function FormTextAreaLabel({ textAreaName, label, placeholder, value }: FormTextAreaProps) {
     return (
         <>
             <div>
@@ -18,6 +19,7 @@ export default function FormTextAreaLabel({ textAreaName, label, placeholder }: 
                     required
                     className={styles.textArea}
                     rows={10}
+                    defaultValue={value}
                 />
             </div>
         </>

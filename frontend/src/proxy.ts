@@ -24,7 +24,7 @@ import type { NextRequest } from "next/server";
 
 const PROTECTED_ROUTES = ["/products", "/profile", "/admin", "/review"];
 const ADMIN_ONLY_ROUTES = ["/admin"];
-const AUTH_ROUTES = ["/login", "/register"]; // rotas que usuário logado não deveria acessar
+const AUTH_ROUTES = ["/login", "/register"]; 
 
 export async function proxy(req: NextRequest) {
 

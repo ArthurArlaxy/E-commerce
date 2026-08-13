@@ -1,25 +1,25 @@
-import FormInputLabel from "@/components/inputs/formInputLabel";
-import SelectInputLabel from "@/components/inputs/selectInput";
-import Image from "next/image";
-import styles from "./style.module.css"
 import { getCategories } from "@/actions/categories";
-import FormTextAreaLabel from "@/components/inputs/formTextAreaLabel";
-import ImageUpload from "@/components/inputs/imageUpload";
-import Button from "@/components/Button";
+import { getProductById} from "@/actions/product";
+import UpdateProductForm from "@/components/forms/updateProductForm";
 
-export default function Page() {
+interface PageProps {
+    params: Promise<{ id: string }>;
+}
+
+export default async function Page({ params }: PageProps) {
+    const { id } = await params
+    const categories = await getCategories()
+    const product = await getProductById(id)
+
+    if ("error" in product) {
+        throw new Error("Falha ao tentar buscar o produto para a atualização!")
+    }
+    
+
     return (
-        <>
-            <form className={styles.productForm} action="">
-                <FormInputLabel type="text" inputName="name" label="Nome" placeholder="Nome do Produto" />
-                <FormInputLabel type="number" inputName="price" label="Preço" placeholder="Preço do Produto" />
-                <SelectInputLabel label="Categoria" SelectName="categories" getCategories={getCategories} />
-                <FormInputLabel type="text" inputName="slug" label="Slug" placeholder="Slug do Produto" />
-                <FormInputLabel type="number" inputName="stockQuantity" label="Quantidade em Estoque" placeholder="Quantidade do Produto em Estoque" />
-                <FormTextAreaLabel textAreaName="description" label="Descrição" placeholder="Descrição do Produto" />
-                <ImageUpload inputName="fotoProduto" label="Imagens do Produto" />
-                <Button href="" text="Criar Produto"/>
-            </form>
-        </>
-    );
+        <UpdateProductForm
+            categories={categories}
+            product={product}
+        />
+    )
 }

@@ -19,7 +19,7 @@ export default function FormInput({ inputName, label, placeholder, value }: Form
                 placeholder={placeholder}
                 required
                 className={styles.input}
-                value={value}
+                defaultValue={value}
             />
         </>
     )

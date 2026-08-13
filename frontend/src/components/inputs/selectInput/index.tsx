@@ -13,11 +13,12 @@ export interface Category {
 interface SelectInputProps {
     SelectName: string;
     label: string;
-    placeholder?: string;
     categories: Category[];
+    originalValuesId?: string[]
 }
 
-export default function SelectInputLabel({ SelectName, label, categories }: SelectInputProps) {
+export default function SelectInputLabel({ SelectName, label, categories, originalValuesId }: SelectInputProps) {
+
     return (
         <div>
             <label htmlFor={SelectName} className={styles.label}>{label}</label>
@@ -27,10 +28,16 @@ export default function SelectInputLabel({ SelectName, label, categories }: Sele
                 multiple
                 size={3}
                 required
-                className={styles.select}>
+                defaultValue={originalValuesId}
+                className={styles.select}
+            >
                 {categories && categories.length > 0
                     ? categories.map((category) => (
-                        <option className={styles.option} key={category.id} value={category.id}>
+                        <option
+                            className={styles.option}
+                            key={category.id}
+                            value={category.id}
+                        >
                             {category.name}
                         </option>
                     ))

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./styles.module.css";
 
 interface ImageFile {
@@ -9,11 +9,80 @@ interface ImageFile {
     previewUrl: string;
 }
 
-export default function ImageUploadMultiple() {
+interface ImportedImage {
+    id: string
+    url: string;
+    order: number;
+    isCover: boolean;
+}
+
+interface ImageUploadMultipleProps {
+    imagesImported?: ImportedImage[];
+}
+
+async function urlsToFiles(images: ImportedImage[]): Promise<{ file: File; isCover: boolean, id: string }[]> {
+    return Promise.all(
+        images.map(async (img) => {
+            const response = await fetch(img.url);
+            const blob = await response.blob();
+            const fileName = img.url.split("/").pop() || "image.jpg";
+            return {
+                file: new File([blob], fileName, { type: blob.type }),
+                isCover: img.isCover,
+                id: img.id
+            };
+        })
+    );
+}
+
+export default function ImageUploadMultiple({ imagesImported = [] }: ImageUploadMultipleProps) {
     const [images, setImages] = useState<ImageFile[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [coverId, setCoverId] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const imagesRef = useRef<ImageFile[]>([]);
+    imagesRef.current = images;
+
+    useEffect(() => {
+        if (!imagesImported.length) return;
+        let cancelled = false;
+
+        async function loadImages() {
+            try {
+                const sorted = [...imagesImported].sort((a, b) => a.order - b.order);
+                const files = await urlsToFiles(sorted);
+                if (cancelled) return;
+
+                const imported: ImageFile[] = files.map(({ file,id }) => ({
+                    id,
+                    file,
+                    previewUrl: URL.createObjectURL(file),
+                }));
+
+                setImages(imported);
+                syncInputFiles(imported);
+
+                const coverIndex = files.findIndex((f) => f.isCover);
+                setCoverId(imported[coverIndex >= 0 ? coverIndex : 0]?.id ?? null);
+            } catch (error) {
+                console.error("Erro ao carregar imagens existentes:", error);
+            }
+        }
+
+        loadImages();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+
+    useEffect(() => {
+        return () => {
+            imagesRef.current.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+        };
+    }, []);
 
     const processFiles = (fileList: FileList) => {
         const validFiles = Array.from(fileList)
@@ -24,12 +93,11 @@ export default function ImageUploadMultiple() {
                 previewUrl: URL.createObjectURL(file),
             }));
 
-        if (!validFiles.length) return null;
+        if (!validFiles.length) return;
 
         setImages((prev) => {
             const updated = [...prev, ...validFiles];
             syncInputFiles(updated);
-            // se ainda não tem capa definida, a primeira imagem vira capa por padrão
             if (!coverId && updated.length > 0) {
                 setCoverId(updated[0].id);
             }
@@ -38,7 +106,7 @@ export default function ImageUploadMultiple() {
     };
 
     const syncInputFiles = (currentImages: ImageFile[]) => {
-        if (!fileInputRef.current) return null;
+        if (!fileInputRef.current) return;
         const dataTransfer = new DataTransfer();
         currentImages.forEach((img) => dataTransfer.items.add(img.file));
         fileInputRef.current.files = dataTransfer.files;
@@ -54,7 +122,6 @@ export default function ImageUploadMultiple() {
             const filtered = prev.filter((img) => img.id !== idToRemove);
             syncInputFiles(filtered);
 
-            // se a imagem removida era a capa, reatribui pra primeira restante
             if (idToRemove === coverId) {
                 setCoverId(filtered.length > 0 ? filtered[0].id : null);
             }
