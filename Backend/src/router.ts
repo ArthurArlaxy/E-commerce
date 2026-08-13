@@ -84,7 +84,7 @@ router.get("/products", AuthMiddleware.authenticate, productController.getProduc
 router.get("/products/id/:id", AuthMiddleware.authenticate, productController.getProductById)
 router.get("/products/:slug", AuthMiddleware.authenticate, productController.getProductBySlug)
 router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images',8), productController.createProducts)
-router.put("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.updateProduct)
+router.put("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin,imageMiddleware.array('images',8), productController.updateProduct)
 router.delete("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteProduct)
 router.post("/products/:id/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addCategoriesToProduct)
 router.delete("/products/:productId/categories/:categoryId", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteCategoryFromProduct)
