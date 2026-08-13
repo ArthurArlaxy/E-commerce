@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { HttpError } from "../Error/HttpError.js";
 import { slugCreator, uniqueSlug } from "../helpers/slugFunctions.js";
 import type { ProductRepository } from "../Repository/ProductRepository.js";
-import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductQueryInput, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
+import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductQueryInput, ProductUpdateData, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
 import fs from "fs"
 
 export class ProductService {
@@ -25,7 +25,7 @@ export class ProductService {
             const formData = new FormData()
             formData.append('image', base64Image)
             try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?expiration=600&key=${process.env.IMGBB_KEY}`, {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
                     method: "POST",
                     body: formData
                 })
@@ -35,10 +35,10 @@ export class ProductService {
                 }
 
                 const result = await response.json()
-                
-                const url = result.data.url
-                const order  = orderImage
-                const isCover =  orderImage === data.coverIndex ? true : false 
+
+                const url = result.data.image.url
+                const order = orderImage
+                const isCover = orderImage === data.coverIndex
                 orderImage++
 
                 uploadedImages.push({ url, order, isCover })
@@ -88,7 +88,7 @@ export class ProductService {
             }
         }
 
-        if(query.isActive){
+        if (query.isActive) {
             filter.isActive = query.isActive
         }
 
@@ -125,7 +125,8 @@ export class ProductService {
 
         return product
     }
-    async updateProduct(id: string, data: UpdateProductInput) {
+    async updateProduct(id: string, data: UpdateProductInput, files: Express.Multer.File[]) {
+
         if (typeof id !== "string") {
             throw new HttpError("Invalid Product ID", 400)
         }
@@ -136,7 +137,46 @@ export class ProductService {
             throw new HttpError("Product not found", 404)
         }
 
-        const updatedProduct = await this.productRepository.updateProduct(id, data)
+        const uploadedImages: { url: string, order: number, isCover: boolean }[] = []
+        let orderImage: number = 0
+
+        for (const image of files) {
+            const buffer = fs.readFileSync(image.path)
+            fs.rmSync(image.path)
+            const imageBase64 = buffer.toString("base64")
+            const formData = new FormData()
+            formData.append("image", imageBase64)
+
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
+                    method: "POST",
+                    body: formData
+                })
+
+                if (!response.ok) {
+                    throw new HttpError("Falha ao fazer upload das imagens", 400)
+                }
+
+                const result = await response.json()
+
+                const url = result.data.image.url
+                const order = orderImage
+                const isCover = orderImage === data.coverIndex
+                orderImage++
+
+                uploadedImages.push({ url, order, isCover })
+
+            } catch (error) {
+                return new HttpError(`${error}`, 400)
+            }
+
+        }
+
+
+        const updatedProduct = await this.productRepository.updateProduct(id, {
+            ...data,
+            images: [...uploadedImages]
+        })
 
         if (!updatedProduct) {
             throw new HttpError("Error occurred while updating the product", 500)
