@@ -1,8 +1,8 @@
 import type { Prisma, Product, ProductCategory, ProductImages } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
-import type { CreateProductInput, ImagesProductInput, ProductCreateData, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
+import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductUpdateData, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
 import { toCreate, toUpdate } from "../../helpers/mappers.js";
-import { tr } from "zod/locales";
+import { da, tr } from "zod/locales";
 import { response } from "express";
 
 export class ProductPrisma {
@@ -109,12 +109,51 @@ export class ProductPrisma {
         });
     }
 
-    async updateProduct(id: string, serviceData: UpdateProductInput): Promise<Product> {
+    async updateProduct(id: string, serviceData: ProductUpdateData): Promise<Product | null> {
         const data = toUpdate(serviceData)
 
-        return await prisma.product.update({
-            where: { id },
-            data
+        return prisma.$transaction(async (transaction) => {
+
+            await transaction.product.update({
+                where: { id },
+                data: {
+                    name: data.name,
+                    price: data.price,
+                    slug: data.slug,
+                    stock: data.stock,
+                    description: data.description,
+                    isActive: data.isActive,
+                }
+            })
+
+            await transaction.productImages.deleteMany({ where: { productId: id } })
+
+            await transaction.productImages.createMany({
+                data: data.images.map((image: ImagesProductInput) => ({
+                    url: image.url,
+                    order: image.order,
+                    isCover: image.isCover,
+                    productId: id
+                }))
+            })
+
+            await transaction.productCategory.deleteMany({ where: { productId: id } })
+
+            await transaction.productCategory.createMany({
+                data: data.categoriesIds.map((categoryId: string) => ({
+                    categoryId,
+                    productId: id
+                }))
+            })
+
+            return await transaction.product.findUnique({
+                where: { id },
+                include: {
+                    images: true,
+                    productCategories: true
+                }
+            })
+
         })
     }
 
