@@ -1,24 +1,60 @@
 "use server"
+
 import { cookies } from "next/headers";
 
-export async function getCategories() {
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
 
-    // 3. Faz a requisição enviando esses cookies para o Express
+interface Category{
+    id:string,
+    name: string,
+    slug: string,
+    imageUrl: string
+    createdAt: Date
+    updatedAt: Date
+}
+
+export async function getCategories(): Promise<Category[] | []>  {
     const response = await fetch(`${process.env.API_URL}/categories`, {
         method: "GET",
         headers: { 
             "Content-Type": "application/json",
-            "Cookie": cookieHeader 
         },
         cache: "no-store" 
     });
 
     if (!response.ok) {
-        console.error(`Erro ${response.status}: Falha ao autenticar sessão com o Express.`);
+        console.error(`Erro ${response.status}: Falha ao buscar categorias`);
         return [];
     }
 
-    return response.json();
+    const categories = await response.json() as Category[]
+
+    return categories ;
+}
+
+export async function getCategoryBySlug(slug?: string): Promise<Category | null> {
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!slug || !token) {
+        return null;
+    }
+
+    const response = await fetch(`${process.env.API_URL}/categories/${slug}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Cookie": `token=${token}`
+        },
+        cache: "no-store"
+    });
+
+    if (!response.ok) {
+        console.error(`Erro ${response.status}: Falha ao buscar categorias`);
+        return null;
+    }
+
+    const category = await response.json() as Category;
+
+    return category;
 }
