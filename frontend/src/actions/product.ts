@@ -3,6 +3,20 @@
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
+interface GetProductsParams {
+    name?: string
+    maxPrice?: string
+    minPrice?: string
+    categories?: string | string[]
+    includeOutOfStock?: string
+    isActive?: string
+    orderBy?: string
+    order?: string
+    page?: string
+    limit?: string
+    take?: number
+}
+
 export interface ProductState {
     error?: string
 }
@@ -16,6 +30,34 @@ export interface Product {
     price: Number;
     description: string;
     stock: number;
+    images: {
+        id: string;
+        url: string;
+        order: number;
+        isCover: boolean;
+        productId: string
+    }[]
+}
+
+export interface GetProducts {
+    items: {
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        slug: string;
+        price: Number;
+        description: string;
+        stock: number;
+        images: {
+            id: string;
+            url: string;
+            order: number;
+            isCover: boolean;
+            productId: string
+        }[]
+    }[]
+    total: number
 }
 
 export interface ProductById {
@@ -41,6 +83,43 @@ export interface ProductById {
             slug: string;
         }
     }[]
+}
+
+export interface ProductBySlug {
+    product: {
+        name: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        slug: string;
+        price: Number;
+        description: string;
+        stock: number;
+        images: {
+            id: string;
+            url: string;
+            order: number;
+            isCover: boolean;
+            productId: string
+        }[]
+        productCategories: {
+            category: {
+                id: string;
+                name: string;
+                slug: string;
+            }
+        }[]
+        reviews: {
+            user:{
+                name:string
+            }
+            id:string;
+            createdAt: Date;
+            rating: number;
+            comment: string;
+        }[]
+    }
+    totalReview:number
 }
 
 interface Image {
@@ -101,7 +180,7 @@ export async function productCreateForm(
 
     const data = await response.json()
 
-    redirect(`/products/${data.id}`)
+    redirect(`/admin/create-product`)
 }
 
 export async function getProductById(id: string) {
@@ -124,6 +203,171 @@ export async function getProductById(id: string) {
     const product: Promise<ProductById> = await response.json()
 
     return product
+}
+
+export async function getProductBySlug(slug: string) {
+
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+
+    const response = await fetch(`${process.env.API_URL}/products/${slug}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "cookie": cookieHeader
+        }
+    })
+
+    if (!response.ok) {
+        return { error: "Erro ao tenter vizualizar o produto" }
+    }
+
+    const product: Promise<ProductBySlug> = await response.json()
+
+    return product
+}
+
+
+export async function getProducts({
+    name,
+    maxPrice,
+    minPrice,
+    categories,
+    includeOutOfStock,
+    isActive,
+    orderBy,
+    order,
+    page,
+    limit,
+}: GetProductsParams = {}) {
+
+    const params = new URLSearchParams()
+
+    if (name) {
+        params.set("name", name)
+    }
+
+    if (maxPrice) {
+        params.set("maxPrice", maxPrice)
+    }
+
+    if (minPrice) {
+        params.set("minPrice", minPrice)
+    }
+
+    if (categories) {
+        const categoryParam = Array.isArray(categories)
+            ? categories.join(",")
+            : categories
+
+        params.set("categories", categoryParam)
+    }
+
+    if (includeOutOfStock) {
+        params.set("includeOutOfStock", includeOutOfStock)
+    }
+
+    if (isActive) {
+        params.set("isActive", isActive)
+    }
+
+    if (orderBy) {
+        params.set("orderBy", orderBy)
+    }
+
+    if (order) {
+        params.set("order", order)
+    }
+
+    if (page) {
+        params.set("page", page)
+    }
+
+    if (limit) {
+        params.set("limit", limit)
+    }
+
+    const response = await fetch(`${process.env.API_URL}/products?${params.toString()}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+
+    if (!response.ok) {
+        return { error: "Erro ao tentar visualizar o produto" }
+    }
+
+    const products: GetProducts = await response.json()
+
+
+    return products
+}
+
+export async function searchProducts(
+    target: { type: "products" } | { type: "categories"; slug: string },
+    formData: FormData
+) {
+    const name = formData.get("name")
+    const maxPrice = formData.get("maxPrice")
+    const minPrice = formData.get("minPrice")
+    const categoriesIds = formData.getAll("categories")
+    const includeOutOfStock = formData.get("includeOutOfStock")
+    const isActive = formData.get("isActive")
+    const orderBy = formData.get("orderBy")
+    const order = formData.get("order")
+    const page = formData.get("page")
+    const limit = formData.get("limit")
+
+    const params = new URLSearchParams()
+
+    params.set("limit", "10")
+
+    if (name) {
+        params.set("name", String(name))
+    }
+
+    if (maxPrice) {
+        params.set("maxPrice", String(maxPrice))
+    }
+
+    if (minPrice) {
+        params.set("minPrice", String(minPrice))
+    }
+
+    if (categoriesIds.length > 0) {
+        params.set("categories", categoriesIds.join(","))
+    }
+
+    if (includeOutOfStock) {
+        params.set("includeOutOfStock", String(includeOutOfStock))
+    }
+
+    if (isActive) {
+        params.set("isActive", String(isActive))
+    }
+
+    if (orderBy) {
+        params.set("orderBy", String(orderBy))
+    }
+
+    if (order) {
+        params.set("order", String(order))
+    }
+
+    if (page) {
+        params.set("page", String(page))
+    } else {
+        params.set("page", "1")
+    }
+
+    if (limit) {
+        params.set("limit", String(limit))
+    }
+
+    const basePath = target.type === "categories" ? `/categories/${target.slug}` : "/products"
+
+    redirect(`${basePath}?${params.toString()}`)
 }
 
 export async function updateCreateForm(
