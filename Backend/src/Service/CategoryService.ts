@@ -29,7 +29,7 @@ export class CategoryService {
         return category
     }
 
-    async getCategoryBySlug(slug: string){
+    async getCategoryBySlug(slug: string) {
         const category = await this.categoryRepository.getCategoryBySlug(slug)
 
         if (!category) throw new HttpError("Category not found", 404)
@@ -37,25 +37,28 @@ export class CategoryService {
         return category
     }
 
-async updateCategory(id: string, data: UpdateCategoryInput) {
-    const category = await this.categoryRepository.getCategoryById(id)
+    async updateCategory(id: string, data: UpdateCategoryInput) {
+        const category = await this.categoryRepository.getCategoryById(id)
 
-    if (!category) throw new HttpError("Category not found", 404)
+        if (!category) throw new HttpError("Category not found", 404)
 
-    const valueForSlug = data.slug ?? data.name;
 
-    if (!valueForSlug) {
-        throw new HttpError("Slug or name must be provided", 400)
+        if (data.name) {
+            const valueForSlug = data.slug ?? data.name;
+
+            if (!valueForSlug) {
+                throw new HttpError("Slug or name must be provided", 400)
+            }
+
+            const baseSlug = slugCreator(valueForSlug);
+
+            data.slug = await uniqueSlug(baseSlug, async (slug) => {
+                return Boolean(await this.categoryRepository.getCategoryBySlug(slug))
+            })
+        }
+
+        return this.categoryRepository.updateCategory(id, data)
     }
-
-    const baseSlug = slugCreator(valueForSlug);
-
-    data.slug = await uniqueSlug(baseSlug, async (slug) => {
-        return Boolean(await this.categoryRepository.getCategoryBySlug(slug))
-    })
-
-    return this.categoryRepository.updateCategory(id, data)
-}
 
     async deleteCategory(id: string) {
         const category = await this.categoryRepository.getCategoryById(id)
