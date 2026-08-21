@@ -22,7 +22,7 @@ export async function verifyToken(token: string): Promise<UserPayload | null> {
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PROTECTED_ROUTES = ["/products", "/profile", "/admin", "/review"];
+const PROTECTED_ROUTES = ["/products", "/profile", "/admin", "/review","/cart","/orders","/categories"];
 const ADMIN_ONLY_ROUTES = ["/admin"];
 const AUTH_ROUTES = ["/login", "/register"]; 
 
@@ -37,19 +37,16 @@ export async function proxy(req: NextRequest) {
     const payload = token ? await verifyToken(token) : null;
     const isAuthenticated = !!payload;
 
-    // Usuário não autenticado tentando acessar rota protegida
     if (isProtected && !isAuthenticated) {
         const loginUrl = new URL("/login", req.url);
-        loginUrl.searchParams.set("callbackUrl", pathname); // volta pra cá após login
+        loginUrl.searchParams.set("callbackUrl", pathname); 
         return NextResponse.redirect(loginUrl);
     }
 
-    // Usuário autenticado tentando acessar /login ou /register
     if (isAuthRoute && isAuthenticated) {
         return NextResponse.redirect(new URL("/", req.url));
     }
 
-    // Rota de admin, mas usuário não é admin
     if (isAdminRoute && payload?.role !== "admin") {
         return NextResponse.redirect(new URL("/", req.url));
     }
@@ -64,5 +61,8 @@ export const config = {
         "/admin/:path*",
         "/login",
         "/register",
+        "/cart",
+        "/orders/:path*",
+        "/categories/:path*"
     ],
 };
