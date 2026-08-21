@@ -1,5 +1,3 @@
-
-import type { Prisma } from "@prisma/client";
 import z from "zod"
 
 export const createProductSchema = z.object({
@@ -14,7 +12,7 @@ export const createProductSchema = z.object({
         if (Array.isArray(val)) return val;
 
         return [];
-    }, z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria")),
+    }, z.array(z.string()).min(1, "Selecione ao menos uma categoria")),
     coverIndex: z.coerce.number().int().min(0)
 })
 
@@ -25,7 +23,7 @@ export const productCreateData = z.object({
     slug: z.string().min(1).optional(),
     description: z.string().min(1),
     stock: z.coerce.number().int().min(0),
-    categoriesIds: z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria"),
+    categoriesIds: z.array(z.string()).min(1, "Selecione ao menos uma categoria"),
     coverIndex: z.number(),
     images: z.array(z.object({
         url: z.string(),
@@ -109,10 +107,22 @@ export const productUpdateData = z.object({
 
 export const productQuerySchema = z.object({
     name: z.string().optional(),
-    maxPrice: z.number().optional(),
-    minPrice: z.number().optional(),
-    category: z.string().optional(),
-    inStock: z.boolean().optional(),
+    maxPrice: z.coerce.number().optional(),
+    minPrice: z.coerce.number().optional(),
+    categories: z.preprocess((val) => {
+        if (typeof val === 'string') return val.split(',').filter(Boolean)
+        if (Array.isArray(val)) return val.flatMap((v) =>
+            typeof v === 'string' ? v.split(',').filter(Boolean) : v
+        )
+        return undefined
+    }, z.array(z.string()).optional()),
+    includeOutOfStock: z.preprocess((val) => {
+        if (val === "on") {
+            return true
+        }
+
+        return val
+    }, z.boolean().optional().default(false)),
     isActive: z.preprocess((val) => {
         if (val === "false") {
             return false
@@ -120,10 +130,10 @@ export const productQuerySchema = z.object({
 
         return val
     }, z.boolean().optional().default(true)),
-    orderBy: z.enum(["price", "name", "createdAt"]).optional().default("name"),
-    order: z.enum(["asc", "desc"]).optional(),
-    page: z.number().int().min(1).optional(),
-    limit: z.number().int().min(1).max(100).optional(),
+    orderBy: z.enum(["price", "name", "createdAt"]).optional().default("createdAt"),
+    order: z.enum(["asc", "desc"]).optional().default("desc"),
+    page: z.coerce.number().int().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).optional().default(10),
 })
 
 export const idParamSchema = z.object({
@@ -140,7 +150,7 @@ export const productCategoryParamSchema = z.object({
 })
 
 export const addCategoriesToProductSchema = z.object({
-    categoryIds: z.array(z.string().uuid()).min(1),
+    categoryIds: z.array(z.string()).min(1),
 })
 
 export const addImagesToProductSchema = z.array(imagesProductSchema).min(1)
