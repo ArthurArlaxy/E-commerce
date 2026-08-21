@@ -72,7 +72,7 @@ router.put("/addresses/:id", AuthMiddleware.authenticate, addressController.upda
 router.delete("/addresses/:id", AuthMiddleware.authenticate, addressController.deleteAddress)
 
 // Rotas de Categorias
-router.get("/categories", AuthMiddleware.authenticate, categoryController.getCategories)
+router.get("/categories", categoryController.getCategories)
 router.get("/categories/id/:id", AuthMiddleware.authenticate, categoryController.getCategoryById)
 router.get("/categories/:slug", AuthMiddleware.authenticate, categoryController.getCategoryBySlug)
 router.post("/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, categoryController.createCategory)
@@ -80,7 +80,7 @@ router.put("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.admin,
 router.delete("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, categoryController.deleteCategory)
 
 // Rotas de Produtos
-router.get("/products", AuthMiddleware.authenticate, productController.getProducts)
+router.get("/products", productController.getProducts)
 router.get("/products/id/:id", AuthMiddleware.authenticate, productController.getProductById)
 router.get("/products/:slug", AuthMiddleware.authenticate, productController.getProductBySlug)
 router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images',8), productController.createProducts)
@@ -101,7 +101,7 @@ router.delete("/reviews/:id", AuthMiddleware.authenticate, reviewController.dele
 
 // Rotas de Carrinho
 router.get("/cart", AuthMiddleware.authenticate, cartController.getCart)
-router.post("/cart/items", AuthMiddleware.authenticate, cartController.addProductToCart)
+router.post("/cart", AuthMiddleware.authenticate, cartController.addProductToCart)
 router.put("/cart/items/:id", AuthMiddleware.authenticate, cartController.updateCartItem)
 router.patch("/cart/items/:id/selection", AuthMiddleware.authenticate, cartController.updateCartItemSelection)
 router.delete("/cart/items/:id", AuthMiddleware.authenticate, cartController.removeProductFromCart)
