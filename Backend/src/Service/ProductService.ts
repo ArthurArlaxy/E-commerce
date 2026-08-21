@@ -74,15 +74,18 @@ export class ProductService {
             }
         }
 
-        if (query.category) {
+        if (query.categories) {
+
             filter.productCategories = {
                 some: {
-                    categoryId: query.category
+                    categoryId: {
+                        in: query.categories
+                    }
                 }
-            }
+            };
         }
 
-        if (query.inStock) {
+        if (query.includeOutOfStock === false) {
             filter.stock = {
                 gt: 0
             }
@@ -127,7 +130,7 @@ export class ProductService {
     }
     async updateProduct(id: string, data: UpdateProductInput, files: Express.Multer.File[]) {
 
-        const baseSlug = slugCreator(data.slug || data.name )
+        const baseSlug = slugCreator(data.slug || data.name)
         data.slug = await uniqueSlug(baseSlug, async (slug) => {
             return Boolean(await this.productRepository.getProductBySlug(slug))
         })
