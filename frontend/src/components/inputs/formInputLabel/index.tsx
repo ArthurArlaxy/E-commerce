@@ -6,21 +6,26 @@ interface FormInputProps {
     label: string;
     placeholder?: string;
     value?: string;
+    required?: boolean;
+    checked?: boolean;
 }
 
-export default function FormInput({ inputName, label, placeholder, value }: FormInputProps) {
+export default function FormInputLabel({ inputName, label, placeholder, value, type, required=true, checked=false}: FormInputProps) {
     return (
         <>
-            <label htmlFor={inputName} className={styles.label}>{label}</label>
-            <input
-                type="text"
-                name={inputName}
-                id={inputName}
-                placeholder={placeholder}
-                required
-                className={styles.input}
-                defaultValue={value}
-            />
+            <div className={styles.inputContainer}>
+                <label htmlFor={inputName} className={styles.label}>{label}</label>
+                <input
+                    type={type}
+                    name={inputName}
+                    id={inputName}
+                    placeholder={placeholder}
+                    required={required}
+                    defaultChecked={checked}
+                    className={styles.input}
+                    defaultValue={value}
+                />
+            </div>
         </>
     )
 }

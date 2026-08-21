@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./styles.module.css";
+import { ImageDown } from "lucide-react";
 
 interface ImageFile {
     id: string;
@@ -188,8 +189,9 @@ export default function ImageUploadMultiple({ imagesImported = [] }: ImageUpload
                 onDrop={handleDrop}
             >
                 <div className={styles.placeholder}>
+                    <ImageDown />
                     <p><strong>Clique para buscar</strong> ou arraste as imagens aqui</p>
-                    <span>Você pode selecionar múltiplos arquivos (PNG, JPG)</span>
+                    <span>Você pode selecionar múltiplos arquivos (PNG, JPG), até 1MB</span>
                 </div>
             </div>
 
