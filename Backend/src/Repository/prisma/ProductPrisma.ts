@@ -81,8 +81,9 @@ export class ProductPrisma {
         })
     }
 
-    async getProductBySlug(slug: string): Promise<Product | null> {
-        return await prisma.product.findUnique({
+    async getProductBySlug(slug: string): Promise<{ product: Product, totalReview: number } | null> {
+
+        const product = await prisma.product.findUnique({
             where: { slug },
             include: {
                 images: true,
@@ -93,6 +94,12 @@ export class ProductPrisma {
                 },
                 reviews: {
                     select: {
+                        user: {
+                            select: {
+                                name: true
+                            }
+                        },
+                        id: true,
                         rating: true,
                         comment: true,
                         createdAt: true
@@ -100,6 +107,17 @@ export class ProductPrisma {
                 }
             }
         })
+
+        const totalReview = await prisma.review.count({
+            where: { productId: product?.id }
+        })
+
+        if (!product) {
+            return null
+        }
+
+        return { product, totalReview }
+
     }
 
     async deleteProduct(id: string): Promise<Product> {

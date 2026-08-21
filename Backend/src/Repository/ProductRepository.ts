@@ -5,7 +5,7 @@ export interface ProductRepository {
     createProduct(data: ProductCreateData): Promise<Product | null>
     getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{items: Product[], total:number}>
     getProductById(id: string): Promise<Product  | null>
-    getProductBySlug(slug: string): Promise<Product  | null>
+    getProductBySlug(slug: string): Promise<{ product: Product,totalReview:number}  | null>
     deleteProduct(id: string): Promise<Product>
     updateProduct(id: string, data: ProductUpdateData): Promise<Product | null>
     addCategoriesToProduct(productId: string, categoryIds: string[]): Promise<void>
