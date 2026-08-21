@@ -78,8 +78,9 @@ model ProductImages {
 
 model Category {
   id        String   @id @default(uuid())
-  name      String   @db.VarChar(100)
+  name      String   @unique @db.VarChar(100)
   slug      String   @unique @db.VarChar(100)
+  imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
