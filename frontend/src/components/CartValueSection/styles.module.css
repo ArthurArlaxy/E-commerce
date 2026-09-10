@@ -1,0 +1,45 @@
+.valueSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 1.25rem 0;
+    border-top: 1px color-mix(in srgb, var(--foreground) 15%, transparent) solid;
+}
+
+.row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.rowLabel {
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+    font-size: 0.9rem;
+}
+
+.rowValue {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9rem;
+}
+
+.totalRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+    border-top: 1px color-mix(in srgb, var(--foreground) 15%, transparent) solid;
+}
+
+.totalLabel {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.totalValue {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 1.35rem;
+}

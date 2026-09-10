@@ -1,0 +1,57 @@
+.shippingMethodContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background-color: var(--background);
+    border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.shippingMethodLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--tertiary);
+    margin: 0;
+}
+
+.shippingMethodRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.shippingMethodName {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+}
+
+.shippingMethodPrice {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--foreground);
+    margin: 0;
+    white-space: nowrap;
+}
+
+.shippingMethodTime {
+    font-size: 0.8125rem;
+    color: var(--tertiary);
+    margin: 0;
+}
+
+@media (min-width: 640px) {
+    .shippingMethodContainer {
+        padding: 1.25rem;
+        gap: 0.625rem;
+    }
+
+    .shippingMethodName {
+        font-size: 1rem;
+    }
+}

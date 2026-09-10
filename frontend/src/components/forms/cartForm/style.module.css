@@ -1,0 +1,12 @@
+.errorText{
+    color: red;
+}
+
+.selectDeliverySection{
+    display: flex;
+    flex-direction: column;
+}
+
+.cartForm{
+    padding-bottom: 1rem;
+}

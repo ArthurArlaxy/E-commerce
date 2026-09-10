@@ -1,0 +1,92 @@
+.addressCardContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border: 0;
+    background-color: var(--background);
+    border-top: 1px color-mix(in srgb, var(--foreground) 15%, transparent) solid;
+}
+
+.addressCardLabel {
+    flex-shrink: 0;
+}
+
+.addressCardContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.addressCardIcon {
+    flex-shrink: 0;
+}
+
+.addressCardText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.addressCardModel {
+    display: none;
+    flex-direction: column;
+    gap: 1rem;
+    background-color: var(--background);
+    color: var(--foreground);
+    border: 1px plum solid;
+    border-radius: .5rem;
+    margin: auto;
+    max-height: 80vh;
+    overflow-y: scroll;
+    padding: 1rem 0;
+}
+
+.addressCardModel[open] {
+    display: flex;
+}
+
+.addressCardModel::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(1px);
+    transition: background-color 1s, backdrop-filter 1s;
+}
+
+@starting-style {
+    .addressCardModel::backdrop {
+        background-color: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(0px);
+    }
+}
+
+.addressOption {
+    background-color: var(--background);
+    border: 0;
+    border-bottom: 1px color-mix(in srgb, var(--foreground) 15%, transparent) solid;
+    padding: 1rem;
+}
+
+
+.addressCardModelText {
+    text-align: center;
+
+}
+
+.addressCardModelContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modalBtn {
+    background-color: red;
+    padding: .4rem 1rem;
+    text-align: center;
+    border: 1px var(--foreground) solid;
+    border-radius: .5rem;
+    align-self: center;
+}

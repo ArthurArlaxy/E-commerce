@@ -1,0 +1,169 @@
+/* Base = mobile */
+.cartCardContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    padding: .6rem;
+    gap: .6rem;
+    width: 100%;
+    border: 1px var(--foreground) solid;
+    border-radius: 0.5rem;
+}
+
+.cartCardImageContainer {
+    position: relative;
+    width: 100%;
+    max-width: 140px;
+    align-self: center;
+    aspect-ratio: 1 / 1;
+}
+
+.cartImageCard {
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.cartInfo {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    min-width: 0;
+    width: 100%;
+}
+
+.cartInfo p {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.cartNameCard {
+    font-weight: bold;
+    font-size: .9rem;
+}
+
+.cartCategoryCard {
+    font-size: .85rem;
+}
+
+.cartQuantityCard {
+    font-size: .9rem;
+}
+
+.cartBuyInfo {
+    width: 100%;
+    text-align: left;
+}
+
+.cartQuantitySpan {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.cartQuantityDiv {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border: 1px var(--foregroaund) solid;
+    border-radius: 1rem;
+    padding: 0 .5rem;
+}
+
+.quantityBtn {
+    border: 0;
+    background-color: transparent;
+    font-weight: bold;
+}
+
+.trashBtn {
+    cursor: pointer;
+    border: 0;
+    background-color: transparent;
+    font-weight: bold;
+    color: rgb(255, 0, 55);
+}
+
+.actionsBtnDiv {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.cartPriceCard {
+    font-size: .9rem;
+    font-weight: bold;
+}
+
+.cartSelectCard {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    cursor: pointer;
+    align-self: flex-end;
+}
+
+.unavailable {
+    background-color: var(--quaternary);
+}
+
+@media (min-width: 500px) {
+    .cartCardContainer {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .cartCardImageContainer {
+        width: 80px;
+        max-width: none;
+        flex-shrink: 0;
+        align-self: auto;
+    }
+
+    .cartInfo {
+        flex: 1 1 150px;
+        width: auto;
+    }
+
+    .cartInfo p {
+        white-space: nowrap;
+    }
+
+    .cartBuyInfo {
+        text-align: center;
+        flex: 0 0 auto;
+        min-width: 70px;
+        width: auto;
+    }
+
+    .cartSelectCard {
+        align-self: center;
+    }
+}
+
+@media (min-width: 500px) {
+    .actionsBtnDiv {
+        display: flex;
+        gap: 1rem;
+        width: auto;
+    }
+}
+
+/* Desktop grande: ícones/textos um pouco maiores, acompanhando o resto do projeto */
+@media (min-width: 1200px) {
+
+    .cartNameCard,
+    .cartQuantityCard,
+    .cartPriceCard {
+        font-size: 1rem;
+    }
+
+
+    .cartCardImageContainer {
+        width: 100px;
+    }
+}

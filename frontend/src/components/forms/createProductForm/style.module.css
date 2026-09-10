@@ -4,3 +4,7 @@
     gap:.4rem;
     padding: 1rem;
 }
+
+.errorText{
+    color: red;
+}

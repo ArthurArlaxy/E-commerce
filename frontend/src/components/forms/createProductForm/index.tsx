@@ -17,9 +17,9 @@ export default function CreateProductForm({categories}: {categories: Category[]}
         <>
             <form className={styles.productForm} action={formActionHandler}>
                 <FormInputLabel type="text" inputName="name" label="Nome" placeholder="Nome do Produto" />
-                <FormInputLabel type="number" inputName="price" label="Preço" placeholder="Preço do Produto" />
+                <FormInputLabel type="number" inputName="price" label="Preço" placeholder="Preço do Produto" step="0.01"/>
                 <SelectInputLabel label="Categoria" SelectName="categories" categories={categories} />
-                <FormInputLabel type="text" inputName="slug" label="Slug" placeholder="Slug do Produto" />
+                <FormInputLabel type="text" inputName="slug" label="Slug" placeholder="Slug do Produto" required={false}/>
                 <FormInputLabel type="number" inputName="stock" label="Quantidade em Estoque" placeholder="Quantidade do Produto em Estoque" />
                 <FormTextAreaLabel textAreaName="description" label="Descrição" placeholder="Descrição do Produto" />
                 <ImageUpload />

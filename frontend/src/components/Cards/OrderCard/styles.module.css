@@ -1,0 +1,110 @@
+.orderCardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--tertiary);
+    border-radius: 0.75rem;
+    background-color: var(--background);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.orderCardContainer:hover {
+    border-color: var(--tertiary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.orderCardContainer:active {
+    transform: scale(0.99);
+}
+
+.orderHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.orderId {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--foregound);
+    margin: 0;
+}
+
+.orderDate {
+    font-size: 0.8125rem;
+    color: var(--tertiary);
+    margin: 0.125rem 0 0;
+}
+
+.statusBadge {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.625rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    background-color: var(--background);
+    color: var(--foregound);
+}
+
+.pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.processing {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.shipped {
+    background-color: #e0e7ff;
+    color: #3730a3;
+}
+
+.delivered {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.canceled {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.productsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 1px solid var(--tertiary);
+    border-bottom: 1px solid var(--tertiary);
+    padding: 0.5rem 0;
+}
+
+.orderFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.orderTotal {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--foregound);
+    margin: 0;
+}
+
+@media (min-width: 640px) {
+    .orderCardContainer {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+
+    .orderId {
+        font-size: 1rem;
+    }
+}
