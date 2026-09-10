@@ -14,14 +14,12 @@ export default function layout({
   return (
     <>
       <h1 className="title">Administração</h1>
-      <nav>
-        <div className="nav-inner">
-          <Link className={`nav-admin-item ${pathname === "/admin" ? "active" : ''}`} href={"/admin"}>Dashboards</Link>
-          <Link className={`nav-admin-item ${pathname === "/admin/create-product" ? "active" : ''}`} href={"/admin/create-product"}>Create Product</Link>
-          <Link className={`nav-admin-item ${pathname === "/admin/update-product" ? "active" : ''}`} href={"/admin/update-product"}>Update Product</Link>
-        </div>
+      <nav className={styles.navInner}>
+        <Link className={`${styles.navAdminItem} ${pathname === "/admin" ? "active" : ''}`} href={"/admin"}>Dashboards</Link>
+        <Link className={`${styles.navAdminItem} ${pathname === "/admin/create-product" ? "active" : ''}`} href={"/admin/create-product"}>Create Product</Link>
+        <Link className={`${styles.navAdminItem} ${pathname === "/admin/update-product" ? "active" : ''}`} href={"/admin/update-product"}>Update Product</Link>
       </nav>
-      <main>
+      <main className="pageContainer">
         {children}
       </main>
     </>

@@ -20,7 +20,7 @@ export default async function ({ params }: { params: { slug: string } }) {
     const mediaReview = totalReview > 0 ? totalStars / totalReview : 0
 
     return (
-        <main>
+        <main className="pageContainer">
             <section className="product-main-section">
                 <ImageProductSection product={product} />
                 <div>

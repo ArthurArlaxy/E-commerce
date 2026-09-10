@@ -1,4 +1,30 @@
-.adminBar{
-    padding-top: 1rem;
+.navInner {
+    display: flex;
+    overflow-x: scroll;
+    padding: 1rem 1rem .6rem 1rem;
+    gap: .3rem;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
+.navAdminItem {
+    text-align: center;
+    border-radius: .5rem;
+    padding: .2rem .8rem;
+
+    white-space: none;
+    text-wrap: nowrap;
+    border: 1px var(--foreground) solid;
+}
+
+@media (min-width:490px) {
+    .navInner {
+        display: flex;
+        justify-content: center;
+        overflow-x: none;
+        padding: 1rem 1rem .6rem 1rem;
+        gap: .3rem;
+    }
+}

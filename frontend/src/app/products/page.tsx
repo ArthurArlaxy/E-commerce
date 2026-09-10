@@ -18,7 +18,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ [
 
 
   return (
-    <main>
+    <main className="pageContainer">
       <form action={searchProducts.bind(null, { type: "products"})}> 
         <SearchInput inputName="name" placeholder="O que está procurando?" defaultValue={search?.name} />
         <SearchProductForm categories={categories} maxPrice={search?.maxPrice} minPrice={search?.minPrice} defaultCategories={search?.categories} includeOutOfStock={search?.includeOutOfStock}/>

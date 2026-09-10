@@ -31,7 +31,7 @@ export default async function Page({
     }
 
     return (
-        <main>
+        <main className="pageContainer">
             <Image className="image-category-container"
                 src={category?.imageUrl}
                 alt={`Imagem da categoria ${category?.name}`}

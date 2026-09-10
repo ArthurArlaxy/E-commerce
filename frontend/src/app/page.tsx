@@ -17,9 +17,9 @@ export default async function Page() {
   }
 
   return (
-    <>
-      <main>
-        <form action={searchProducts.bind(null, { type: "products"})}>
+    <main>
+      <div className="pageContainer">
+        <form action={searchProducts.bind(null, { type: "products" })}>
           <SearchInput inputName="name" placeholder="O que está procurando?" />
         </form>
         <Image
@@ -33,20 +33,31 @@ export default async function Page() {
         <section>
           <h2 className="sectionTitle">Categorias</h2>
           <div className="category-card-container">
-            {categories && categories.map((category) => {
-              return <CategoryCard slug={category.slug} name={category.name} imageUrl={category.imageUrl} key={category.id} />
-            })}
+            {categories.map((category) => (
+              <CategoryCard
+                slug={category.slug}
+                name={category.name}
+                imageUrl={category.imageUrl}
+                key={category.id}
+              />
+            ))}
           </div>
         </section>
         <section>
           <h2 className="sectionTitle">Ultimos lançamentos</h2>
           <div className="card-container">
-            {products && products.items.map((product) => {
-              return <ProductCard name={product.name} imageUrl={product.images[0].url} price={String(product.price)} slug={product.slug} key={product.id} />
-            })}
+            {products.items.map((product) => (
+              <ProductCard
+                name={product.name}
+                imageUrl={product.images[0].url}
+                price={String(product.price)}
+                slug={product.slug}
+                key={product.id}
+              />
+            ))}
           </div>
         </section>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

@@ -1,0 +1,20 @@
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.redirectSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.redirectSection a{
+    max-width: 500px;
+}
+
+
+
