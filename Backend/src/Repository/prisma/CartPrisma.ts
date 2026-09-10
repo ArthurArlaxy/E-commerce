@@ -7,7 +7,41 @@ export class CartPrisma {
     constructor() { }
 
     async getOrCreateCart(userId: string): Promise<Cart> {
-        const cart = await prisma.cart.findUnique({ where: { userId } })
+        const cart = await prisma.cart.findUnique({
+            where: { userId },
+            include: {
+                products: {
+                    orderBy: { product: { name: "desc" } },
+                    include: {
+                        product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                price: true,
+                                stock: true,
+                                slug: true,
+                                deletedAt: true,
+                                isActive: true,
+                                images: {
+                                    select: {
+                                        url: true
+                                    }
+                                },
+                                productCategories: {
+                                    select: {
+                                        category: {
+                                            select: {
+                                                name: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
 
         if (cart) return cart
 
@@ -19,13 +53,32 @@ export class CartPrisma {
             where: { userId },
             include: {
                 products: {
+                    orderBy: { product: { name: "desc" } },
                     include: {
                         product: {
                             select: {
                                 id: true,
                                 name: true,
                                 price: true,
-                                stock: true
+                                stock: true,
+                                slug: true,
+                                isActive: true,
+                                deletedAt: true,
+                                images: {
+                                    select: {
+                                        isCover: true,
+                                        url: true
+                                    }
+                                },
+                                productCategories: {
+                                    select: {
+                                        category: {
+                                            select: {
+                                                name: true
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -60,11 +113,18 @@ export class CartPrisma {
     }
 
     async updateCartItemSelection(id: string, selected: boolean): Promise<ProductCart> {
-    return await prisma.productCart.update({
-        where: { id },
-        data: { selected }
-    })
-}
+        return await prisma.productCart.update({
+            where: { id },
+            data: { selected }
+        })
+    }
+
+    async updateManyCartItemSelection(ids: string[], selected: boolean): Promise<void> {
+        await prisma.productCart.updateMany({
+            where: { id: { in: ids } },
+            data: { selected }
+        })
+    }
 
     async removeProductFromCart(id: string): Promise<ProductCart> {
         return await prisma.productCart.delete({ where: { id } })

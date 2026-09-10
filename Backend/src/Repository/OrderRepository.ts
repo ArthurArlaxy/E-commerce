@@ -2,22 +2,77 @@ import type { Order, Prisma } from "@prisma/client";
 
 export type OrderItemInput = {
     productId: string
+    nameSnapshot: string
     quantity: number
     priceSnapshot: Prisma.Decimal | string
+}
+
+export type ProductImageSnapshot = {
+    id: string
+    url: string
+    isCover: boolean
+}
+
+export type CategorySnapshot = {
+    id: string
+    name: string
+}
+
+export type OrderListProduct = {
+    slug: string
+    images: ProductImageSnapshot[]
+}
+
+export type OrderDetailProduct = {
+    id: string
+    slug: string
+    images: ProductImageSnapshot[]
+    productCategories: { category: CategorySnapshot }[]
+}
+
+export type OrderListItem = Order & {
+    products: {
+        nameSnapshot: string
+        quantity: number
+        priceSnapshot: Prisma.Decimal
+        product: OrderListProduct
+    }[]
 }
 
 export type OrderWithItems = Order & {
     products: {
         id: string
         quantity: number
-        priceSnapshot: unknown
-        product: { id: string, name: string }
-    }[]
+        priceSnapshot: Prisma.Decimal
+        nameSnapshot: string
+        product: OrderDetailProduct
+    }[],
+    shipping: {
+        nameSnapshot: string
+        priceSnapshot: Prisma.Decimal
+        deliveryTimeSnapshot: number
+    }
+}
+
+export interface AddressSnapshot {
+    shippingStreet: string;
+    shippingNumber: string | null;
+    shippingComplement: string | null;
+    shippingNeighborhood: string;
+    shippingCity: string;
+    shippingState: string;
+}
+
+export interface ShippingSnapshot {
+    shippingId: string
+    nameSnapshot: string
+    priceSnapshot: Prisma.Decimal
+    deliveryTimeSnapshot: number
 }
 
 export interface OrderRepository {
-    createOrder(userId: string, addressId: string, purchasedCartItemIds: string[], items: OrderItemInput[], total: string): Promise<OrderWithItems>
-    getOrders(filter: Prisma.OrderWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{ items: Order[], total: number }>
+    createOrder(userId: string, addressSnapshot: AddressSnapshot, shippingSnapshot: ShippingSnapshot, purchasedCartItemIds: string[], items: OrderItemInput[], total: string): Promise<OrderWithItems>
+    getOrders(filter: Prisma.OrderWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{ items: OrderListItem[], total: number }>
     getOrderById(id: string): Promise<OrderWithItems | null>
     updateOrderStatus(id: string, status: Order["status"]): Promise<Order>
 }

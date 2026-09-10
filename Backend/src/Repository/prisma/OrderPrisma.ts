@@ -1,23 +1,75 @@
 import type { Order, Prisma } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
-import type { OrderItemInput, OrderWithItems } from "../OrderRepository.js";
+import type { AddressSnapshot, OrderItemInput, OrderListItem, OrderWithItems, ShippingSnapshot } from "../OrderRepository.js";
+
+const orderListInclude = {
+    products: {
+        select: {
+            nameSnapshot: true,
+            quantity: true,
+            priceSnapshot: true,
+            product: {
+                select: {
+                    slug: true,
+                    images: {
+                        where: { isCover: true }
+                    }
+                }
+            }
+        }
+    }
+} 
+
+const orderDetailInclude = {
+    products: {
+        include: {
+            product: {
+                select: {
+                    id: true,
+                    slug: true,
+                    images: {
+                        where: { isCover: true }
+                    },
+                    productCategories: {
+                        select: {
+                            category: {
+                                select: { id: true, name: true }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    shipping: {
+        select: { nameSnapshot: true, priceSnapshot: true, deliveryTimeSnapshot: true }
+    }
+}
 
 export class OrderPrisma {
     constructor() { }
 
-    async createOrder(userId: string, addressId: string, purchasedCartItemIds: string[], items: OrderItemInput[], total: string): Promise<OrderWithItems> {
+    async createOrder(userId: string, addressSnapshot: AddressSnapshot, shippingSnapshot: ShippingSnapshot, purchasedCartItemIds: string[], items: OrderItemInput[], total: string): Promise<OrderWithItems> {
         return prisma.$transaction(async (transaction) => {
             const order = await transaction.order.create({
-                data: { userId, addressId, total }
+                data: { userId, ...addressSnapshot, total }
             })
 
             await transaction.orderProducts.createMany({
                 data: items.map((item) => ({
                     orderId: order.id,
                     productId: item.productId,
+                    nameSnapshot: item.nameSnapshot,
                     quantity: item.quantity,
-                    priceSnapshot: item.priceSnapshot 
+                    priceSnapshot: item.priceSnapshot
                 }))
+            })
+
+            await transaction.orderShipping.create({
+                data: {
+                    orderId: order.id,
+                    ...shippingSnapshot
+                }
             })
 
             for (const item of items) {
@@ -33,42 +85,35 @@ export class OrderPrisma {
 
             const fullOrder = await transaction.order.findUnique({
                 where: { id: order.id },
-                include: {
-                    products: {
-                        include: { product: { select: { id: true, name: true } } }
-                    }
-                }
+                include: orderDetailInclude
             })
 
             return fullOrder as OrderWithItems
         })
     }
 
-    async getOrders(filter: Prisma.OrderWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{ items: Order[], total: number }> {
+    async getOrders(filter: Prisma.OrderWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{ items: OrderListItem[], total: number }> {
         const [items, total] = await prisma.$transaction([
             prisma.order.findMany({
                 where: filter,
                 orderBy: { [orderBy]: order },
                 skip,
-                take
+                take,
+                include: orderListInclude
             }),
             prisma.order.count({ where: filter })
         ])
 
-        return { items, total }
+        return { items: items, total }
     }
 
     async getOrderById(id: string): Promise<OrderWithItems | null> {
-        return await prisma.order.findUnique({
+        const order = await prisma.order.findUnique({
             where: { id },
-            include: {
-                products: {
-                    include: {
-                        product: { select: { id: true, name: true } }
-                    }
-                }
-            }
-        }) as OrderWithItems | null
+            include: orderDetailInclude
+        })
+
+        return order as OrderWithItems | null
     }
 
     async updateOrderStatus(id: string, status: Order["status"]): Promise<Order> {

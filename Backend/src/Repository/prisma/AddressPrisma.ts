@@ -11,8 +11,6 @@ export class AddressPrisma {
     async createAddress(data: CreateAddressInput): Promise<Address> {
 
         return prisma.$transaction(async (transaction) => {
-
-            // validação defensiva para concorrência
             const count = await transaction.address.count({
                 where: { userId: data.userId }
             })
@@ -39,7 +37,8 @@ export class AddressPrisma {
 
     async getUserAddresses(userId: string): Promise<Address[]> {
         return prisma.address.findMany({
-            where: { userId }
+            where: { userId },
+            orderBy: { street: "desc"}
         })
     }
 
@@ -77,4 +76,6 @@ export class AddressPrisma {
             where: { id }
         })
     }
+
 }
+
