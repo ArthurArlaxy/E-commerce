@@ -11,9 +11,9 @@ export class OrderController {
             throw new HttpError("Not Authenticated", 401)
         }
 
-        const { addressId } = createOrderSchema.parse(req.body)
+        const { addressId, shippingId } = createOrderSchema.parse(req.body)
 
-        const response = await this.orderService.createOrder(req.user.id, addressId)
+        const response = await this.orderService.createOrder(req.user.id, addressId , shippingId)
 
         return res.status(201).json(response)
     }

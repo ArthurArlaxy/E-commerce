@@ -82,7 +82,7 @@ export class UserController {
         const data = updateUserSchema.parse(req.body)
 
         try {
-            const updatedUser = await this.userService.updateUser(req.user.id, data)
+            const updatedUser = await this.userService.updateUser(req.user.email, data)
             res.status(200).json(updatedUser)
         } catch (error) {
             next(error)

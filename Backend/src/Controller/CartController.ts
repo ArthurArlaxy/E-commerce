@@ -59,7 +59,7 @@ export class CartController {
             throw new HttpError("Not Authenticated", 401)
         }
 
-        const { id } = cartItemIdParamSchema.parse(req.params)
+        const id = String(req.params.id)
 
         const response = await this.cartService.removeProductFromCart(req.user.id, id)
 
