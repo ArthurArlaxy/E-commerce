@@ -10,7 +10,7 @@ export class UserService {
     constructor(private userRepository: UserRepository) { }
 
     async login(data: LoginUserInput) {
-        const user = await this.userRepository.getUserByEmail(data.email);
+        const user = await this.userRepository.getUserByEmailWithAllInfo(data.email);
 
         if (!user || !bcrypt.compareSync(data.password, user.password)) {
             throw new HttpError("Invalid credentials", 401);
@@ -27,7 +27,7 @@ export class UserService {
     }
 
     async createUser(data: CreateUserInput) {
-        const userExists = await this.userRepository.getUserByEmail(data.email);
+        const userExists = await this.userRepository.getUserByEmailWithAllInfo(data.email);
         if (userExists) {
             throw new Error("User with this email already exists");
         }
@@ -75,8 +75,8 @@ export class UserService {
 
 
 
-    async updateUser(id: string, data: UpdateUserInput) {
-        const userExists = await this.userRepository.getUserById(id);
+    async updateUser(email: string, data: UpdateUserInput) {
+        const userExists = await this.userRepository.getUserByEmailWithAllInfo(email);
         if (!userExists) {
             throw new HttpError("User not found", 404);
         }
@@ -84,20 +84,25 @@ export class UserService {
         if (data.email) {
             const userEmailExist = await this.userRepository.getUserByEmail(data.email)
 
-            if(userEmailExist){
+            if (userEmailExist) {
                 throw new HttpError("You can't use this email", 400)
             }
         }
 
-        if (data.password) {
-            if (!bcrypt.compareSync(data.currentPassword!, userExists.password)) {
-                throw new HttpError("Invalid password", 401)
-            }
-            data.password = bcrypt.hashSync(data.password, 10);
+        if (!data.currentPassword) {
+            throw new HttpError("Password is required to Update", 401)
+        }
+
+        if (!bcrypt.compareSync(data.currentPassword!, userExists.password)) {
+            throw new HttpError("Invalid password", 401)
+        }
+
+        if (data.newPassword) {
+            data.newPassword = bcrypt.hashSync(data.newPassword, 10);
         }
 
         try {
-            return this.userRepository.updateUser(id, data);
+            return this.userRepository.updateUser(userExists.id, data);
         } catch (error) {
             throw new HttpError(`Failed to update user: ${error}`, 500);
         }

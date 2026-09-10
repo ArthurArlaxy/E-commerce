@@ -5,19 +5,31 @@ import type { CartRepository } from "../Repository/CartRepository.js";
 import type { AddressRepository } from "../Repository/AddressRepository.js";
 import type { OrderQueryInput, UpdateOrderStatusInput } from "../Schema/OrderSchema.js";
 import type { Prisma } from "@prisma/client";
+import type { ShippingRepository } from "../Repository/ShippingRepository.js";
 
 export class OrderService {
     constructor(
         private orderRepository: OrderRepository,
         private cartRepository: CartRepository,
-        private addressRepository: AddressRepository
+        private addressRepository: AddressRepository,
+        private shippingRepository: ShippingRepository
     ) { }
 
-    async createOrder(userId: string, addressId: string) {
+    async createOrder(userId: string, addressId: string, shippingId: string) {
         const address = await this.addressRepository.getAddress(addressId)
 
         if (!address || address.userId !== userId) {
             throw new HttpError("Address not found", 404)
+        }
+
+        const addressSnapshot = {
+            shippingStreet: address.street,
+            shippingNumber: address.number || null,
+            shippingComplement: address.complement || null,
+            shippingNeighborhood: address.neighborhood,
+            shippingCity: address.city,
+            shippingState: address.state,
+            shippingZipCode: address.zipCode
         }
 
         const cart = await this.cartRepository.getCartByUserId(userId)
@@ -36,7 +48,7 @@ export class OrderService {
         let total = new Decimal(0)
 
         for (const item of selectedItems) {
-            if (item.product.stock < item.quantity) {
+            if (item.product.stock === 0 || item.product.stock < item.quantity) {
                 throw new HttpError(`Insufficient stock for product ${item.product.name}`, 400)
             }
 
@@ -48,11 +60,26 @@ export class OrderService {
             items.push({
                 productId: item.productId,
                 quantity: item.quantity,
+                nameSnapshot: item.product.name,
                 priceSnapshot: price.toFixed(2)
             })
         }
 
-        return await this.orderRepository.createOrder(userId, addressId, selectedItems.map(i => i.id), items, total.toFixed(2))
+        const shipping = await this.shippingRepository.getShippingById(shippingId)
+
+        if (!shipping) {
+            throw new HttpError("Type of hipping not found", 400)
+        }
+
+        const shippingSnapshot = {
+            shippingId: shipping.id,
+            nameSnapshot: shipping.name,
+            priceSnapshot: shipping.price,
+            deliveryTimeSnapshot: shipping.deliveryTime
+        }
+
+
+        return await this.orderRepository.createOrder(userId, addressSnapshot, shippingSnapshot, selectedItems.map(i => i.id), items, total.toFixed(2))
     }
 
     async getOrders(query: OrderQueryInput, userId: string, isAdmin: boolean) {

@@ -17,20 +17,37 @@ export class CartService {
             return { id: null, items: [], total: "0.00", selectedTotal: "0.00" }
         }
 
+        const idsToDeselect: string[] = []
+
         const items = cart.products.map((item) => {
             const price = new Decimal(item.product.price as any)
-            const subtotal = price.times(item.quantity)
+            const effectiveQuantity = item.quantity <= item.product.stock ? item.quantity : item.product.stock
+            const subtotal = price.times(effectiveQuantity)
+            const isUnavailable = item.product.stock === 0 || !item.product.isActive || item.product.deletedAt !== null
+
+            if (isUnavailable && item.selected) {
+                idsToDeselect.push(item.id)
+            }
 
             return {
                 id: item.id,
                 productId: item.productId,
                 name: item.product.name,
                 price: price.toFixed(2),
-                quantity: item.quantity,
-                selected: item.selected,
+                quantity: effectiveQuantity,
+                maxStock: item.product.stock,
+                selected: isUnavailable ? false : item.selected,
+                unavailable: isUnavailable,
+                image: item.product.images.find((image) => image.isCover === true)?.url,
+                slug: item.product.slug,
+                category: item.product.productCategories[0]?.category.name,
                 subtotal: subtotal.toFixed(2)
             }
         })
+        
+        if (idsToDeselect.length > 0) {
+            await this.cartRepository.updateManyCartItemSelection(idsToDeselect, false)
+        }
 
         const total = items.reduce(
             (acc, item) => acc.plus(item.subtotal),

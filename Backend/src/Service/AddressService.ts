@@ -1,3 +1,4 @@
+import type { Address } from "@prisma/client"
 import { HttpError } from "../Error/HttpError.js"
 import type { AddressRepository } from "../Repository/AddressRepository.js"
 import type { CreateAddressInput, UpdateAddressInput } from "../Schema/AddressSchema.js"
@@ -9,7 +10,6 @@ export class AddressService {
 
         const userAddresses = await this.addressRepository.getUserAddresses(data.userId)
 
-        // regra de negócio explícita
         if (userAddresses.length >= 3) {
             throw new HttpError("Limit address: 3", 400)
         }
@@ -42,12 +42,13 @@ export class AddressService {
     }
 
     async updateAddress(id: string, data: UpdateAddressInput) {
+
+        const address = await this.addressRepository.getAddress(id)
+
+        if (!address) throw new HttpError("Address not found", 404)
+        if (address.userId !== data.userId) throw new HttpError("Unauthorized", 403)
+
         try {
-            const address = await this.addressRepository.getAddress(id)
-
-            if (!address) throw new HttpError("Address not found", 404)
-            if (address.userId !== data.userId) throw new HttpError("Unauthorized", 403)
-
             return await this.addressRepository.updateAddress(id, data)
         } catch (error) {
             throw new HttpError("Address not found", 404)
@@ -59,6 +60,7 @@ export class AddressService {
 
         if (!address) throw new HttpError("Address not found", 404)
         if (address.userId !== userId) throw new HttpError("Unauthorized", 403)
+        if (address.isPrimary === true)  throw new HttpError("Não é permitido excluir o endereço principal", 400)
 
         try {
             return await this.addressRepository.deleteAddress(id)
