@@ -22,6 +22,9 @@ import { OrderPrisma } from "./Repository/prisma/OrderPrisma.js";
 import { OrderService } from "./Service/OrderService.js";
 import { OrderController } from "./Controller/OrderController.js";
 import { imageMiddleware } from "./Middleware/ImageMiddleware.js";
+import { ShippingPrisma } from "./Repository/prisma/ShippingPrisma.js";
+import { ShippingService } from "./Service/ShippingService.js";
+import { ShippingController } from "./Controller/ShippingController.js";
 
 export const router = Router()
 
@@ -33,6 +36,7 @@ const productPrisma = new ProductPrisma()
 const reviewPrisma = new ReviewPrisma()
 const cartPrisma = new CartPrisma()
 const orderPrisma = new OrderPrisma()
+const shippingPrisma = new ShippingPrisma()
 
 // Instancias do Service
 const userService = new UserService(userPrisma)
@@ -40,8 +44,9 @@ const addressService = new AddressService(addressPrisma)
 const categoryService = new CategoryService(categoryPrisma)
 const productService = new ProductService(productPrisma)
 const reviewService = new ReviewService(reviewPrisma)
-const cartService = new CartService(cartPrisma, productPrisma) 
-const orderService = new OrderService(orderPrisma, cartPrisma, addressPrisma)
+const cartService = new CartService(cartPrisma, productPrisma)
+const orderService = new OrderService(orderPrisma, cartPrisma, addressPrisma, shippingPrisma)
+const shippingService = new ShippingService(shippingPrisma)
 
 // Instancias do Controller
 const userController = new UserController(userService)
@@ -51,6 +56,7 @@ const productController = new ProductController(productService)
 const reviewController = new ReviewController(reviewService)
 const cartController = new CartController(cartService)
 const orderController = new OrderController(orderService)
+const shippingController = new ShippingController(shippingService)
 
 // Rotas de Autenticação
 router.post("/register", userController.register)
@@ -83,8 +89,8 @@ router.delete("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.adm
 router.get("/products", productController.getProducts)
 router.get("/products/id/:id", AuthMiddleware.authenticate, productController.getProductById)
 router.get("/products/:slug", AuthMiddleware.authenticate, productController.getProductBySlug)
-router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images',8), productController.createProducts)
-router.put("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin,imageMiddleware.array('images',8), productController.updateProduct)
+router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images', 8), productController.createProducts)
+router.put("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images', 8), productController.updateProduct)
 router.delete("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteProduct)
 router.post("/products/:id/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addCategoriesToProduct)
 router.delete("/products/:productId/categories/:categoryId", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteCategoryFromProduct)
@@ -106,6 +112,13 @@ router.put("/cart/items/:id", AuthMiddleware.authenticate, cartController.update
 router.patch("/cart/items/:id/selection", AuthMiddleware.authenticate, cartController.updateCartItemSelection)
 router.delete("/cart/items/:id", AuthMiddleware.authenticate, cartController.removeProductFromCart)
 router.delete("/cart", AuthMiddleware.authenticate, cartController.clearCart)
+
+//Rotas de Fretes
+router.get("/shippings", AuthMiddleware.authenticate, shippingController.getShippings)
+router.post("/shippings", AuthMiddleware.authenticate, AuthMiddleware.admin, shippingController.createShipping)
+router.get("/shippings/:id", AuthMiddleware.authenticate, shippingController.getShippindById)
+router.put("/shippings/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, shippingController.updateShipping)
+router.delete("/shippings/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, shippingController.deleteShipping)
 
 // Rotas de Pedidos
 router.post("/orders", AuthMiddleware.authenticate, orderController.createOrder)
