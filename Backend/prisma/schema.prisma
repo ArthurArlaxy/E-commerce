@@ -42,8 +42,7 @@ model Address {
 
   userId String
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders Order[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Product {
@@ -73,7 +72,7 @@ model ProductImages {
 
   productId String
 
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Category {
@@ -91,8 +90,8 @@ model ProductCategory {
   productId  String
   categoryId String
 
-  product  Product  @relation(fields: [productId], references: [id])
-  category Category @relation(fields: [categoryId], references: [id])
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([productId, categoryId])
 }
@@ -115,9 +114,31 @@ model ProductCart {
   cartId    String
 
   product Product @relation(fields: [productId], references: [id])
-  cart    Cart    @relation(fields: [cartId], references: [id])
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
   @@unique([productId, cartId])
+}
+
+model Shipping {
+  id           String  @id @default(uuid())
+  name         String
+  price        Decimal @db.Decimal(5, 2)
+  deliveryTime Int
+
+  orders OrderShipping[]
+}
+
+model OrderShipping {
+  id                   String  @id @default(uuid())
+  nameSnapshot         String
+  priceSnapshot        Decimal @db.Decimal(5, 2)
+  deliveryTimeSnapshot Int
+
+  orderId    String @unique
+  shippingId String
+
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  shipping Shipping @relation(fields: [shippingId], references: [id])
 }
 
 model Order {
@@ -125,25 +146,35 @@ model Order {
   total     Decimal     @db.Decimal(10, 2)
   status    OrderStatus @default(pending)
   createdAt DateTime    @default(now())
+  updatedAt DateTime?   @updatedAt
 
-  userId    String
-  addressId String
+  userId String
 
-  user    User    @relation(fields: [userId], references: [id])
-  address Address @relation(fields: [addressId], references: [id])
+  shippingStreet       String  @db.VarChar(255)
+  shippingNumber       String? @db.VarChar(10)
+  shippingComplement   String? @db.VarChar(200)
+  shippingNeighborhood String  @db.VarChar(150)
+  shippingCity         String  @db.VarChar(100)
+  shippingState        String  @db.VarChar(100)
+  shippingZipCode      String  @db.VarChar(20)
 
-  products OrderProducts[]
+  user User @relation(fields: [userId], references: [id])
+
+  products        OrderProducts[]
+  shipping        OrderShipping   @relation(fields: [orderShippingId], references: [id])
+  orderShippingId String
 }
 
 model OrderProducts {
   id            String  @id @default(uuid())
   quantity      Int
   priceSnapshot Decimal @db.Decimal(10, 2)
+  nameSnapshot  String  @db.VarChar(255)
 
   orderId   String
   productId String
 
-  order   Order   @relation(fields: [orderId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
   @@unique([orderId, productId])
@@ -160,7 +191,7 @@ model Review {
   productId String
 
   user    User    @relation(fields: [userId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId])
 }
