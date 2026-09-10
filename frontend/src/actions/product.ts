@@ -27,7 +27,7 @@ export interface Product {
     createdAt: Date;
     updatedAt: Date;
     slug: string;
-    price: Number;
+    price: number;
     description: string;
     stock: number;
     images: {
@@ -46,7 +46,7 @@ export interface GetProducts {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        price: Number;
+        price: number;
         description: string;
         stock: number;
         images: {
@@ -66,7 +66,7 @@ export interface ProductById {
     createdAt: Date;
     updatedAt: Date;
     slug: string;
-    price: Number;
+    price: number;
     description: string;
     stock: number;
     images: {
@@ -92,7 +92,7 @@ export interface ProductBySlug {
         createdAt: Date;
         updatedAt: Date;
         slug: string;
-        price: Number;
+        price: number;
         description: string;
         stock: number;
         images: {
@@ -110,16 +110,16 @@ export interface ProductBySlug {
             }
         }[]
         reviews: {
-            user:{
-                name:string
+            user: {
+                name: string
             }
-            id:string;
+            id: string;
             createdAt: Date;
             rating: number;
             comment: string;
         }[]
     }
-    totalReview:number
+    totalReview: number
 }
 
 interface Image {
@@ -151,13 +151,17 @@ export async function productCreateForm(
     const stock = formData.get("stock")
     const coverIndex = formData.get("coverIndex")
 
-    if (!name || !slug || !description || !price || !categories || !images || !stock || !coverIndex) {
+    if (!name || !description || !price || !categories || !images || !stock || !coverIndex) {
         return { error: "Todos os campos precisam ser preenchidos" }
     }
 
     const backendFormData = new FormData()
     backendFormData.append("name", name)
-    backendFormData.append("slug", slug)
+
+    if (slug) {
+        backendFormData.append("slug", slug)
+    }
+
     backendFormData.append("price", price)
     backendFormData.append("stock", stock)
     backendFormData.append("description", description)
@@ -179,6 +183,8 @@ export async function productCreateForm(
     }
 
     const data = await response.json()
+
+    console.log(data)
 
     redirect(`/admin/create-product`)
 }
@@ -300,7 +306,6 @@ export async function getProducts({
 
     const products: GetProducts = await response.json()
 
-
     return products
 }
 
@@ -392,13 +397,17 @@ export async function updateCreateForm(
     const stock = formData.get("stock")
     const coverIndex = formData.get("coverIndex")
 
-    if (!id || !name || !slug || !description || !price || !categories || !images || !stock || !coverIndex) {
+    if (!id || !name || !description || !price || !categories || !images || !stock || !coverIndex) {
         return { error: "Todos os campos precisam ser preenchidos" }
     }
 
     const backendFormData = new FormData()
     backendFormData.append("name", name)
-    backendFormData.append("slug", slug)
+
+    if (slug) {
+        backendFormData.append("slug", slug)
+    }
+
     backendFormData.append("price", price)
     backendFormData.append("stock", stock)
     backendFormData.append("description", description)
@@ -421,5 +430,5 @@ export async function updateCreateForm(
 
     const data = await response.json()
 
-    redirect(`/products/${data.id}`)
+    redirect(`/products/${data.slug}`)
 }

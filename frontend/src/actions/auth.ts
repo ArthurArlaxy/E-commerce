@@ -1,7 +1,22 @@
 "use server"
 
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+
+export interface User {
+    name: string;
+    email: string;
+    role: string;
+    password: string;
+}
+
+export interface UserUpdate {
+    name: string | undefined;
+    email: string | undefined;
+    currentPassword: string | undefined;
+    newPassword: string | undefined;
+}
 
 interface AuthState {
     error?: string;
@@ -101,3 +116,67 @@ export async function loginAction(
 
     redirect("/")
 }
+
+export async function getProfile() {
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+
+    const response = await fetch(`${process.env.API_URL}/users/me`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Cookie": cookieHeader
+        }
+    })
+
+    if (!response.ok) {
+        throw new Error("Erro ao buscar informações do usuário")
+    }
+
+    const userInfo = await response.json()
+
+    return userInfo
+}
+
+export async function updateUserInfo(data: UserUpdate) {
+    const cookieStore = await cookies()
+    const cookieHeader = cookieStore.toString()
+
+    if (data.currentPassword === "") {
+        data.currentPassword = undefined
+    }
+
+    if (data.newPassword === "") {
+        data.newPassword = undefined
+    }
+
+    if (data.email === "") {
+        data.email = undefined
+    }
+
+    const response = await fetch(`${process.env.API_URL}/users/me`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Cookie": cookieHeader
+        },
+        body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+        throw new Error("Erro ao atualizar o produto")
+    }
+
+    const userInfo = await response.json();
+
+    if(data.email || data.newPassword){
+            cookieStore.delete({
+        name: "token",
+        path: "/",
+    });
+
+    redirect("/login")
+    }
+
+    revalidatePath("/profile")
+}   
