@@ -11,6 +11,7 @@ const statusSchema = z.enum([
 
 export const createOrderSchema = z.object({
     addressId: z.string().min(1),
+    shippingId: z.string().min(1)
 })
 
 export const updateOrderStatusSchema = z.object({

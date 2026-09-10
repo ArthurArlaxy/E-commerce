@@ -13,7 +13,7 @@ export const updateUserSchema = z.object({
     name: z.string().min(1, "Name is required").optional(),
     email: z.string().email("Invalid email address").optional(),
     currentPassword: z.string().optional(),
-    password: z.string().min(6, "Password must be at least 6 characters long").optional(),
+    newPassword: z.string().min(6, "Password must be at least 6 characters long").optional(),
 });
 
 export const loginSchema = z.object({
@@ -22,7 +22,6 @@ export const loginSchema = z.object({
 });
 
 export const safeUserSchema = z.object({
-    id: z.string(),
     name: z.string(),
     email: z.string().email("Invalid email address"),
     role: RoleEnum,
