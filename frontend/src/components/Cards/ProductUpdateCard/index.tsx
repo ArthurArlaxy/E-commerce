@@ -3,15 +3,15 @@ import styles from "./style.module.css"
 import Image from "next/image"
 
 interface ProductCardProps {
-    slug: string
+    id:string
     name: string
     price: string
     imageUrl: string
 }
 
-export default function ProductCard({ slug, name, price, imageUrl }: ProductCardProps) {
+export default function ProductUpdateCard({ id, name, price, imageUrl }: ProductCardProps) {
     return (
-        <a className={styles.productCard} href={`/products/${slug}`}>
+        <a className={styles.productCard} href={`/admin/update-product/${id}`}>
             <div className={styles.productImageWrapper}>
                 <Image
                     fill

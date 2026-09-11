@@ -16,6 +16,8 @@ export class ReviewController {
 
         const userId = req.user.id
 
+        console.log(body, userId, productId)
+
         const response = await this.reviewService.createReview(body, userId, productId)
 
         return res.status(201).json(response)

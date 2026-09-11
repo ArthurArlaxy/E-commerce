@@ -1,0 +1,49 @@
+.productCard {
+    border: 1px var(--foreground) solid;
+    border-radius: .5rem;
+    padding: .5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.productImageWrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.imageCard {
+    object-fit: cover;
+}
+
+.productCardContent {
+    margin-top: .5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    min-width: 0;
+}
+
+.productName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .9rem;
+}
+
+.productPrice {
+    color: purple;
+    font-weight: bold;
+    font-size: .9rem;
+}
+
+@media (min-width: 1200px) {
+    .productName {
+        font-size: 1rem;
+    }
+
+    .productPrice {
+        font-size: 1.05rem;
+    }
+}

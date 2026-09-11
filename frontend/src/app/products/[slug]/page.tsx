@@ -2,6 +2,7 @@ import { addToCart, addToCartAndBuy } from "@/actions/cart"
 import { getProductBySlug } from "@/actions/product"
 import Button from "@/components/Button"
 import ReviewCard from "@/components/Cards/ReviewCard"
+import { ReviewForm } from "@/components/forms/reviewForm"
 import { ImageProductSection } from "@/components/ImageProductSection"
 import StarRating from "@/components/StarRating"
 
@@ -20,7 +21,7 @@ export default async function ({ params }: { params: { slug: string } }) {
     const mediaReview = totalReview > 0 ? totalStars / totalReview : 0
 
     return (
-        <main className="pageContainer">
+        <main className="pageContainer flex-colomn">
             <section className="product-main-section">
                 <ImageProductSection product={product} />
                 <div>
@@ -44,6 +45,8 @@ export default async function ({ params }: { params: { slug: string } }) {
                     return <ReviewCard user={review.user.name} content={review.comment} rating={review.rating} createdAt={review.createdAt} key={review.id} />
                 }) : <p>Nenhuma avaliação encontrada</p>}
             </section>
+
+            <ReviewForm productId={result.product.id} slug={slug}/>
         </main>
     )
 }

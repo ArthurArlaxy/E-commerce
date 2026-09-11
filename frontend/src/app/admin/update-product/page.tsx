@@ -1,8 +1,38 @@
-export default async function Page() {
+import { getCategories } from "@/actions/categories";
+import { getProducts, searchProducts } from "@/actions/product";
+import ProductUpdateCard from "@/components/Cards/ProductUpdateCard";
+import { SearchProductForm } from "@/components/forms/searchForm";
+import SearchInput from "@/components/inputs/searchInput";
+import Pagination from "@/components/Pagination";
+
+export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
+    const search = await searchParams
+    const products = await getProducts(search)
+    const categories = await getCategories()
+
+    if ("error" in products) {
+        throw new Error("Falha ao tentar buscar os produtos")
+    }
 
 
-
-    return(
-        <h1>Pesquisa</h1>
+    return (
+        <main className="pageContainer">
+            <form action={searchProducts.bind(null, { type: "products" })}>
+                <SearchInput inputName="name" placeholder="O que está procurando?" defaultValue={search?.name} />
+                <SearchProductForm categories={categories} maxPrice={search?.maxPrice} minPrice={search?.minPrice} defaultCategories={search?.categories} includeOutOfStock={search?.includeOutOfStock} />
+                <section>
+                    <div className="card-container">
+                        {products.items.length ? products.items.map((product) => {
+                            return <ProductUpdateCard name={product.name} imageUrl={product.images[0].url} price={product.price.toString()} id={product.id} key={product.id} />
+                        }) : <p>Nenhum produto como esse disponível</p>}
+                    </div>
+                </section>
+                <Pagination
+                    currentPage={Number(search.page) || 1}
+                    totalPages={Math.ceil(products.total / (Number(search.limit) || 10))}
+                />
+            </form>
+        </main>
     )
 }
+

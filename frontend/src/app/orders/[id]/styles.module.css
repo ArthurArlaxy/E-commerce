@@ -98,6 +98,7 @@
     margin: 0;
 }
 
+
 @media (min-width: 768px) {
     .pageContainer {
         padding: 2rem;
@@ -112,7 +113,7 @@
         flex-direction: row;
     }
 
-    .shippingGrid > * {
+    .shippingGrid>* {
         flex: 1;
     }
 }
