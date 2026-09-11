@@ -1,15 +1,14 @@
-.themeCardContainer {
+.logoutCardContainer {
     display: flex;
     justify-content: space-between;
     width: 100%;
     padding: 1rem ;
     border: 0;
     background-color: var(--background);
-    border-top: 1px color-mix(in srgb, var(--foreground) 15%, transparent) solid;
     border-bottom: 1px color-mix(in srgb, var(--foreground) 15%, transparent) solid;
 }
 
-.themeCardModel {
+.logoutCardModel {
     display: none;
     flex-direction: column;
     gap: 1rem;
@@ -23,45 +22,42 @@
     padding: 1rem 0;
 }
 
-.themeCardModel[open] {
+.logoutCardModel[open] {
     display: flex;
 }
 
-.themeCardModel::backdrop {
+.logoutCardModel::backdrop {
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(1px);
     transition: background-color 1s, backdrop-filter 1s;
 }
 
 @starting-style {
-    .themeCardModel::backdrop {
+    .logoutCardModel::backdrop {
         background-color: rgba(0, 0, 0, 0);
         backdrop-filter: blur(0px);
     }
 }
 
-.themeOptions {
-    background-color: var(--background);
-    border: 1px purple solid;
-    border-radius: .5rem;
-    padding: .7rem;
-}
-
-
-.themeCardModelText {
+.logoutCardModelText {
     text-align: center;
 }
 
-.themeCardModelContainer {
+.logoutBtnModelContainer {
     display: flex;
     gap: 1rem;
     align-items: center;
     padding: 0 .5rem ;
 }
 
-
-.active{
-    background-color: plum;
+.modalBtn {
+    background-color: var(--foreground);
+    padding: .4rem 1rem;
+    color: var(--background);
+    text-align: center;
+    border: 1px var(--background) solid;
+    border-radius: .5rem;
+    align-self: center;
 }
 
 .modalBtnExit {

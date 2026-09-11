@@ -4,7 +4,7 @@ import type { JwtPayload } from "jsonwebtoken";
 
 export interface UserRepository {
     getAllUsers(): Promise<User[]>;
-    getUserByEmail(email: string): Promise<User | null>;
+    getUserByEmail(email: string): Promise<SafeUserReturn & { password: string} | null>;
     getUserById(id: string): Promise<SafeUserReturn | null>;
     getUserByEmailWithAllInfo(email:string): Promise<User | null>;
     createUser(data: CreateUserInput): Promise<JwtPayload>;

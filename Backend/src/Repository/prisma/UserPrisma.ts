@@ -12,7 +12,7 @@ export class UserPrisma {
         return prisma.user.findMany();
     }
 
-    async getUserByEmail(email: string): Promise<SafeUserReturn | null> {
+    async getUserByEmail(email: string): Promise<SafeUserReturn & { password: string} | null> {
         return prisma.user.findUnique({
             where: {
                 email: email,

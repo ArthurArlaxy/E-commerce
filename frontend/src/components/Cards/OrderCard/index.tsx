@@ -18,10 +18,10 @@ function formatDate(date: string) {
     })
 }
 
-export function OrderCard({ id, total, status, createdAt, products }: OrderListItem) {
+export async function OrderCard({ id, total, status, createdAt, products }: OrderListItem) {
     return (
-        <Link href={`/orders/${id}`} className={styles.orderCardContainer}>
-            <div className={styles.orderHeader}>
+        <div  className={styles.orderCardContainer}>
+            <Link href={`/orders/${id}`} className={styles.orderHeader}>
                 <div>
                     <p className={styles.orderId}>{`Pedido #${id.slice(0, 8)}`}</p>
                     <p className={styles.orderDate}>{formatDate(createdAt)}</p>
@@ -29,7 +29,7 @@ export function OrderCard({ id, total, status, createdAt, products }: OrderListI
                 <span className={`${styles.statusBadge} ${styles[status] ?? ""}`}>
                     {statusLabel[status] ?? status}
                 </span>
-            </div>
+            </Link>
 
             <div className={styles.productsList}>
                 {products.map((item, index) => (
@@ -48,6 +48,6 @@ export function OrderCard({ id, total, status, createdAt, products }: OrderListI
                 <p className={styles.orderTotal}>Total do Pedido</p>
                 <p className={styles.orderTotal}>{formatCurrency(Number(total))}</p>
             </div>
-        </Link>
+        </div>
     )
 }

@@ -5,6 +5,7 @@ import { AddressManagerForm } from "@/components/forms/addressManagerForm"
 import { UserUpdateForm } from "@/components/forms/userUpdateForm"
 import { SelectTheme } from "@/components/inputs/selectTheme"
 import styles from "./style.module.css"
+import { Logout } from "@/components/forms/Logout"
 
 
 export default async function Page(){
@@ -25,6 +26,7 @@ export default async function Page(){
                 <AddressManagerForm addresses={addresses}/>
                 <UserUpdateForm user={userInfo} />
                 <SelectTheme />
+                <Logout/>
             </section>
             <section className={styles.redirectSection}>
                 <Button text="Ver Carrinho" href="/cart" />

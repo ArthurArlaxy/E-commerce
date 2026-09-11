@@ -180,3 +180,15 @@ export async function updateUserInfo(data: UserUpdate) {
 
     revalidatePath("/profile")
 }   
+
+export async function logout() {
+    const cookieStore = await cookies()
+
+    if(!cookieStore){
+        throw new Error("É preciso logar para deslogar")
+    }
+
+    cookieStore.delete("token")
+
+    redirect("/login")
+}
