@@ -126,4 +126,31 @@ export class OrderService {
 
         return await this.orderRepository.updateOrderStatus(id, status)
     }
+
+    async getDashboardInfo() {
+
+        const agora = new Date();
+        const day = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+        const currentMonth = new Date(day.getFullYear(), day.getMonth(), 1)
+        const currentYear = new Date(day.getFullYear(), 0, 1)
+        const nextDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() +1)
+        const nextMonth = new Date(day.getFullYear(), day.getMonth() + 1, 1)
+        const nextYear = new Date(day.getFullYear() + 1, 0, 1)
+
+        const dayTime = {
+            gte: day,
+            lt: nextDay
+        }
+
+        const monthTime = {
+            gte: currentMonth,
+            lt: nextMonth
+        }
+        const yearTime = {
+            gte: currentYear,
+            lt: nextYear
+        }
+
+        return this.orderRepository.dashboardInfo(dayTime, monthTime, yearTime)
+    }
 }

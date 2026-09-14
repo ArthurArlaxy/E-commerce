@@ -1,6 +1,7 @@
 import type { Order, Prisma } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
 import type { AddressSnapshot, OrderItemInput, OrderListItem, OrderWithItems, ShippingSnapshot } from "../OrderRepository.js";
+import type { DateLimit } from "../../Schema/OrderSchema.js";
 
 const orderListInclude = {
     products: {
@@ -18,7 +19,7 @@ const orderListInclude = {
             }
         }
     }
-} 
+}
 
 const orderDetailInclude = {
     products: {
@@ -120,6 +121,66 @@ export class OrderPrisma {
         return await prisma.order.update({
             where: { id },
             data: { status }
+        })
+    }
+
+    async dashboardInfo(day: DateLimit, month: DateLimit, year: DateLimit) {
+
+        return prisma.$transaction(async (transaction) => {
+
+            const dayOrders = await transaction.order.findMany({
+                where: { createdAt: { ...day } },
+                select: {
+                    total: true,
+                    createdAt: true
+                }
+            })
+
+            const dayOrdersCount = await transaction.order.count({
+                where: { createdAt: { ...day } },
+            })
+
+            const monthOrders = await transaction.order.findMany({
+                where: { createdAt: { ...month } },
+                select: {
+                    total: true,
+                    createdAt: true,
+                }
+            })
+
+            const monthOrdersCount = await transaction.order.count({
+                where: { createdAt: { ...month } },
+            })
+
+            const yearOrders = await transaction.order.findMany({
+                where: { createdAt: { ...year } },
+                select: {
+                    total: true,
+                    createdAt: true
+                },
+                
+            })
+
+            const yearOrdersCount = await transaction.order.count({
+                where: { createdAt: { ...year } }
+            })
+
+            const ordersByStatus = await transaction.order.groupBy({
+                by: ['status'],
+                _count: { id: true },
+                where: { createdAt: { ...year } }
+            })
+
+            const topProducts = await transaction.orderProducts.groupBy({
+                by: ['nameSnapshot'],
+                _sum: { quantity: true },
+                _count: { id: true },
+                orderBy: { _sum: { quantity: 'desc' } },
+                take: 5
+            })
+
+            return { daily: { dayOrders, dayOrdersCount }, monthly: { monthOrders, monthOrdersCount }, yearly: { yearOrders, yearOrdersCount }, ordersByStatus, topProducts}
+
         })
     }
 }

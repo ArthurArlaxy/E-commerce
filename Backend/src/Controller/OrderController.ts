@@ -13,7 +13,7 @@ export class OrderController {
 
         const { addressId, shippingId } = createOrderSchema.parse(req.body)
 
-        const response = await this.orderService.createOrder(req.user.id, addressId , shippingId)
+        const response = await this.orderService.createOrder(req.user.id, addressId, shippingId)
 
         return res.status(201).json(response)
     }
@@ -27,6 +27,22 @@ export class OrderController {
         const isAdmin = req.user.role === "admin"
 
         const response = await this.orderService.getOrders(query, req.user.id, isAdmin)
+
+        return res.json(response)
+    }
+
+    getDashboardInfo: Handler = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401)
+        }
+
+        const isAdmin = req.user.role === "admin"
+
+        if(!isAdmin){
+            throw new HttpError("Not Authorized", 401)
+        }
+
+        const response = await this.orderService.getDashboardInfo()
 
         return res.json(response)
     }

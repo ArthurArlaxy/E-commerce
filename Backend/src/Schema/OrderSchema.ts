@@ -9,6 +9,11 @@ const statusSchema = z.enum([
     "cancelled",
 ])
 
+export interface DateLimit {
+    gte: Date
+    lt: Date
+}
+
 export const createOrderSchema = z.object({
     addressId: z.string().min(1),
     shippingId: z.string().min(1)
