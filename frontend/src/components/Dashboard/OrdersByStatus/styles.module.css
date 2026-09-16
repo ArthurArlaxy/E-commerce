@@ -1,0 +1,96 @@
+.card {
+  border: 1px var(--foreground) solid;
+  border-radius: .5rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: .8rem;
+  color: var(--tertiary);
+  font-weight: 700;
+  margin-top: .1rem;
+}
+
+.list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.rowHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  display: inline-block;
+  width: fit-content;
+  padding: .3rem .8rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.badge[data-status="pending"] {
+  background-color: #fdecc4;
+  color: #8a5a00;
+}
+.badge[data-status="paid"] {
+  background-color: #e6d8f7;
+  color: #5b1f9e;
+}
+.badge[data-status="processing"] {
+  background-color: #d7e6f7;
+  color: #1b5da3;
+}
+.badge[data-status="shipped"] {
+  background-color: #d7e6f7;
+  color: #1b5da3;
+}
+.badge[data-status="delivered"] {
+  background-color: #d9f0dc;
+  color: #1f7a34;
+}
+.badge[data-status="cancelled"] {
+  background-color: #fbdbd8;
+  color: #a3231a;
+}
+
+.count {
+  font-weight: bold;
+}
+
+.track {
+  height: 6px;
+  border-radius: 999px;
+  background-color: var(--quaternary);
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  background-color: plum;
+}
+
+.empty {
+  font-size: .85rem;
+  color: var(--tertiary);
+}

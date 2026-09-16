@@ -427,10 +427,10 @@ hr {
   gap: 1rem;
 }
 
-.flex-colomn{
+.flex-colomn {
   display: flex;
   flex-direction: column;
-  gap:1rem;
+  gap: 1rem;
   padding: 1rem;
 }
 
@@ -480,6 +480,12 @@ hr {
   .product-side-images-container .product-image-wrapper {
     width: 100px;
   }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--tertiary) var(--background);
+  }
+
 }
 
 
