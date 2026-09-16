@@ -27,6 +27,9 @@
     height: 160px;
     overflow-x: auto;
     padding-bottom: .25rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 1rem;
 }
 
 .column {
@@ -37,6 +40,7 @@
     flex: 1 0 2.75rem;
     height: 100%;
     gap: .4rem;
+    scroll-snap-align: start;
 }
 
 .value {
