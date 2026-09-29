@@ -76,7 +76,6 @@ export const updateImagesProductSchema = z.object({
 
 export const updateProductSchema = z.object({
     name: z.string().min(1),
-    price: z.coerce.number().positive(),
     slug: z.string().min(1).optional(),
     description: z.string().min(1),
     stock: z.coerce.number().int().min(0),
@@ -86,18 +85,17 @@ export const updateProductSchema = z.object({
         if (Array.isArray(val)) return val;
 
         return [];
-    }, z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria")),
+    }, z.array(z.string()).min(1, "Selecione ao menos uma categoria")),
     coverIndex: z.coerce.number()
 })
 
 export const productUpdateData = z.object({
     name: z.string().min(1),
-    price: z.coerce.number().positive(),
     slug: z.string().min(1).optional(),
     description: z.string().min(1),
     stock: z.coerce.number().int().min(0),
     coverIndex: z.number(),
-    categoriesIds: z.array(z.string().uuid()).min(1, "Selecione ao menos uma categoria"),
+    categoriesIds: z.array(z.string()).min(1, "Selecione ao menos uma categoria"),
     images: z.array(z.object({
         url: z.string(),
         isCover: z.boolean(),

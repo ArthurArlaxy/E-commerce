@@ -13,5 +13,6 @@ export interface ProductRepository {
     addImagesToProduct(productId: string, data: ImagesProductInput[]): Promise<void>
     deleteImageFromProduct(id: string): Promise<ProductImages>
     updateImagesFromProduct(updates: UpdateImagesProductInput[]): Promise<void>
+    hardDeleteProduct(id:string): Promise<Product>
 }
 

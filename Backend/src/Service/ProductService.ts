@@ -1,9 +1,10 @@
 import { Prisma } from "@prisma/client";
 import { HttpError } from "../Error/HttpError.js";
-import { slugCreator, uniqueSlug } from "../helpers/slugFunctions.js";
 import type { ProductRepository } from "../Repository/ProductRepository.js";
 import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductQueryInput, ProductUpdateData, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
 import fs from "fs"
+import { slugCreator, uniqueSlug } from "../helpers/slugFunctions.js";
+import { toCents } from "../helpers/format.js";
 
 export class ProductService {
     constructor(private productRepository: ProductRepository) { }
@@ -48,13 +49,45 @@ export class ProductService {
             }
         }
 
-
         const serviceData: ProductCreateData = {
             ...data,
             images: [...uploadedImages]
         }
 
-        return this.productRepository.createProduct(serviceData)
+        const product = await this.productRepository.createProduct(serviceData)
+
+        if (!product) {
+            throw new HttpError(`Erro ao criar o produto`, 500)
+        }
+
+        try {
+            const response = await fetch("https://api.abacatepay.com/v2/products/create", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    externalId: product.id,
+                    name: product.name,
+                    price: toCents(String(product.price)),
+                    description: product.description,
+                    currency: "BRL"
+                })
+            })
+
+            const result = await response.json()
+
+            if (!response.ok || !result.success) {
+                throw new Error(JSON.stringify(result))
+            }
+
+        } catch (error) {
+            await this.productRepository.hardDeleteProduct(product.id)
+            throw new HttpError(`Erro ao criar o produto na AbacatePay: ${error}`, 400)
+        }
+
+        return product
     }
 
     async getProducts(query: ProductQueryInput) {
@@ -128,58 +161,56 @@ export class ProductService {
 
         return product
     }
-    async updateProduct(id: string, data: UpdateProductInput, files: Express.Multer.File[]) {
 
-        const baseSlug = slugCreator(data.slug || data.name)
-        data.slug = await uniqueSlug(baseSlug, async (slug) => {
-            return Boolean(await this.productRepository.getProductBySlug(slug))
-        })
+    async updateProduct(id: string, data: UpdateProductInput, files: Express.Multer.File[]) {
 
         if (typeof id !== "string") {
             throw new HttpError("Invalid Product ID", 400)
         }
 
-        const productExists = await this.getProductById(id)
+        await this.getProductById(id)
 
-        if (!productExists) {
-            throw new HttpError("Product not found", 404)
+        if (data.slug || data.name) {
+            const baseSlug = slugCreator(data.slug || data.name)
+            data.slug = await uniqueSlug(baseSlug, async (slug: string) => {
+                return Boolean(await this.productRepository.getProductBySlug(slug))
+            })
         }
 
         const uploadedImages: { url: string, order: number, isCover: boolean }[] = []
         let orderImage: number = 0
 
-        for (const image of files) {
-            const buffer = fs.readFileSync(image.path)
-            fs.rmSync(image.path)
-            const imageBase64 = buffer.toString("base64")
-            const formData = new FormData()
-            formData.append("image", imageBase64)
+        if (files?.length > 0) {
+            for (const image of files) {
+                const buffer = fs.readFileSync(image.path)
+                fs.rmSync(image.path)
+                const base64Image = buffer.toString("base64")
+                const formData = new FormData()
+                formData.append('image', base64Image)
+                try {
+                    const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
+                        method: "POST",
+                        body: formData
+                    })
 
-            try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
-                    method: "POST",
-                    body: formData
-                })
+                    if (!response.ok) {
+                        throw new Error(`Erro no ImgBB: ${response.statusText}`)
+                    }
 
-                if (!response.ok) {
-                    throw new HttpError("Falha ao fazer upload das imagens", 400)
+                    const result = await response.json()
+
+                    const url = result.data.image.url
+                    const order = orderImage
+                    const isCover = orderImage === data.coverIndex
+                    orderImage++
+
+                    uploadedImages.push({ url, order, isCover })
+
+                } catch (error) {
+                    throw new HttpError(`${error}`, 400)
                 }
-
-                const result = await response.json()
-
-                const url = result.data.image.url
-                const order = orderImage
-                const isCover = orderImage === data.coverIndex
-                orderImage++
-
-                uploadedImages.push({ url, order, isCover })
-
-            } catch (error) {
-                return new HttpError(`${error}`, 400)
             }
-
         }
-
 
         const updatedProduct = await this.productRepository.updateProduct(id, {
             ...data,
@@ -208,6 +239,55 @@ export class ProductService {
 
         if (!deletedProduct) {
             throw new HttpError("Error occurred while deleting the product", 500)
+        }
+
+        try {
+            const options = {
+                headers: {
+                    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
+                },
+            };
+
+            const getResponse = await fetch(
+                `https://api.abacatepay.com/v2/products/get?externalId=${id}`,
+                {
+                    method: "GET",
+                    ...options,
+                }
+            );
+
+            if (!getResponse.ok) {
+                throw new HttpError(
+                    `Error occurred while getting the product on AbacatePay. Id do produto: ${id}`,
+                    500
+                );
+            }
+
+            const productInAbacate = await getResponse.json();
+
+            const deleteResponse = await fetch(
+                `https://api.abacatepay.com/v2/products/delete?id=${productInAbacate.data.id}`,
+                {
+                    method: "POST",
+                    ...options,
+                }
+            );
+
+            if (!deleteResponse.ok) {
+                console.log(`Error occurred while deleting the product on AbacatePay. Id do produto: ${id}`, 500);
+            }
+
+        } catch (error) {
+            console.error(error);
+
+            if (error instanceof HttpError) {
+                throw error;
+            }
+
+            throw new HttpError(
+                `Error occurred while deleting the product on AbacatePay. Id do produto: ${id}`,
+                500
+            );
         }
 
         return deletedProduct
@@ -276,4 +356,6 @@ export class ProductService {
 
         return await this.productRepository.updateImagesFromProduct(data)
     }
+
+
 }

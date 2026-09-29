@@ -1,9 +1,7 @@
-import type { Prisma, Product, ProductCategory, ProductImages } from "@prisma/client";
+import type { Prisma, Product, ProductImages } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
-import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductUpdateData, UpdateImagesProductInput, UpdateProductInput } from "../../Schema/ProductSchema.js";
+import type { ImagesProductInput, ProductCreateData, ProductUpdateData, UpdateImagesProductInput } from "../../Schema/ProductSchema.js";
 import { toCreate, toUpdate } from "../../helpers/mappers.js";
-import { da, tr } from "zod/locales";
-import { response } from "express";
 
 export class ProductPrisma {
     constructor() { }
@@ -216,5 +214,9 @@ export class ProductPrisma {
                 })
             )
         )
+    }
+
+    async hardDeleteProduct(id: string): Promise<Product> {
+        return prisma.product.delete({ where: { id } })
     }
 }
