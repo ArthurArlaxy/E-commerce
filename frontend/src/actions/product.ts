@@ -391,13 +391,12 @@ export async function updateCreateForm(
     const name = formData.get("name")
     const slug = formData.get("slug")
     const description = formData.get("description")
-    const price = formData.get("price")
     const categories = formData.getAll("categories")
     const images = formData.getAll("images") as File[]
     const stock = formData.get("stock")
     const coverIndex = formData.get("coverIndex")
 
-    if (!id || !name || !description || !price || !categories || !images || !stock || !coverIndex) {
+    if (!id || !name || !description || !categories || !images || !stock || !coverIndex) {
         return { error: "Todos os campos precisam ser preenchidos" }
     }
 
@@ -408,7 +407,7 @@ export async function updateCreateForm(
         backendFormData.append("slug", slug)
     }
 
-    backendFormData.append("price", price)
+
     backendFormData.append("stock", stock)
     backendFormData.append("description", description)
     backendFormData.append("coverIndex", coverIndex)

@@ -28,7 +28,6 @@ export default function UpdateProductForm({ categories, product }: UpdateProduct
             <form className={styles.productForm} action={formActionHandler}>
                 <input type="hidden" name="id" value={product.id} />
                 <FormInputLabel type="text" inputName="name" label="Nome" placeholder="Nome do Produto" value={product.name} />
-                <FormInputLabel type="number" inputName="price" label="Preço" placeholder="Preço do Produto" value={product.price.toString()} />
                 <SelectInputLabel label="Categoria" SelectName="categories" categories={categories} originalValuesId={originalCategories} />
                 <FormInputLabel type="text" inputName="slug" label="Slug" placeholder="Slug do Produto" value={product.slug} />
                 <FormInputLabel type="number" inputName="stock" label="Quantidade em Estoque" placeholder="Quantidade do Produto em Estoque" value={product.stock.toString()} />

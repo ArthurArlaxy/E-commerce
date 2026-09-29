@@ -5,7 +5,6 @@ import styles from "./style.module.css"
 import { ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { createAddress, deleteAddress, selectPrimaryAddress, updateAddress } from "@/actions/address";
 import { FaRegStar, FaStar } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 import FormInputLabel from "@/components/inputs/formInputLabel";
 
 interface AddressesProps {
@@ -65,7 +64,6 @@ export function AddressManagerForm({ addresses }: { addresses: AddressesProps[] 
     }
 
     function handleCreateSubmit(formData: FormData) {
-        if (!addressToEdit) return
 
         setCreateError(null)
 
@@ -131,13 +129,6 @@ export function AddressManagerForm({ addresses }: { addresses: AddressesProps[] 
         modalRef.current?.showModal()
     }
 
-    if (!primaryAddress) {
-        return (
-            <>
-                <p>Cadastre um endereço agora</p>
-            </>
-        )
-    }
 
     return (
         <>
@@ -157,14 +148,14 @@ export function AddressManagerForm({ addresses }: { addresses: AddressesProps[] 
                         <li key={address.id} className={styles.addressCardModelContent}>
                             <button className={styles.addressOption}
                                 type="button"
-                                disabled={isPending || primaryAddress.id === address.id}
+                                disabled={isPending || primaryAddress?.id === address.id }
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
                                     handleAddressFavorite(address)
                                 }}
                             >
-                                {primaryAddress.id === address.id ? <FaStar key={1} size={30} color="#fad400" className={styles.modelIcons} /> : <FaRegStar key={1} size={30} color="#fad400" className={styles.modelIcons} />}
+                                {primaryAddress?.id === address.id ? <FaStar key={1} size={30} color="#fad400" className={styles.modelIcons} /> : <FaRegStar key={1} size={30} color="#fad400" className={styles.modelIcons} />}
                             </button>
                             <p className={styles.modelAddressText}>{address?.street}, {address?.number || "S/N"}, {address?.state}, {address?.neighborhood}, {address?.zipCode}</p>
                             <button className={styles.addressOption}
@@ -180,7 +171,7 @@ export function AddressManagerForm({ addresses }: { addresses: AddressesProps[] 
                             </button>
                             <button className={styles.addressOption}
                                 type="button"
-                                disabled={isPending || primaryAddress.id === address.id}
+                                disabled={isPending || primaryAddress?.id === address.id}
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()

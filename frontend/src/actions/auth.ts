@@ -52,6 +52,7 @@ export async function registerAction(
         data = await response.json();
 
     } catch {
+        
         return { error: "Erro de conexão. Tente novamente." };
     }
 

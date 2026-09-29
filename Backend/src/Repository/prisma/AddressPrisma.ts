@@ -10,7 +10,7 @@ export class AddressPrisma {
 
     async createAddress(data: CreateAddressInput): Promise<Address> {
 
-        return prisma.$transaction(async (transaction) => {
+        return prisma.$transaction(async (transaction: any) => {
             const count = await transaction.address.count({
                 where: { userId: data.userId }
             })
@@ -51,7 +51,7 @@ export class AddressPrisma {
     }
 
     async updateAddress(id: string, data: UpdateAddressInput): Promise<Address> {
-        return prisma.$transaction(async (transaction) => {
+        return prisma.$transaction(async (transaction: any) => {
 
             if (data.isPrimary) {
                 await transaction.address.updateMany({
