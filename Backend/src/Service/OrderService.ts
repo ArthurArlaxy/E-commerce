@@ -15,6 +15,76 @@ export class OrderService {
         private shippingRepository: ShippingRepository
     ) { }
 
+    async createPayment(userId: string, shippingId: string) {
+        const cart = await this.cartRepository.getCartByUserId(userId)
+
+        if (!cart || cart.products.length === 0) {
+            throw new HttpError("Cart is empty", 400)
+        }
+
+        const selectedItems = cart.products.filter((item) => item.selected === true)
+
+        if (selectedItems.length === 0) {
+            throw new HttpError("No items selected for checkout", 400)
+        }
+
+        let total = new Decimal(0)
+
+        for (const item of selectedItems) {
+            if (item.product.stock === 0 || item.product.stock < item.quantity) {
+                throw new HttpError(`Insufficient stock for product ${item.product.name}`, 400)
+            }
+
+            const price = new Decimal(item.product.price as any)
+            const subtotal = price.times(item.quantity)
+
+            total = total.plus(subtotal)
+        }
+
+        const shipping = await this.shippingRepository.getShippingById(shippingId)
+
+        if (!shipping) {
+            throw new HttpError("Type of hipping not found", 400)
+        }
+
+        const shippingPrice = new Decimal(shipping.price)
+
+        total = total.plus(shippingPrice)
+
+        let priceInCents = Number(total.toFixed(2).replace(".",""))
+        console.log(priceInCents)
+
+        const options = {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                method: 'PIX',
+                data: {
+                    amount: priceInCents,
+                    expiresIn: 1800,
+                    description: 'Pagamento dos produtos selecionados',
+                }
+            })
+        };
+
+        const response = await fetch('https://api.abacatepay.com/v2/transparents/create', options)
+
+        console.log(response)
+
+        if(!response.ok){
+            throw new HttpError("Erro ao criar a cobrança",500)
+        }
+
+        const paymentData = await response.json()
+
+        console.log(paymentData)
+
+        return paymentData
+    }
+
     async createOrder(userId: string, addressId: string, shippingId: string) {
         const address = await this.addressRepository.getAddress(addressId)
 
@@ -71,13 +141,17 @@ export class OrderService {
             throw new HttpError("Type of hipping not found", 400)
         }
 
+
+        const shippingPrice = new Decimal(shipping.price)
+
+        total = total.plus(shippingPrice)
+
         const shippingSnapshot = {
             shippingId: shipping.id,
             nameSnapshot: shipping.name,
             priceSnapshot: shipping.price,
             deliveryTimeSnapshot: shipping.deliveryTime
         }
-
 
         return await this.orderRepository.createOrder(userId, addressSnapshot, shippingSnapshot, selectedItems.map(i => i.id), items, total.toFixed(2))
     }
@@ -133,7 +207,7 @@ export class OrderService {
         const day = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
         const currentMonth = new Date(day.getFullYear(), day.getMonth(), 1)
         const currentYear = new Date(day.getFullYear(), 0, 1)
-        const nextDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() +1)
+        const nextDay = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1)
         const nextMonth = new Date(day.getFullYear(), day.getMonth() + 1, 1)
         const nextYear = new Date(day.getFullYear() + 1, 0, 1)
 

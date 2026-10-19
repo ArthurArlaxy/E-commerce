@@ -60,33 +60,6 @@ export class ProductService {
             throw new HttpError(`Erro ao criar o produto`, 500)
         }
 
-        try {
-            const response = await fetch("https://api.abacatepay.com/v2/products/create", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    externalId: product.id,
-                    name: product.name,
-                    price: toCents(String(product.price)),
-                    description: product.description,
-                    currency: "BRL"
-                })
-            })
-
-            const result = await response.json()
-
-            if (!response.ok || !result.success) {
-                throw new Error(JSON.stringify(result))
-            }
-
-        } catch (error) {
-            await this.productRepository.hardDeleteProduct(product.id)
-            throw new HttpError(`Erro ao criar o produto na AbacatePay: ${error}`, 400)
-        }
-
         return product
     }
 
@@ -239,55 +212,6 @@ export class ProductService {
 
         if (!deletedProduct) {
             throw new HttpError("Error occurred while deleting the product", 500)
-        }
-
-        try {
-            const options = {
-                headers: {
-                    Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}`,
-                },
-            };
-
-            const getResponse = await fetch(
-                `https://api.abacatepay.com/v2/products/get?externalId=${id}`,
-                {
-                    method: "GET",
-                    ...options,
-                }
-            );
-
-            if (!getResponse.ok) {
-                throw new HttpError(
-                    `Error occurred while getting the product on AbacatePay. Id do produto: ${id}`,
-                    500
-                );
-            }
-
-            const productInAbacate = await getResponse.json();
-
-            const deleteResponse = await fetch(
-                `https://api.abacatepay.com/v2/products/delete?id=${productInAbacate.data.id}`,
-                {
-                    method: "POST",
-                    ...options,
-                }
-            );
-
-            if (!deleteResponse.ok) {
-                console.log(`Error occurred while deleting the product on AbacatePay. Id do produto: ${id}`, 500);
-            }
-
-        } catch (error) {
-            console.error(error);
-
-            if (error instanceof HttpError) {
-                throw error;
-            }
-
-            throw new HttpError(
-                `Error occurred while deleting the product on AbacatePay. Id do produto: ${id}`,
-                500
-            );
         }
 
         return deletedProduct

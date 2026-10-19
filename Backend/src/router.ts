@@ -121,7 +121,8 @@ router.put("/shippings/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, 
 router.delete("/shippings/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, shippingController.deleteShipping)
 
 // Rotas de Pedidos
-router.post("/orders", AuthMiddleware.authenticate, orderController.createOrder)
+router.post("/orders/payment", AuthMiddleware.authenticate, orderController.createPayment)
+router.post("/orders/create", AuthMiddleware.authenticate, orderController.createOrder)
 router.get("/orders", AuthMiddleware.authenticate, orderController.getOrders)
 router.get("/orders/:id", AuthMiddleware.authenticate, orderController.getOrderById)
 router.put("/orders/:id/status", AuthMiddleware.authenticate, AuthMiddleware.admin, orderController.updateOrderStatus)
