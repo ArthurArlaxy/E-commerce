@@ -38,21 +38,21 @@ model Address {
 }
 
 model Product {
-  id                String            @id @default(uuid())
-  name              String            @db.VarChar(255)
-  slug              String            @unique @db.VarChar(255)
-  price             Decimal           @db.Decimal(10, 2)
-  description       String
-  stock             Int               @db.SmallInt
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  deletedAt         DateTime?
-  isActive          Boolean           @default(true)
-  orders            OrderProducts[]
-  carts             ProductCart[]
-  productCategories ProductCategory[]
-  images            ProductImages[]
-  reviews           Review[]
+  id                  String            @id @default(uuid())
+  name                String            @db.VarChar(255)
+  slug                String            @unique @db.VarChar(255)
+  price               Decimal           @db.Decimal(10, 2)
+  description         String
+  stock               Int               @db.SmallInt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  deletedAt           DateTime?
+  isActive            Boolean           @default(true)         
+  orders              OrderProducts[]
+  carts               ProductCart[]
+  productCategories   ProductCategory[]
+  images              ProductImages[]
+  reviews             Review[]
 }
 
 model ProductImages {

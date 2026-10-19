@@ -1,0 +1,1 @@
+ALTER TABLE "Product" ADD COLUMN "abacatePayProductId" TEXT; CREATE UNIQUE INDEX "Product_abacatePayProductId_key" ON "Product"("abacatePayProductId")

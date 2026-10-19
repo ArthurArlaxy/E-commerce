@@ -2,7 +2,7 @@
 "use client"
 
 import { useActionState, useState } from "react"
-import { createOrder, OrderState } from "@/actions/orders"
+import { createPayment, OrderState } from "@/actions/orders"
 import { Shipping } from "@/actions/shipping"
 import Button from "@/components/Button"
 import { CartValueSection } from "@/components/CartValueSection"
@@ -28,7 +28,7 @@ export function CartForm({
     selectedTotal: string
     addresses: Address[]
 }) {
-    const [state, formAction, isPending] = useActionState(createOrder, initialState)
+    const [state, formAction, isPending] = useActionState(createPayment, initialState)
     const [selectedShipping, setSelectedShipping] = useState(shippings[0])
 
     return (
