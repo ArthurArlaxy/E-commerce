@@ -55,7 +55,6 @@ export type OrderWithItems = Order & {
         deliveryTimeSnapshot: number
     }
 }
-
 export interface AddressSnapshot {
     shippingStreet: string;
     shippingNumber: string | null;
@@ -63,6 +62,7 @@ export interface AddressSnapshot {
     shippingNeighborhood: string;
     shippingCity: string;
     shippingState: string;
+    shippingZipCode: string
 }
 
 export interface ShippingSnapshot {

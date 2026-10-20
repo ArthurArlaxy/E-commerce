@@ -2,6 +2,7 @@ import type { Order, Prisma } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
 import type { AddressSnapshot, OrderItemInput, OrderListItem, OrderWithItems, ShippingSnapshot } from "../OrderRepository.js";
 import type { DateLimit } from "../../Schema/OrderSchema.js";
+import { HttpError } from "../../Error/HttpError.js";
 
 const orderListInclude = {
     products: {
@@ -74,10 +75,14 @@ export class OrderPrisma {
             })
 
             for (const item of items) {
-                await transaction.product.update({
-                    where: { id: item.productId },
+                const { count } = await transaction.product.updateMany({
+                    where: { id: item.productId, stock: { gte: item.quantity } },
                     data: { stock: { decrement: item.quantity } }
                 })
+
+                if (count === 0) {
+                    throw new HttpError(`Insufficient stock for product ${item.nameSnapshot}`, 400)
+                }
             }
 
             await transaction.productCart.deleteMany({
@@ -158,7 +163,7 @@ export class OrderPrisma {
                     total: true,
                     createdAt: true
                 },
-                
+
             })
 
             const yearOrdersCount = await transaction.order.count({
@@ -179,8 +184,12 @@ export class OrderPrisma {
                 take: 5
             })
 
-            return { daily: { dayOrders, dayOrdersCount }, monthly: { monthOrders, monthOrdersCount }, yearly: { yearOrders, yearOrdersCount }, ordersByStatus, topProducts}
+            return { daily: { dayOrders, dayOrdersCount }, monthly: { monthOrders, monthOrdersCount }, yearly: { yearOrders, yearOrdersCount }, ordersByStatus, topProducts }
 
         })
+    }
+
+    async removeItems(purchasedCartItemIds: string[]){
+        
     }
 }
