@@ -4,8 +4,12 @@ import type { OrderRepository, OrderItemInput } from "../Repository/OrderReposit
 import type { CartRepository } from "../Repository/CartRepository.js";
 import type { AddressRepository } from "../Repository/AddressRepository.js";
 import type { OrderQueryInput, UpdateOrderStatusInput } from "../Schema/OrderSchema.js";
-import type { Prisma } from "@prisma/client";
+import type { Order, Prisma } from "@prisma/client";
 import type { ShippingRepository } from "../Repository/ShippingRepository.js";
+import type { string } from "zod";
+import { paymentQueue } from "../queue.js";
+
+const PAYMENT_WINDOW_MS = 30 * 60 * 1000
 
 export class OrderService {
     constructor(
@@ -83,8 +87,10 @@ export class OrderService {
             deliveryTimeSnapshot: shipping.deliveryTime
         }
 
+        let order: Order
+
         try {
-            await this.orderRepository.createOrder(userId, addressSnapshot, shippingSnapshot, selectedItems.map(i => i.id), items, total.toFixed(2))
+            order = await this.orderRepository.createOrder(userId, addressSnapshot, shippingSnapshot, items, total.toFixed(2))
         } catch (error) {
             throw new HttpError("An error occurred while creating the order.", 500)
         }
@@ -92,6 +98,7 @@ export class OrderService {
         let priceInCents = Number(total.toFixed(2).replace(".", ""))
         console.log(priceInCents)
 
+        let payment
 
         try {
             const options = {
@@ -106,6 +113,7 @@ export class OrderService {
                         amount: priceInCents,
                         expiresIn: 1800,
                         description: 'Pagamento dos produtos selecionados',
+                        externalId: order.id
                     }
                 })
             };
@@ -118,13 +126,39 @@ export class OrderService {
                 throw new HttpError("Erro ao criar a cobrança", 500)
             }
 
-            const paymentData = await response.json()
+            const body = await response.json()
 
-            console.log(paymentData)
+            payment = body.data
 
-            return paymentData
+            console.log(payment)
+
         } catch (error) {
-            
+            await this.orderRepository.cancelIfUnpaid(order.id).catch(console.error)
+            throw new HttpError("Erro ao criar a cobrança", 502)
+        }
+        const expireAt = new Date(Date.now() + PAYMENT_WINDOW_MS)
+
+        await this.orderRepository.setPayment(order.id, { paymentId: payment.id, paymentExpireAt: expireAt })
+
+        try {
+            await paymentQueue.add(
+                'check-payment',
+                { orderId: order.id },
+                { delay: 10_000, removeOnComplete: true }
+            )
+        } catch (error) {
+            console.error('Falha ao agendar a checagem; Porém o sweep cobre', order.id, error)
+        }
+
+        await this.cartRepository.removeItems(selectedItems.map(i => i.id)).catch((error) =>
+            console.error('Falha ao limpar o carrinho', order.id, error)
+        )
+
+        return {
+            orderId: order.id,
+            paymentExpireAt: expireAt,
+            brCode: payment.brCode,
+            brCodeBase64: payment.brCodeBase64
         }
 
     }

@@ -38,21 +38,21 @@ model Address {
 }
 
 model Product {
-  id                  String            @id @default(uuid())
-  name                String            @db.VarChar(255)
-  slug                String            @unique @db.VarChar(255)
-  price               Decimal           @db.Decimal(10, 2)
-  description         String
-  stock               Int               @db.SmallInt
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
-  deletedAt           DateTime?
-  isActive            Boolean           @default(true)         
-  orders              OrderProducts[]
-  carts               ProductCart[]
-  productCategories   ProductCategory[]
-  images              ProductImages[]
-  reviews             Review[]
+  id                String            @id @default(uuid())
+  name              String            @db.VarChar(255)
+  slug              String            @unique @db.VarChar(255)
+  price             Decimal           @db.Decimal(10, 2)
+  description       String
+  stock             Int               @db.SmallInt
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
+  isActive          Boolean           @default(true)
+  orders            OrderProducts[]
+  carts             ProductCart[]
+  productCategories ProductCategory[]
+  images            ProductImages[]
+  reviews           Review[]
 }
 
 model ProductImages {
@@ -123,17 +123,20 @@ model OrderShipping {
 
 model Order {
   id                   String          @id @default(uuid())
+  paymentId            String?
+  paymentExpireAt      DateTime?
+  paymentPaidAt        DateTime?
   total                Decimal         @db.Decimal(10, 2)
   status               OrderStatus     @default(pending)
   createdAt            DateTime        @default(now())
   userId               String
-  shippingCity         String          @default("null") @db.VarChar(100)
-  shippingComplement   String?         @default("null") @db.VarChar(200)
-  shippingNeighborhood String          @default("null") @db.VarChar(150)
-  shippingNumber       String?         @default("null") @db.VarChar(10)
-  shippingState        String          @default("null") @db.VarChar(100)
-  shippingStreet       String          @default("null") @db.VarChar(255)
-  shippingZipCode      String          @default("null") @db.VarChar(20)
+  shippingCity         String          @db.VarChar(100)
+  shippingComplement   String?         @db.VarChar(200)
+  shippingNeighborhood String          @db.VarChar(150)
+  shippingNumber       String?         @db.VarChar(10)
+  shippingState        String          @db.VarChar(100)
+  shippingStreet       String          @db.VarChar(255)
+  shippingZipCode      String          @db.VarChar(20)
   updatedAt            DateTime?       @default(now()) @updatedAt
   user                 User            @relation(fields: [userId], references: [id])
   products             OrderProducts[]
@@ -146,7 +149,7 @@ model OrderProducts {
   priceSnapshot Decimal @db.Decimal(10, 2)
   orderId       String
   productId     String
-  nameSnapshot  String  @default("null") @db.VarChar(255)
+  nameSnapshot  String  @db.VarChar(255)
   order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product       Product @relation(fields: [productId], references: [id])
 

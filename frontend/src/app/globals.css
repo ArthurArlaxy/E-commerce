@@ -434,6 +434,10 @@ hr {
   padding: 1rem;
 }
 
+button:disabled {
+    color: gray;
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
     --background: #0a0a0a;

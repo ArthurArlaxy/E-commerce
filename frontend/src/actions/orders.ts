@@ -62,35 +62,6 @@ export interface OrderDetail extends Omit<OrderListItem, "products"> {
     }
 }
 
-export async function createPayment(prevState: OrderState, formData: FormData): Promise<OrderState> {
-
-    const cookieStore = await cookies()
-    const cookieHeader = cookieStore.toString()
-
-    const addressId = formData.get("addressId")
-    const shippingId = formData.get("shippingId")
-
-    if (!addressId || !shippingId) {
-        return { error: "Campos faltando para realizar a compra" }
-    }
-
-    const response = await fetch(`${process.env.API_URL}/orders/payment`, {
-        method: "POST",
-        body: JSON.stringify({ shippingId,addressId }),
-        headers: {
-            "Content-Type": "application/json",
-            "Cookie": cookieHeader
-        },
-        cache: "no-cache"
-    })
-
-    if (!response.ok) {
-        return { error: "Erro ao criar um produto" }
-    }
-
-    redirect("/orders") // tem que trocar
-}
-
 export async function createOrder(prevState: OrderState, formData: FormData): Promise<OrderState> {
 
     const cookieStore = await cookies()
@@ -103,7 +74,7 @@ export async function createOrder(prevState: OrderState, formData: FormData): Pr
         return { error: "Campos faltando para realizar a compra" }
     }
 
-    const response = await fetch(`${process.env.API_URL}/orders/create`, {
+    const response = await fetch(`${process.env.API_URL}/orders/`, {
         method: "POST",
         body: JSON.stringify({ addressId, shippingId }),
         headers: {

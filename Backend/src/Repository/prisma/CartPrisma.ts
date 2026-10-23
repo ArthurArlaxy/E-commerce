@@ -130,6 +130,12 @@ export class CartPrisma {
         return await prisma.productCart.delete({ where: { id } })
     }
 
+    async removeItems(purchasedCartItemIds: string[]) {
+        await prisma.productCart.deleteMany({
+            where: { id: { in: purchasedCartItemIds } }
+        })
+    }
+
     async clearCart(cartId: string): Promise<void> {
         await prisma.productCart.deleteMany({ where: { cartId } })
     }

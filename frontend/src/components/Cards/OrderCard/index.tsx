@@ -7,9 +7,10 @@ import Link from "next/link"
 const statusLabel: Record<string, string> = {
     pending: "Pendente",
     processing: "Em processamento",
+    paid: "Pago",
     shipped: "Enviado",
     delivered: "Entregue",
-    canceled: "Cancelado",
+    cancelled: "Cancelado",
 }
 
 function formatDate(date: string) {
@@ -19,8 +20,13 @@ function formatDate(date: string) {
 }
 
 export async function OrderCard({ id, total, status, createdAt, products }: OrderListItem) {
+
+    console.log("Status:", JSON.stringify(status));
+    console.log("Classe paid:", styles.paid);
+    console.log("Classe dinâmica:", styles[status]);
+
     return (
-        <div  className={styles.orderCardContainer}>
+        <div className={styles.orderCardContainer}>
             <Link href={`/orders/${id}`} className={styles.orderHeader}>
                 <div>
                     <p className={styles.orderId}>{`Pedido #${id.slice(0, 8)}`}</p>

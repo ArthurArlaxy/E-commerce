@@ -10,8 +10,6 @@ RUN npm ci
 COPY prisma ./prisma
 RUN npx prisma generate
 
-VOLUME node_module
-
 COPY . .
 
 EXPOSE 3333

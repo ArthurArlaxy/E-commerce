@@ -40,4 +40,5 @@ export interface CartRepository {
     updateManyCartItemSelection(ids:string[], select: boolean): Promise<void>
     removeProductFromCart(id: string): Promise<ProductCart>
     clearCart(cartId: string): Promise<void>
+    removeItems(purchasedCartItemIds: string[]): Promise<void>
 }

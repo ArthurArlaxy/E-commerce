@@ -90,12 +90,12 @@ router.get("/products", productController.getProducts)
 router.get("/products/id/:id", AuthMiddleware.authenticate, productController.getProductById)
 router.get("/products/:slug", AuthMiddleware.authenticate, productController.getProductBySlug)
 router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images', 8), productController.createProducts)
+router.put("/products/images", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.updateImagesFromProduct)
 router.put("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images', 8), productController.updateProduct)
 router.delete("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteProduct)
 router.post("/products/:id/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addCategoriesToProduct)
 router.delete("/products/:productId/categories/:categoryId", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteCategoryFromProduct)
 router.post("/products/:id/images", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addImagesToProduct)
-router.put("/products/images", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.updateImagesFromProduct)
 router.delete("/products/images/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteImagesFromProduct)
 
 // Rotas de Reviews
@@ -122,7 +122,6 @@ router.delete("/shippings/:id", AuthMiddleware.authenticate, AuthMiddleware.admi
 
 // Rotas de Pedidos
 router.post("/orders", AuthMiddleware.authenticate, orderController.createOrder)
-router.post("/orders/payment", AuthMiddleware.authenticate, orderController.createPayment)
 router.get("/orders", AuthMiddleware.authenticate, orderController.getOrders)
 router.get("/orders/:id", AuthMiddleware.authenticate, orderController.getOrderById)
 router.put("/orders/:id/status", AuthMiddleware.authenticate, AuthMiddleware.admin, orderController.updateOrderStatus)

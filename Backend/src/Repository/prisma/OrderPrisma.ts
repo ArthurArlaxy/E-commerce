@@ -1,6 +1,6 @@
 import type { Order, Prisma } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
-import type { AddressSnapshot, OrderItemInput, OrderListItem, OrderWithItems, ShippingSnapshot } from "../OrderRepository.js";
+import type { AddressSnapshot, OrderItemInput, OrderListItem, OrderWithItems, PaymentData, ShippingSnapshot } from "../OrderRepository.js";
 import type { DateLimit } from "../../Schema/OrderSchema.js";
 import { HttpError } from "../../Error/HttpError.js";
 
@@ -51,7 +51,7 @@ const orderDetailInclude = {
 export class OrderPrisma {
     constructor() { }
 
-    async createOrder(userId: string, addressSnapshot: AddressSnapshot, shippingSnapshot: ShippingSnapshot, purchasedCartItemIds: string[], items: OrderItemInput[], total: string): Promise<OrderWithItems> {
+    async createOrder(userId: string, addressSnapshot: AddressSnapshot, shippingSnapshot: ShippingSnapshot, items: OrderItemInput[], total: string): Promise<OrderWithItems> {
         return prisma.$transaction(async (transaction) => {
             const order = await transaction.order.create({
                 data: { userId, ...addressSnapshot, total }
@@ -84,10 +84,6 @@ export class OrderPrisma {
                     throw new HttpError(`Insufficient stock for product ${item.nameSnapshot}`, 400)
                 }
             }
-
-            await transaction.productCart.deleteMany({
-                where: { id: { in: purchasedCartItemIds } }
-            })
 
             const fullOrder = await transaction.order.findUnique({
                 where: { id: order.id },
@@ -129,12 +125,75 @@ export class OrderPrisma {
         })
     }
 
+    async setPayment(id: string, data: PaymentData): Promise<Order> {
+        return prisma.order.update({
+            where: { id },
+            data
+        })
+    }
+
+    async getOrderPayment(orderId: string) {
+        return prisma.order.findUnique({
+            where: { id: orderId },
+            select: { status: true, paymentId: true, paymentExpireAt: true, createdAt: true }
+        })
+    }
+
+    async markAsPaid(orderId: string): Promise<boolean> {
+        const { count } = await prisma.order.updateMany({
+            where: { id: orderId, status: 'pending' },
+            data: { status: 'paid', paymentPaidAt: new Date() }
+        })
+        return count > 0
+    }
+
+    async getExpiredPendingOrderIds(): Promise<string[]> {
+        const orders = await prisma.order.findMany({
+            where: {
+                status: 'pending',
+                OR: [
+                    { paymentExpireAt: { lt: new Date() } },
+                    { paymentExpireAt: null, createdAt: { lt: new Date(Date.now() - 40 * 60_000) } }
+                ]
+            },
+            select: { id: true },
+            take: 100
+        })
+        return orders.map(order => order.id)
+    }
+
+    async cancelIfUnpaid(orderId: string): Promise<boolean> {
+        return prisma.$transaction(async (transaction) => {
+            const { count } = await transaction.order.updateMany({
+                where: { id: orderId, status: 'pending' },
+                data: { status: 'cancelled' }
+            })
+
+            if (count === 0) return false
+
+            const items = await transaction.orderProducts.findMany({
+                where: { orderId },
+                select: { productId: true, quantity: true },
+                orderBy: { productId: 'asc' }
+            })
+
+            for (const item of items) {
+                await transaction.product.update({
+                    where: { id: item.productId },
+                    data: { stock: { increment: item.quantity } }
+                })
+            }
+
+            return true
+        })
+    }
+
     async dashboardInfo(day: DateLimit, month: DateLimit, year: DateLimit) {
 
         return prisma.$transaction(async (transaction) => {
 
             const dayOrders = await transaction.order.findMany({
-                where: { createdAt: { ...day } },
+                where: { createdAt: { ...day }, status: { not: "cancelled" } },
                 select: {
                     total: true,
                     createdAt: true
@@ -142,11 +201,11 @@ export class OrderPrisma {
             })
 
             const dayOrdersCount = await transaction.order.count({
-                where: { createdAt: { ...day } },
+                where: { createdAt: { ...day }, status: { not: "cancelled" } },
             })
 
             const monthOrders = await transaction.order.findMany({
-                where: { createdAt: { ...month } },
+                where: { createdAt: { ...month }, status: { not: "cancelled" } },
                 select: {
                     total: true,
                     createdAt: true,
@@ -154,11 +213,11 @@ export class OrderPrisma {
             })
 
             const monthOrdersCount = await transaction.order.count({
-                where: { createdAt: { ...month } },
+                where: { createdAt: { ...month }, status: { not: "cancelled" } },
             })
 
             const yearOrders = await transaction.order.findMany({
-                where: { createdAt: { ...year } },
+                where: { createdAt: { ...year }, status: { not: "cancelled" } },
                 select: {
                     total: true,
                     createdAt: true
@@ -167,7 +226,7 @@ export class OrderPrisma {
             })
 
             const yearOrdersCount = await transaction.order.count({
-                where: { createdAt: { ...year } }
+                where: { createdAt: { ...year }, status: { not: "cancelled" } }
             })
 
             const ordersByStatus = await transaction.order.groupBy({
@@ -177,6 +236,11 @@ export class OrderPrisma {
             })
 
             const topProducts = await transaction.orderProducts.groupBy({
+                where: {
+                    order: {
+                        status: { not: "cancelled" }
+                    }
+                },
                 by: ['nameSnapshot'],
                 _sum: { quantity: true },
                 _count: { id: true },
@@ -189,7 +253,4 @@ export class OrderPrisma {
         })
     }
 
-    async removeItems(purchasedCartItemIds: string[]){
-        
-    }
 }

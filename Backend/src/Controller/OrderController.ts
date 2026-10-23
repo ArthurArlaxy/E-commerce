@@ -5,20 +5,6 @@ import { HttpError } from "../Error/HttpError.js";
 
 export class OrderController {
     constructor(private orderService: OrderService) { }
-
-    createPayment: Handler = async (req, res, next) => {
-        if (!req.user) {
-            throw new HttpError("Not Authenticated", 401)
-        }
-
-        console.log(req.body)
-        const { shippingId } = createOrderSchema.parse(req.body)
-
-        const response = await this.orderService.createPayment(req.user.id, shippingId)
-
-        return res.status(201).json(response)
-    }
-
     createOrder: Handler = async (req, res, next) => {
         if (!req.user) {
             throw new HttpError("Not Authenticated", 401)

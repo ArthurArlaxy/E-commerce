@@ -105,11 +105,21 @@ export interface DashboardInfo {
     }>;
 }
 
+export interface PaymentData {
+    paymentId: string;
+    paymentExpireAt: Date;
+}
+
 export interface OrderRepository {
-    createOrder(userId: string, addressSnapshot: AddressSnapshot, shippingSnapshot: ShippingSnapshot, purchasedCartItemIds: string[], items: OrderItemInput[], total: string): Promise<OrderWithItems>
+    createOrder(userId: string, addressSnapshot: AddressSnapshot, shippingSnapshot: ShippingSnapshot, items: OrderItemInput[], total: string): Promise<OrderWithItems>
     getOrders(filter: Prisma.OrderWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{ items: OrderListItem[], total: number }>
     getOrderById(id: string): Promise<OrderWithItems | null>
     updateOrderStatus(id: string, status: Order["status"]): Promise<Order>
     dashboardInfo(day: DateLimit, month: DateLimit, year: DateLimit): Promise<DashboardInfo>
+    setPayment(orderId: string, PaymentData: PaymentData): Promise<Order>
+    cancelIfUnpaid(orderId: string): Promise<boolean>
+    getExpiredPendingOrderIds(): Promise<string[]>
+    getOrderPayment(orderId: string): Promise<{ status: Order["status"]; paymentId: string | null; paymentExpireAt: Date | null; createdAt: Date } | null>
+    markAsPaid(orderId: string): Promise<boolean>
 }
 

@@ -1,5 +1,5 @@
 import { JwtPayload } from "jsonwebtoken";
-import type { SafeUserReturn } from "../Schema/UserSchema.js";
+import type { SafeUserReturn } from "../Schema/UserSchema.ts";
 
 declare global {
     namespace Express {

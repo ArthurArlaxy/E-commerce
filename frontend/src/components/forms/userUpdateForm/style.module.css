@@ -9,10 +9,6 @@
     border-top: 1px color-mix(in srgb, var(--foreground) 15%, transparent) solid;
 }
 
-.userUpdateCardLabel {}
-
-.userUpdateCardIcon {}
-
 .userModel {
     display: none;
     flex-direction: column;
@@ -72,11 +68,6 @@
     border: 1px var(--foreground) solid;
     border-radius: .5rem;
     align-self: center;
-}
-
-
-button:disabled {
-    color: gray;
 }
 
 .editForm {
