@@ -108,6 +108,7 @@ export interface DashboardInfo {
 export interface PaymentData {
     paymentId: string;
     paymentExpireAt: Date;
+    paymentBrCode: string;
 }
 
 export interface OrderRepository {

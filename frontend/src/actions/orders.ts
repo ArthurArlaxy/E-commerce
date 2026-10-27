@@ -88,7 +88,9 @@ export async function createOrder(prevState: OrderState, formData: FormData): Pr
         return { error: "Erro ao criar um produto" }
     }
 
-    redirect("/orders")
+    const { orderId } = await response.json()
+
+    redirect(`/orders/${orderId}/payment`)
 }
 
 export async function getOrder() {

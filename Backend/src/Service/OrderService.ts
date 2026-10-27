@@ -138,7 +138,7 @@ export class OrderService {
         }
         const expireAt = new Date(Date.now() + PAYMENT_WINDOW_MS)
 
-        await this.orderRepository.setPayment(order.id, { paymentId: payment.id, paymentExpireAt: expireAt })
+        await this.orderRepository.setPayment(order.id, { paymentId: payment.id, paymentExpireAt: expireAt, paymentBrCode: payment.brCode })
 
         try {
             await paymentQueue.add(
@@ -193,6 +193,10 @@ export class OrderService {
 
         if (order.userId !== userId && !isAdmin) {
             throw new HttpError("You can only view your own orders", 403)
+        }
+
+        if (order.status !== "pending") {
+            return { ...order, paymentBrCode: null }
         }
 
         return order

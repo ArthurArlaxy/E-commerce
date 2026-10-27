@@ -126,6 +126,7 @@ model Order {
   paymentId            String?
   paymentExpireAt      DateTime?
   paymentPaidAt        DateTime?
+  paymentBrCode        String?
   total                Decimal         @db.Decimal(10, 2)
   status               OrderStatus     @default(pending)
   createdAt            DateTime        @default(now())
