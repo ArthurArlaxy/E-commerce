@@ -15,7 +15,7 @@ export function ImageProductSection({ product }: { product: Product }) {
                     alt="Imagem principal do produto"
                     src={selectedImage}
                     fill
-                    sizes="(max-width: 768px) 100vw, 500px"
+                    sizes="(max-width: 1-30px) 100vw, 500px"
                     className="image-product"
                     priority
                 />

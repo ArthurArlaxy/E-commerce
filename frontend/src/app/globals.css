@@ -1,3 +1,7 @@
+/* ==========================================================================
+    1. VARIÁVEIS E TEMAS
+   ========================================================================== */
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -18,17 +22,44 @@
   --quaternary: #ffffff;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --tertiary: #5e5e5e;
+  }
+}
+
+
+/* ==========================================================================
+    2. RESET E BASE
+   ========================================================================== */
+
 *,
 body,
 html {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 
 html {
   background: var(--background);
   color: var(--foreground);
+}
+
+a {
+  text-decoration: none;
+  color: var(--foreground);
+}
+
+hr {
+  color: var(--tertiary);
 }
 
 button,
@@ -44,8 +75,21 @@ input {
   color: var(--tertiary);
 }
 
+button:disabled {
+  color: gray;
+}
+
+
+/* ==========================================================================
+    3. LAYOUT GERAL
+   ========================================================================== */
+
 main {
   min-height: 100vh;
+}
+
+header {
+  width: 100%;
 }
 
 footer {
@@ -56,9 +100,36 @@ footer {
   width: 100%;
 }
 
-header {
+.container {
+  height: 100vh;
   width: 100%;
+  display: grid;
+  place-content: center;
+  gap: 1rem;
 }
+
+.flex-colomn {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.sectionTitle {
+  font-size: 1.7rem;
+  text-align: center;
+}
+
+
+/* ==========================================================================
+    4. NAVEGAÇÃO
+   ========================================================================== */
 
 .main-nav {
   display: flex;
@@ -69,6 +140,20 @@ header {
   margin: 0 auto;
   padding: .8rem 1rem;
 }
+
+.active {
+  background-color: var(--foreground);
+  color: var(--background);
+}
+
+.active-icon {
+  border-bottom: 2px var(--foreground) solid;
+}
+
+
+/* ==========================================================================
+    5. BUSCA E FORMULÁRIOS DE PESQUISA
+   ========================================================================== */
 
 .searchInput {
   position: relative;
@@ -82,10 +167,6 @@ header {
   font-size: 16px;
 }
 
-.sectionTitle {
-  text-align: center;
-}
-
 .icon-search-input {
   position: absolute;
   top: 50%;
@@ -94,13 +175,50 @@ header {
   pointer-events: none;
 }
 
-.card-container {
-  width: 100%;
-  padding: 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+.search-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  padding: 0 1rem;
+}
+
+.search-form-modal {
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+.search-form-container {
+  display: flex;
   gap: 1rem;
 }
+
+.arrow-btn {
+  border: none;
+  background-color: var(--background);
+
+  /* sem "&", isso vale para os elementos DENTRO do botão (ex.: o ícone) */
+  :hover {
+    color: rgb(248, 101, 248);
+  }
+}
+
+
+/* ==========================================================================
+    6. HOME
+   ========================================================================== */
+
+.home-banner {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding-bottom: 1rem;
+}
+
+/* ---- Categorias ---- */
 
 .category-card-container {
   width: 100%;
@@ -113,6 +231,50 @@ header {
   gap: 1rem;
 }
 
+.category-card {
+  padding: .5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.category-image-card {
+  object-fit: cover;
+  border-radius: 100%;
+}
+
+.category-card-content {
+  margin-top: .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+}
+
+.categoryName {
+  white-space: nowrap;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.image-category-container {
+  padding: 1rem;
+  border-radius: 1rem;
+  width: 100%;
+  height: auto;
+}
+
+/* ---- Produtos ---- */
+
+.card-container {
+  width: 100%;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
 .product-card {
   border: 1px var(--foreground) solid;
   border-radius: .5rem;
@@ -122,19 +284,8 @@ header {
   height: 100%;
 }
 
-.product-image-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-}
-
 .image-card {
   object-fit: fill;
-}
-
-.category-image-card {
-  object-fit: cover;
-  border-radius: 100%;
 }
 
 .product-card-content {
@@ -155,96 +306,21 @@ header {
   font-weight: bold;
 }
 
-.category-card-content {
-  margin-top: .5rem;
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
-}
+/* ---- Wrapper quadrado usado pelos cards e pela página de produto ---- */
 
-.categoryName {
-  white-space: nowrap;
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.category-card {
-  padding: .5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-}
-
+.product-image-wrapper,
 .category-image-wrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
 }
 
-.search-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  padding: 0 1rem 0 1rem;
-}
 
-.search-form-modal {
-  display: flex;
-  flex-direction: column;
-  gap: .8rem;
-}
+/* ==========================================================================
+    7. PÁGINA DE PRODUTO
+   ========================================================================== */
 
-.arrow-btn {
-  border: none;
-  background-color: var(--background);
-
-  :hover {
-    color: rgb(248, 101, 248);
-  }
-
-}
-
-.search-form-container {
-  display: flex;
-  gap: 1rem;
-}
-
-.hidden {
-  display: none;
-}
-
-
-
-.page-section-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.page-section-container span {
-  position: relative;
-  bottom: 3px;
-}
-
-.image-category-container {
-  padding: 1rem;
-  border-radius: 1rem;
-  width: 100%;
-  height: auto;
-}
-
-.desktop-only {
-  display: none;
-}
-
-.mobile-only {
-  display: flex;
-}
+/* ---- Imagens ---- */
 
 .product-images-container {
   gap: 1rem;
@@ -253,19 +329,14 @@ header {
 }
 
 .image-product {
-  object-fit: fill;
+  object-fit: contain;
 }
 
 .mobile-carousel {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
   width: 100%;
-}
-
-.mobile-carousel::-webkit-scrollbar {
-  display: none;
 }
 
 .mobile-carousel-item {
@@ -278,17 +349,18 @@ header {
 
 .image-counter {
   position: absolute;
-  bottom: 0.75rem;
-  right: 0.75rem;
+  bottom: .75rem;
+  right: .75rem;
   margin: 0;
-  padding: 0.25rem 0.6rem;
-  background-color: rgba(0, 0, 0, 0.6);
+  padding: .25rem .6rem;
+  background-color: rgba(0, 0, 0, .6);
   color: #fff;
-  font-size: 0.85rem;
+  font-size: .85rem;
   border-radius: 999px;
   z-index: 1;
 }
 
+/* ---- Título e botões ---- */
 
 .product-title {
   padding: 1rem;
@@ -300,6 +372,8 @@ header {
   padding: 1rem;
   gap: 1rem;
 }
+
+/* ---- Descrição ---- */
 
 .product-subtitle {
   font-size: 1.3rem;
@@ -316,6 +390,23 @@ header {
   font-size: .8rem;
 }
 
+
+/* ==========================================================================
+    8. AVALIAÇÕES
+   ========================================================================== */
+
+.review-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.header-review-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 .3rem;
+}
 
 .review-card {
   display: flex;
@@ -335,7 +426,6 @@ header {
   gap: .6rem;
 }
 
-
 .review-author {
   font-weight: bold;
   font-size: .94rem;
@@ -347,23 +437,9 @@ header {
   color: var(--tertiary);
 }
 
-.review-container {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 0;
-}
-
 .review-rating {
   display: flex;
   flex-wrap: nowrap;
-  white-space: none;
-}
-
-.header-review-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 .3rem;
 }
 
 .review-content {
@@ -371,45 +447,9 @@ header {
 }
 
 
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-
-
-.container {
-  height: 100vh;
-  width: 100%;
-  display: grid;
-  place-content: center;
-  gap: 1rem;
-}
-
-.active {
-  background-color: var(--foreground);
-  color: var(--background);
-}
-
-.active-icon {
-  border-bottom: 2px var(--foreground) solid;
-}
-
-
-a {
-  text-decoration: none;
-  color: var(--foreground);
-}
-
-.title {
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-hr {
-  color: var(--tertiary);
-}
+/* ==========================================================================
+    9. CARRINHO
+   ========================================================================== */
 
 .cartContainer {
   width: 100%;
@@ -427,28 +467,47 @@ hr {
   gap: 1rem;
 }
 
-.flex-colomn {
+
+/* ==========================================================================
+    10. UTILITÁRIOS
+   ========================================================================== */
+
+.hidden {
+  display: none;
+}
+
+/* alternam entre carrossel (mobile) e galeria lateral (desktop);
+   a troca acontece em 1400px (ver seção 11) */
+.desktop-only {
+  display: none;
+}
+
+.mobile-only {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
 }
 
-button:disabled {
-    color: gray;
+.page-section-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --tertiary: #5e5e5e;
-  }
+.page-section-container span {
+  position: relative;
+  bottom: 3px;
 }
 
+
+/* ==========================================================================
+    11. RESPONSIVO (breakpoints em ordem crescente)
+   ========================================================================== */
+
+
+/* ---- A partir de 769px ---- */
 @media (min-width: 769px) {
-  .desktop-only {
-    display: flex;
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--tertiary) var(--background);
   }
 
   .pageContainer {
@@ -458,44 +517,66 @@ button:disabled {
     padding: 0 1rem;
   }
 
+  .category-card-container {
+    align-items: center;
+    place-content: center;
+  }
+
+  .product-main-section {
+    display: grid;
+    grid-template-columns: minmax(0, 680px) 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
+/* ---- De 769px a 1399px: coluna da imagem menor ---- */
+@media (min-width: 769px) and (max-width: 1299px) {
+  .product-main-section {
+    grid-template-columns: minmax(0, 450px) 1fr;
+  }
+
+  .mobile-carousel {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+/* ---- A partir de 1200px ---- */
+@media (min-width: 1200px) {
+  .card-container {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+/* ---- A partir de 1400px: galeria lateral no lugar do carrossel ---- */
+@media (min-width: 1300px) {
+  .desktop-only {
+    display: flex;
+  }
+
   .mobile-only {
     display: none;
   }
 
-  .product-images-container {
-    padding: 1rem;
-  }
-
-  .product-image-wrapper {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1 / 1;
+  .product-images-container>.product-image-wrapper {
+    flex: 1;
+    min-width: 0;
   }
 
   .product-side-images-container {
     display: grid;
     grid-template-columns: 100px;
-    align-items: start;
-    gap: 1rem;
-    max-height: calc(100px * 3 + 1rem * 2);
+    grid-auto-rows: 100px;
+    align-content: start;
+    align-self: flex-start;
+    gap: .4rem;
+    max-height: calc(100px * 3 + .4rem * 2);
     overflow-y: auto;
   }
 
   .product-side-images-container .product-image-wrapper {
     width: 100px;
+    cursor: pointer;
   }
-
-  html {
-    scrollbar-width: thin;
-    scrollbar-color: var(--tertiary) var(--background);
-  }
-
-}
-
-
-@media (min-width: 1200px) {
-  .card-container {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  }
-
 }

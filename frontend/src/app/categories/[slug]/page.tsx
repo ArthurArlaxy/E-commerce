@@ -35,8 +35,8 @@ export default async function Page({
             <Image className="image-category-container"
                 src={category?.imageUrl}
                 alt={`Imagem da categoria ${category?.name}`}
-                width="1920"
-                height="1080"
+                width="1400"
+                height="800"
                 priority
             />
             <h1 className="sectionTitle">{category?.name}</h1>

@@ -23,12 +23,13 @@ export default async function Page() {
           <SearchInput inputName="name" placeholder="O que está procurando?" />
         </form>
         <Image
-          src="https://i.ibb.co/rKRy9W97/Banner-E-commerce.jpg"
+          src="https://i.ibb.co/gLqQt1mD/banner-tech-ecommerce.png"
           alt="Imagem da marca Tech E-commerce"
-          width="1920"
-          height="1080"
+          width={1321}
+          height={350}
+          sizes="(max-width: 1400px) 100vw, 1400px"
           priority
-          style={{ width: '100%', height: 'auto' }}
+          className="home-banner"
         />
         <section>
           <h2 className="sectionTitle">Categorias</h2>

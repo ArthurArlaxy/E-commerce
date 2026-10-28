@@ -2,6 +2,7 @@
 import { UserStar } from "lucide-react";
 import { useState } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"
+import styles from "./styles.module.css"
 
 interface StarRatingProps {
     rating: number;
@@ -26,19 +27,19 @@ export default function StarRating({ rating, maxStars = 5, size = 18, rate = fal
                     role="img"
                     aria-label={`Avaliação: ${userRate} de 5 estrelas`}
                 >
-                    <button type="button" className="starbtn" onClick={() => { setUserRate(1) }}>
-                        {userRate >= 1 ? <FaStar size={size} color="#ffd700" /> : <FaRegStar size={size} color="#ffd700" />}
+                    <button type="button" className={styles.starbtn} onClick={() => { setUserRate(1) }}>
+                        {userRate >= 1 ? <FaStar size={size}  color="#ffd700" /> : <FaRegStar size={size} color="#ffd700" />}
                     </button>
-                    <button type="button" className="starbtn" onClick={() => { setUserRate(2) }}>
+                    <button type="button" className={styles.starbtn} onClick={() => { setUserRate(2) }}>
                         {userRate >= 2 ? <FaStar size={size} color="#ffd700" /> : <FaRegStar size={size} color="#ffd700" />}
                     </button>
-                    <button type="button" className="starbtn" onClick={() => { setUserRate(3) }}>
+                    <button type="button" className={styles.starbtn} onClick={() => { setUserRate(3) }}>
                         {userRate >= 3 ? <FaStar size={size} color="#ffd700" /> : <FaRegStar size={size} color="#ffd700" />}
                     </button>
-                    <button type="button" className="starbtn" onClick={() => { setUserRate(4) }}>
+                    <button type="button" className={styles.starbtn} onClick={() => { setUserRate(4) }}>
                         {userRate >= 4 ? <FaStar size={size} color="#ffd700" /> : <FaRegStar size={size} color="#ffd700" />}
                     </button>
-                    <button type="button" className="starbtn" onClick={() => { setUserRate(5) }}>
+                    <button type="button" className={styles.starbtn} onClick={() => { setUserRate(5) }}>
                         {userRate >= 5 ? <FaStar size={size} color="#ffd700" /> : <FaRegStar size={size} color="#ffd700" />}
                     </button>
                 </p>
