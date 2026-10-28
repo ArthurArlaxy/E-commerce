@@ -13,7 +13,6 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
 
     const shortId = order.id.slice(0, 8).toUpperCase()
 
-    // Cancelado ou expirado
     if (order.status === "cancelled") {
         return (
             <main className={styles.container}>
@@ -29,7 +28,6 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
         )
     }
 
-    // Pago (qualquer status diferente de pending e cancelled)
     if (order.status !== "pending") {
         const paidAt = order.paymentPaidAt
             ? new Date(order.paymentPaidAt).toLocaleString("pt-BR", {
@@ -70,7 +68,6 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
         )
     }
 
-    // Pendente
     if (!order.paymentBrCode) notFound()
 
     const expireTime = new Date(order.paymentExpireAt).toLocaleTimeString("pt-BR", {
