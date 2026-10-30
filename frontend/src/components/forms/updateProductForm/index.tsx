@@ -6,7 +6,7 @@ import styles from "./style.module.css"
 import FormTextAreaLabel from "@/components/inputs/formTextAreaLabel";
 import ImageUpload from "@/components/inputs/imageUpload";
 import Button from "@/components/Button";
-import { ProductById, ProductState, updateCreateForm } from "@/actions/product";
+import { ProductById, ProductState, productUpdateForm } from "@/actions/product";
 import { useActionState } from "react";
 import ImageUploadMultiple from "@/components/inputs/imageUpload";
 
@@ -22,7 +22,7 @@ export default function UpdateProductForm({ categories, product }: UpdateProduct
     product.productCategories.map((category) => originalCategories.push(category.category.id))
     if (!product.images) throw new Error("Falha ao tentar buscar as imagens do produto para a atualização!")
 
-    const [state, formActionHandler, isPending] = useActionState(updateCreateForm, initialState)
+    const [state, formActionHandler, isPending] = useActionState(productUpdateForm, initialState)
     return (
         <>
             <form className={styles.productForm} action={formActionHandler}>

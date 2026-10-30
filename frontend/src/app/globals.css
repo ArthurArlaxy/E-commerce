@@ -211,10 +211,11 @@ footer {
     6. HOME
    ========================================================================== */
 
-.home-banner {
+.main-banner {
   display: block;
   width: 100%;
   height: auto;
+  max-height: 380px;
   padding-bottom: 1rem;
 }
 

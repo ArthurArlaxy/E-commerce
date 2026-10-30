@@ -1,10 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { HttpError } from "../Error/HttpError.js";
 import type { ProductRepository } from "../Repository/ProductRepository.js";
-import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductQueryInput, ProductUpdateData, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
+import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductQueryInput, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
 import fs from "fs"
 import { slugCreator, uniqueSlug } from "../helpers/slugFunctions.js";
-import { toCents } from "../helpers/format.js";
 
 export class ProductService {
     constructor(private productRepository: ProductRepository) { }
@@ -146,7 +145,11 @@ export class ProductService {
         if (data.slug || data.name) {
             const baseSlug = slugCreator(data.slug || data.name)
             data.slug = await uniqueSlug(baseSlug, async (slug: string) => {
-                return Boolean(await this.productRepository.getProductBySlug(slug))
+                let product = await this.productRepository.getProductBySlug(slug)
+                if (!product || product.product.id === id) {
+                    return false
+                }
+                return true
             })
         }
 
@@ -167,7 +170,9 @@ export class ProductService {
                     })
 
                     if (!response.ok) {
-                        throw new Error(`Erro no ImgBB: ${response.statusText}`)
+                        const body = await response.text()
+                        console.error("ImgBB:", response.status, body, "arquivo:", image.originalname, image.size, image.mimetype)
+                        throw new HttpError(`Erro no ImgBB: ${response.status}`, 502)
                     }
 
                     const result = await response.json()

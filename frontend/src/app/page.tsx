@@ -29,7 +29,7 @@ export default async function Page() {
           height={350}
           sizes="(max-width: 1400px) 100vw, 1400px"
           priority
-          className="home-banner"
+          className="main-banner"
         />
         <section>
           <h2 className="sectionTitle">Categorias</h2>

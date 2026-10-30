@@ -32,12 +32,14 @@ export default async function Page({
 
     return (
         <main className="pageContainer">
-            <Image className="image-category-container"
+            <Image
                 src={category?.imageUrl}
                 alt={`Imagem da categoria ${category?.name}`}
-                width="1400"
-                height="800"
+                width={1321}
+                height={350}
+                sizes="(max-width: 1400px) 100vw, 1400px"
                 priority
+                className="main-banner"
             />
             <h1 className="sectionTitle">{category?.name}</h1>
             <form action={searchProducts.bind(null, { type: 'categories', slug: slug })}>

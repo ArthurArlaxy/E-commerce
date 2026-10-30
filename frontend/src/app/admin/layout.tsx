@@ -18,6 +18,8 @@ export default function layout({
         <Link className={`${styles.navAdminItem} ${pathname === "/admin" ? "active" : ''}`} href={"/admin"}>Dashboards</Link>
         <Link className={`${styles.navAdminItem} ${pathname === "/admin/create-product" ? "active" : ''}`} href={"/admin/create-product"}>Create Product</Link>
         <Link className={`${styles.navAdminItem} ${pathname === "/admin/update-product" ? "active" : ''}`} href={"/admin/update-product"}>Update Product</Link>
+        <Link className={`${styles.navAdminItem} ${pathname === "/admin/create-category" ? "active" : ''}`} href={"/admin/create-category"}>Create Category</Link>
+        <Link className={`${styles.navAdminItem} ${pathname === "/admin/update-category" ? "active" : ''}`} href={"/admin/update-category"}>Update Category</Link>
       </nav>
       <main className="pageContainer">
         {children}

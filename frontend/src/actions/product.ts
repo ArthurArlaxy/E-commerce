@@ -375,7 +375,7 @@ export async function searchProducts(
     redirect(`${basePath}?${params.toString()}`)
 }
 
-export async function updateCreateForm(
+export async function productUpdateForm(
     prevState: ProductState,
     formData: FormData
 ): Promise<ProductState> {

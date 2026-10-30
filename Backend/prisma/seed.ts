@@ -44,19 +44,19 @@ const categories = [
         id: '5837c3d3-cab1-4c79-b17c-779563a7744c',
         name: 'Periféricos',
         slug: 'perifericos',
-        imageUrl: 'https://i.ibb.co/MxhyV9BG/images.jpg',
+        imageUrl: 'https://i.ibb.co/MkZrZCF5/Gemini-Generated-Image-r58ixkr58ixkr58i.jpg',
     },
     {
         id: '8b548091-77da-4ba2-85db-a2a836e4433a',
         name: 'SSD/HD',
         slug: 'ssd-hd',
-        imageUrl: 'https://i.ibb.co/Xf9K2BrJ/images.jpg',
+        imageUrl: 'https://i.ibb.co/BKndMf3p/Gemini-Generated-Image-4t4oaj4t4oaj4t4o-1.jpg',
     },
     {
         id: '9e0512ea-52ff-4097-b97d-37418b1fb823',
         name: 'Placas de vídeo',
         slug: 'placas-de-video',
-        imageUrl: 'https://i.ibb.co/xSKWXzrj/images.jpg',
+        imageUrl: 'https://i.ibb.co/hRknGsYj/Gemini-Generated-Image-fmtttqfmtttqfmtt.jpg',
     },
 ]
 

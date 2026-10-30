@@ -1,0 +1,43 @@
+.categoryCard {
+    border: 1px var(--foreground) solid;
+    border-radius: .5rem;
+    padding: .5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.categoryImageWrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+}
+
+.imageCard {
+    object-fit: cover;
+}
+
+.categoryCardContent {
+    margin-top: .5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    min-width: 0;
+}
+
+.categoryName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .9rem;
+}
+
+@media (min-width: 1200px) {
+    .categoryName {
+        font-size: 1rem;
+    }
+
+    .categoryPrice {
+        font-size: 1.05rem;
+    }
+}

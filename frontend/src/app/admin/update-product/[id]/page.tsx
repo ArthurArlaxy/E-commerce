@@ -1,5 +1,5 @@
 import { getCategories } from "@/actions/categories";
-import { getProductById} from "@/actions/product";
+import { getProductById } from "@/actions/product";
 import UpdateProductForm from "@/components/forms/updateProductForm";
 
 interface PageProps {
@@ -14,12 +14,15 @@ export default async function Page({ params }: PageProps) {
     if ("error" in product) {
         throw new Error("Falha ao tentar buscar o produto para a atualização!")
     }
-    
+
 
     return (
-        <UpdateProductForm
-            categories={categories}
-            product={product}
-        />
+        <>
+            <h2>Atualização de Produto</h2>
+            <UpdateProductForm
+                categories={categories}
+                product={product}
+            />
+        </>
     )
 }

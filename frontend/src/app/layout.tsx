@@ -6,6 +6,7 @@ import { MainNavigation } from "@/components/navigation";
 import { ThemeProvider } from "@/contexts/themeContext";
 import { cookies } from "next/headers";
 import { Theme } from "@/actions/theme";
+import { verifyToken } from "@/proxy";
 
 export const montserratFont = Montserrat({
   subsets: ["latin"],
@@ -25,12 +26,14 @@ export default async function RootLayout({
 
   const cookieStore = await cookies()
   const theme = (cookieStore.get("theme")?.value as Theme) ?? "light"
+  const token = cookieStore.get("token")?.value ?? null
+  const user = token ? await verifyToken(token) : null
 
 return (
     <html lang="pt-br" data-theme={theme}>
         <body className={`${montserratFont.className}`}>
             <ThemeProvider initialTheme={theme}>
-                <MainNavigation />
+                <MainNavigation role={user ? user.role : "client"}/>
                 {children}
                 <footer>
                     <p>Tech E-commerce by Arthur Amancio</p>

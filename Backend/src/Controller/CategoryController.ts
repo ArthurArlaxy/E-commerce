@@ -3,6 +3,7 @@ import type { CategoryService } from "../Service/CategoryService.js";
 import { createCategorySchema, updateCategorySchema } from "../Schema/CategorySchema.js";
 
 import { HttpError } from "../Error/HttpError.js";
+import { file } from "zod";
 
 export class CategoryController {
     constructor(private categoryService: CategoryService) { }
@@ -11,7 +12,9 @@ export class CategoryController {
         try {
             const data = createCategorySchema.parse(req.body)
 
-            const category = await this.categoryService.createCategory(data)
+            const files = req.files as Express.Multer.File[]
+
+            const category = await this.categoryService.createCategory(data, files)
 
             res.status(201).json(category)
         } catch (error) {
@@ -45,7 +48,7 @@ export class CategoryController {
             if (!req.params.slug) throw new HttpError("Invalid slug", 400)
 
             const slug = String(req.params.slug)
-            const category =await  this.categoryService.getCategoryBySlug(slug)
+            const category = await this.categoryService.getCategoryBySlug(slug)
 
             res.json(category)
         } catch (error) {
@@ -59,7 +62,9 @@ export class CategoryController {
 
             const data = updateCategorySchema.parse(req.body)
 
-            const category = await this.categoryService.updateCategory(id, data)
+            const files = req.files as Express.Multer.File[]
+
+            const category = await this.categoryService.updateCategory(id, data, files)
 
             res.json(category)
         } catch (error) {
@@ -72,7 +77,7 @@ export class CategoryController {
             const id = String(req.params.id)
 
             await this.categoryService.deleteCategory(id)
-            
+
             res.status(204).json("Category deleted Succesfully")
         } catch (error) {
             next(error)

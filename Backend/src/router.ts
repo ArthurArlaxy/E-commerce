@@ -81,8 +81,8 @@ router.delete("/addresses/:id", AuthMiddleware.authenticate, addressController.d
 router.get("/categories", categoryController.getCategories)
 router.get("/categories/id/:id", AuthMiddleware.authenticate, categoryController.getCategoryById)
 router.get("/categories/:slug", AuthMiddleware.authenticate, categoryController.getCategoryBySlug)
-router.post("/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, categoryController.createCategory)
-router.put("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, categoryController.updateCategory)
+router.post("/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array("images", 1), categoryController.createCategory)
+router.put("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array("images", 1), categoryController.updateCategory)
 router.delete("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, categoryController.deleteCategory)
 
 // Rotas de Produtos

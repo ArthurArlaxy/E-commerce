@@ -5,7 +5,7 @@ import { BriefcaseBusiness, House, PackageSearch, ShoppingCart, UserRound } from
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-export function MainNavigation() {
+export function MainNavigation({ role }: { role: "client" | "admin" | "manager"}) {
     const path = usePathname()
     const pathName = path.split("/")
 
@@ -14,11 +14,14 @@ export function MainNavigation() {
             <nav className="main-nav">
                 <div className={styles.navInner}>
                     <Link href="/"><House className={`${styles.icons} ${pathName[1] === "" ? "active-icon" : ''}`} /></Link>
-                    <Link href="/admin"><BriefcaseBusiness className={`${styles.icons} ${pathName[1] === "admin" ? "active-icon" : ''}`} /></Link>
+                    {role != "client" ?
+                        <Link href="/admin"><BriefcaseBusiness className={`${styles.icons} ${pathName[1] === "admin" ? "active-icon" : ''}`} /></Link>
+                        : null
+                    }
                 </div>
                 <div className={styles.navInner}>
                     <Link href="/cart"><ShoppingCart className={`${styles.icons} ${pathName[1] === "cart" ? "active-icon" : ''}`} /></Link>
-                    <Link href="/orders"><PackageSearch className={`${styles.icons} ${pathName[1] === "order" ? "active-icon" : ''}`} /></Link>
+                    <Link href="/orders"><PackageSearch className={`${styles.icons} ${pathName[1] === "orders" ? "active-icon" : ''}`} /></Link>
                     <Link href="/profile"><UserRound className={`${styles.icons} ${pathName[1] === "profile" ? "active-icon" : ''}`} /></Link>
                 </div>
             </nav>
