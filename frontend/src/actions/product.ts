@@ -431,3 +431,37 @@ export async function productUpdateForm(
 
     redirect(`/products/${data.slug}`)
 }
+
+export async function DeleteProduct(prevState: ProductState, formData: FormData): Promise<ProductState> {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    const id = formData.get("id")
+
+    if (!token) {
+        return { error: `É preciso estar autenticado para realizar essa ação` }
+    }
+
+    if (!id) {
+        return { error: `É preciso o id da categoria para deleta-la` }
+    }
+
+    const response = await fetch(`${process.env.API_URL}/products/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Cookie": `token=${token}`
+        },
+        cache: "no-store"
+    });
+
+    if (!response.ok) {
+        return { error: `Erro ${response.status}: Falha ao deletar a categoria` }
+    }
+
+    const product = await response.json() as Product;
+
+    console.log(product)
+
+    redirect(`/admin/update-product`)
+}

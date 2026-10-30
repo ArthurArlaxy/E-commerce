@@ -6,9 +6,10 @@ import styles from "./style.module.css"
 import FormTextAreaLabel from "@/components/inputs/formTextAreaLabel";
 import ImageUpload from "@/components/inputs/imageUpload";
 import Button from "@/components/Button";
-import { ProductById, ProductState, productUpdateForm } from "@/actions/product";
+import { DeleteProduct, ProductById, ProductState, productUpdateForm } from "@/actions/product";
 import { useActionState } from "react";
 import ImageUploadMultiple from "@/components/inputs/imageUpload";
+import DeleteWithConfirm from "@/components/DeleteWithConfirm";
 
 const initialState: ProductState = {};
 
@@ -43,6 +44,14 @@ export default function UpdateProductForm({ categories, product }: UpdateProduct
                 {state?.error && <p className={styles.errorText}>{state.error}</p>}
                 <Button text={isPending ? "...Aguarde" : "Atualizar Produto"} />
             </form>
+            <div className={styles.deleteForm}>
+                <DeleteWithConfirm
+                    action={DeleteProduct}
+                    id={product.id}
+                    itemName={product.name}
+                    label="Excluir categoria"
+                />
+            </div>
         </>
     );
 }

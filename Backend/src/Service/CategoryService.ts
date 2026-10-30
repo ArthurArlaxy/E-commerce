@@ -41,7 +41,8 @@ export class CategoryService {
             imageUrl = result.data.image.url
 
         } catch (error) {
-            return new HttpError(`${error}`, 400)
+            console.error("Falha no ImgBB:", error, (error as any)?.cause)
+            throw new HttpError("Falha ao enviar imagem para o ImgBB", 502)
         }
 
         data.imageUrl = imageUrl
@@ -119,7 +120,8 @@ export class CategoryService {
             imageUrl = result.data.image.url
 
         } catch (error) {
-            return new HttpError(`${error}`, 400)
+            console.error("Falha no ImgBB:", error, (error as any)?.cause)
+            throw new HttpError("Falha ao enviar imagem para o ImgBB", 502)
         }
 
         data.imageUrl = imageUrl

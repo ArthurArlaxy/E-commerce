@@ -82,7 +82,7 @@ export async function getCategoryById(id?: string): Promise<Category | null> {
     });
 
     if (!response.ok) {
-        console.error(`Erro ${response.status}: Falha ao buscar categorias`);
+        console.error(`Erro ${response.status}: Falha ao buscar a categoria`);
         return null;
     }
 
@@ -143,10 +143,6 @@ export async function categoryCreateForm(prevState: CategoryState, formData: For
         return { error: "Erro no contato com o servidor" }
     }
 
-    const data = await response.json()
-
-    console.log(data)
-
     redirect(`/admin/create-category`)
 }
 
@@ -171,7 +167,7 @@ export async function categoryUpdateForm(prevState: CategoryState, formData: For
         return { error: "É necessário preencher todos os campos" }
     }
 
-        if (images.length === 0) {
+    if (images.length === 0) {
         return { error: "Para criar a categoria é necessário uma imagem" }
     }
 
@@ -201,9 +197,36 @@ export async function categoryUpdateForm(prevState: CategoryState, formData: For
         return { error: "Erro no contato com o servidor" }
     }
 
-    const data = await response.json()
+    redirect(`/admin/update-category`)
+}
 
-    console.log(data)
+
+export async function DeleteCategory(prevState: CategoryState, formData: FormData): Promise<CategoryState> {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    const id = formData.get("id")
+
+    if (!token) {
+        return { error: `É preciso estar autenticado para realizar essa ação` }
+    }
+
+    if (!id) {
+        return { error: `É preciso o id da categoria para deleta-la` }
+    }
+
+    const response = await fetch(`${process.env.API_URL}/categories/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Cookie": `token=${token}`
+        },
+        cache: "no-store"
+    });
+
+    if (!response.ok) {
+        return { error: `Erro ${response.status}: Falha ao deletar a categoria` }
+    }
 
     redirect(`/admin/update-category`)
 }
