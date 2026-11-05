@@ -3,11 +3,11 @@
     border-radius: .5rem;
     padding: .4rem .8rem ;
     width: 100%;
-    color: var(--tertiary);
+    color: var(--foreground);
 }
 
 .option {
-    background-color: var(--background);
+    color: black;
 }
 
 .option:checked {

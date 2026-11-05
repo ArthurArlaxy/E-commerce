@@ -1,7 +1,6 @@
 // backend/prisma/seed.ts
 // Popula o banco com usuários, categorias, fretes e produtos padrão.
 // Cada bloco só roda se a respectiva tabela estiver vazia, então é seguro
-// executar a cada subida: não recria o que você apagou nem sobrescreve nada.
 // Conferido com o schema.prisma: models User, Category, Shipping, Product, ProductCategory e ProductImages.
 
 import { PrismaClient, Role } from '@prisma/client'
@@ -9,8 +8,6 @@ import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
 
-// Senhas vêm do ambiente: nenhum hash ou senha real fica no repositório.
-// O fallback existe só para desenvolvimento local.
 function seedPassword(envName: string, devFallback: string) {
     const value = process.env[envName]
     if (value) return value
@@ -65,8 +62,6 @@ const shippings = [
     { id: 'd9354155-cd97-47ca-b5a4-54c406258a12', name: 'Gratuito', price: '0.00', deliveryTime: 7 },
 ]
 
-// categoryId vem do ProductCategory.csv e images do ProductImages.csv.
-// O Mouse Gamer Redragon Cobra ficou de fora: está deletado (deletedAt preenchido).
 const products = [
     {
         id: '40d6e5b6-2045-407d-ab4c-70863588bdd9',
