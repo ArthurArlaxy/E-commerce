@@ -1,6 +1,6 @@
 import type { Prisma, Product, ProductImages } from "@prisma/client";
 import { prisma } from "../../Database/index.js";
-import type { ImagesProductInput, ProductCreateData, ProductUpdateData, UpdateImagesProductInput } from "../../Schema/ProductSchema.js";
+import type { ImagesProductInput, ProductCreateData, ProductImageCreateData, ProductUpdateData, UpdateImagesProductInput } from "../../Schema/ProductSchema.js";
 import { toCreate, toUpdate } from "../../helpers/mappers.js";
 
 export class ProductPrisma {
@@ -16,17 +16,14 @@ export class ProductPrisma {
                     price: data.price,
                     slug: data.slug,
                     description: data.description,
-                    stock: data.stock
+                    stock: data.stock,
+                    images: {
+                        create: data.images.map(({ file: imageFile, ...imageFields }: ProductImageCreateData) => ({
+                            ...imageFields,
+                            file: { create: imageFile }
+                        }))
+                    }
                 }
-            })
-
-            await transaction.productImages.createMany({
-                data: data.images.map((image: ImagesProductInput) => ({
-                    url: image.url,
-                    order: image.order,
-                    isCover: image.isCover,
-                    productId: product.id
-                }))
             })
 
             await transaction.productCategory.createMany({
@@ -45,7 +42,6 @@ export class ProductPrisma {
             })
         })
     }
-
     async getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{ items: Product[], total: number }> {
         const [items, total] = await prisma.$transaction([
             prisma.product.findMany({
@@ -129,7 +125,6 @@ export class ProductPrisma {
         const data = toUpdate(serviceData)
 
         return prisma.$transaction(async (transaction) => {
-
             await transaction.product.update({
                 where: { id },
                 data: {
@@ -142,16 +137,23 @@ export class ProductPrisma {
                 }
             })
 
-            await transaction.productImages.deleteMany({ where: { productId: id } })
+            if (data.images?.length) {
+                await transaction.productImages.deleteMany({ where: { productId: id } })
 
-            await transaction.productImages.createMany({
-                data: data.images.map((image: ImagesProductInput) => ({
-                    url: image.url,
-                    order: image.order,
-                    isCover: image.isCover,
-                    productId: id
-                }))
-            })
+                await transaction.product.update({
+                    where: { id },
+                    data: {
+                        images: {
+                            create: data.images.map(
+                                ({ file: imageFile, ...imageFields }: ProductImageCreateData) => ({
+                                    ...imageFields,
+                                    file: { create: imageFile }
+                                })
+                            )
+                        }
+                    }
+                })
+            }
 
             await transaction.productCategory.deleteMany({ where: { productId: id } })
 

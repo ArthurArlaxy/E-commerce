@@ -56,12 +56,13 @@ model Product {
 }
 
 model ProductImages {
-  id        String  @id @default(uuid())
+  id        String     @id @default(uuid())
   url       String
   productId String
   isCover   Boolean
   order     Int
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  imageFile ImageFile?
 }
 
 model Category {
@@ -72,6 +73,17 @@ model Category {
   updatedAt         DateTime          @updatedAt
   imageUrl          String?
   productCategories ProductCategory[]
+  file              ImageFile?
+}
+
+model ImageFile {
+  id             String         @id @default(uuid())
+  data           Bytes
+  createdAt      DateTime       @default(now())
+  productImageId String?        @unique
+  categoryId     String?        @unique
+  productImage   ProductImages? @relation(fields: [productImageId], references: [id], onDelete: Cascade)
+  category       Category?      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model ProductCategory {

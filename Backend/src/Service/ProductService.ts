@@ -2,62 +2,40 @@ import { Prisma } from "@prisma/client";
 import { HttpError } from "../Error/HttpError.js";
 import type { ProductRepository } from "../Repository/ProductRepository.js";
 import type { CreateProductInput, ImagesProductInput, ProductCreateData, ProductQueryInput, UpdateImagesProductInput, UpdateProductInput } from "../Schema/ProductSchema.js";
-import fs from "fs"
+
 import { slugCreator, uniqueSlug } from "../helpers/slugFunctions.js";
+import { processImage } from "../helpers/processImage.js";
 
 export class ProductService {
     constructor(private productRepository: ProductRepository) { }
 
+    private async buildImages(files: Express.Multer.File[] | undefined, coverIndex?: number) {
+        const processedImages = await Promise.all(
+            (files ?? []).map((file) => processImage(file.buffer))
+        )
+
+        return processedImages.map(({ url, ...imageFile }, order) => ({
+            url,
+            order,
+            isCover: order === coverIndex,
+            file: imageFile
+        }))
+    }
+
+
     async createProduct(data: CreateProductInput, files: Express.Multer.File[]) {
         const baseSlug = slugCreator(data.slug ?? data.name)
 
-        data.slug = await uniqueSlug(baseSlug, async (slug) => {
-            return Boolean(await this.productRepository.getProductBySlug(slug))
+        const slug = await uniqueSlug(baseSlug, async (candidateSlug) => {
+            return Boolean(await this.productRepository.getProductBySlug(candidateSlug))
         })
 
-        const uploadedImages: { url: string, order: number, isCover: boolean }[] = []
-        let orderImage: number = 0
+        const images = await this.buildImages(files, data.coverIndex)
 
-        for (const image of files) {
-            const buffer = fs.readFileSync(image.path)
-            fs.rmSync(image.path)
-            const base64Image = buffer.toString("base64")
-            const formData = new FormData()
-            formData.append('image', base64Image)
-            try {
-                const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
-                    method: "POST",
-                    body: formData
-                })
-
-                if (!response.ok) {
-                    throw new Error(`Erro no ImgBB: ${response.statusText}`)
-                }
-
-                const result = await response.json()
-
-                const url = result.data.image.url
-                const order = orderImage
-                const isCover = orderImage === data.coverIndex
-                orderImage++
-
-                uploadedImages.push({ url, order, isCover })
-
-            } catch (error) {
-                console.error("Falha no ImgBB:", error, (error as any)?.cause)
-                throw new HttpError("Falha ao enviar imagem para o ImgBB", 502)
-            }
-        }
-
-        const serviceData: ProductCreateData = {
-            ...data,
-            images: [...uploadedImages]
-        }
-
-        const product = await this.productRepository.createProduct(serviceData)
+        const product = await this.productRepository.createProduct({ ...data, slug, images })
 
         if (!product) {
-            throw new HttpError(`Erro ao criar o produto`, 500)
+            throw new HttpError("Erro ao criar o produto", 500)
         }
 
         return product
@@ -154,48 +132,11 @@ export class ProductService {
             })
         }
 
-        const uploadedImages: { url: string, order: number, isCover: boolean }[] = []
-        let orderImage: number = 0
+        const newImages = files?.length > 0
+            ? await this.buildImages(files, data.coverIndex)
+            : undefined
 
-        if (files?.length > 0) {
-            for (const image of files) {
-                const buffer = fs.readFileSync(image.path)
-                fs.rmSync(image.path)
-                const base64Image = buffer.toString("base64")
-                const formData = new FormData()
-                formData.append('image', base64Image)
-                try {
-                    const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
-                        method: "POST",
-                        body: formData
-                    })
-
-                    if (!response.ok) {
-                        const body = await response.text()
-                        console.error("ImgBB:", response.status, body, "arquivo:", image.originalname, image.size, image.mimetype)
-                        throw new HttpError(`Erro no ImgBB: ${response.status}`, 502)
-                    }
-
-                    const result = await response.json()
-
-                    const url = result.data.image.url
-                    const order = orderImage
-                    const isCover = orderImage === data.coverIndex
-                    orderImage++
-
-                    uploadedImages.push({ url, order, isCover })
-
-                } catch (error) {
-                    console.error("Falha no ImgBB:", error, (error as any)?.cause)
-                    throw new HttpError("Falha ao enviar imagem para o ImgBB", 502)
-                }
-            }
-        }
-
-        const updatedProduct = await this.productRepository.updateProduct(id, {
-            ...data,
-            images: [...uploadedImages]
-        })
+        const updatedProduct = await this.productRepository.updateProduct(id, { ...data, images: newImages })
 
         if (!updatedProduct) {
             throw new HttpError("Error occurred while updating the product", 500)

@@ -16,6 +16,15 @@ export const createProductSchema = z.object({
     coverIndex: z.coerce.number().int().min(0)
 })
 
+export const productImageCreateData = z.object({
+    url: z.string(),
+    isCover: z.boolean(),
+    order: z.number().min(0),
+    file: z.object({
+        id: z.string(),
+        data: z.instanceof(Buffer)
+    })
+})
 
 export const productCreateData = z.object({
     name: z.string().min(1),
@@ -25,11 +34,7 @@ export const productCreateData = z.object({
     stock: z.coerce.number().int().min(0),
     categoriesIds: z.array(z.string()).min(1, "Selecione ao menos uma categoria"),
     coverIndex: z.number(),
-    images: z.array(z.object({
-        url: z.string(),
-        isCover: z.boolean(),
-        order: z.number().min(0)
-    })).min(1)
+    images: z.array(productImageCreateData).min(1)
 })
 
 export const getProduct = z.object({
@@ -96,11 +101,7 @@ export const productUpdateData = z.object({
     stock: z.coerce.number().int().min(0),
     coverIndex: z.number(),
     categoriesIds: z.array(z.string()).min(1, "Selecione ao menos uma categoria"),
-    images: z.array(z.object({
-        url: z.string(),
-        isCover: z.boolean(),
-        order: z.number().min(0)
-    })).min(1)
+    images: z.array(productImageCreateData).min(1).optional()
 })
 
 export const productQuerySchema = z.object({
@@ -151,6 +152,8 @@ export const addCategoriesToProductSchema = z.object({
     categoryIds: z.array(z.string()).min(1),
 })
 
+
+
 export const addImagesToProductSchema = z.array(imagesProductSchema).min(1)
 
 export const updateImagesFromProductSchema = z.array(updateImagesProductSchema).min(1)
@@ -161,5 +164,6 @@ export type ProductQueryInput = z.infer<typeof productQuerySchema>
 export type ImagesProductInput = z.infer<typeof imagesProductSchema>
 export type UpdateImagesProductInput = z.infer<typeof updateImagesProductSchema>
 export type ProductCreateData = z.infer<typeof productCreateData>
+export type ProductImageCreateData = z.infer<typeof productImageCreateData>
 export type ProductUpdateData = z.infer<typeof productUpdateData>
 export type GetProductSchema = z.infer<typeof getProduct>

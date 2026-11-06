@@ -1,5 +1,5 @@
 import type { Prisma, Product, ProductImages } from "@prisma/client";
-import type { GetProductSchema, ImagesProductInput, ProductCreateData, ProductUpdateData, UpdateImagesProductInput } from "../Schema/ProductSchema.js";
+import type {ImagesProductInput, ProductCreateData, ProductUpdateData, UpdateImagesProductInput } from "../Schema/ProductSchema.js";
 
 export interface ProductRepository {
     createProduct(data: ProductCreateData): Promise<Product | null>
