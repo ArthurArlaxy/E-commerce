@@ -1,3 +1,4 @@
+import { imageSrc } from "@/utils/format"
 import Image from "next/image"
 
 interface CategoryCardProps {
@@ -13,7 +14,7 @@ export default function CategoryCard({ slug, name, imageUrl }: CategoryCardProps
                 <Image
                     fill
                     alt={`Imagem de ${name}`}
-                    src={imageUrl}
+                    src={imageSrc(imageUrl)}
                     className="category-image-card"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />

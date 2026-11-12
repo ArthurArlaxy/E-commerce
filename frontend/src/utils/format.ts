@@ -42,3 +42,7 @@ export function groupByDay(
             return ma - mb || da - db;
         });
 }
+
+export function imageSrc(url: string){
+    return `${process.env.API_URL}/image/${url}`
+}

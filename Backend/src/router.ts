@@ -25,6 +25,9 @@ import { imageMiddleware } from "./Middleware/ImageMiddleware.js";
 import { ShippingPrisma } from "./Repository/prisma/ShippingPrisma.js";
 import { ShippingService } from "./Service/ShippingService.js";
 import { ShippingController } from "./Controller/ShippingController.js";
+import { ImageController } from "./Controller/imageController.js";
+import { ImagePrisma } from "./Repository/prisma/ImagePrisma.js";
+import { ImageService } from "./Service/ImageService.js";
 
 export const router = Router()
 
@@ -33,6 +36,7 @@ const userPrisma = new UserPrisma()
 const addressPrisma = new AddressPrisma()
 const categoryPrisma = new CategoryPrisma()
 const productPrisma = new ProductPrisma()
+const imagePrisma = new ImagePrisma()
 const reviewPrisma = new ReviewPrisma()
 const cartPrisma = new CartPrisma()
 const orderPrisma = new OrderPrisma()
@@ -44,9 +48,11 @@ const addressService = new AddressService(addressPrisma)
 const categoryService = new CategoryService(categoryPrisma)
 const productService = new ProductService(productPrisma)
 const reviewService = new ReviewService(reviewPrisma)
+const imageService = new ImageService(imagePrisma)
 const cartService = new CartService(cartPrisma, productPrisma)
 const orderService = new OrderService(orderPrisma, cartPrisma, addressPrisma, shippingPrisma)
 const shippingService = new ShippingService(shippingPrisma)
+
 
 // Instancias do Controller
 const userController = new UserController(userService)
@@ -54,6 +60,7 @@ const addressController = new AddressController(addressService)
 const categoryController = new CategoryController(categoryService)
 const productController = new ProductController(productService)
 const reviewController = new ReviewController(reviewService)
+const imageController = new ImageController(imageService)
 const cartController = new CartController(cartService)
 const orderController = new OrderController(orderService)
 const shippingController = new ShippingController(shippingService)
@@ -97,6 +104,9 @@ router.post("/products/:id/categories", AuthMiddleware.authenticate, AuthMiddlew
 router.delete("/products/:productId/categories/:categoryId", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteCategoryFromProduct)
 router.post("/products/:id/images", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addImagesToProduct)
 router.delete("/products/images/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteImagesFromProduct)
+
+// Rotas de Images
+router.get("/images/:id", imageController.getImage)
 
 // Rotas de Reviews
 router.get("/reviews", AuthMiddleware.authenticate, reviewController.getReviews)

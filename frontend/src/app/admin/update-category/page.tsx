@@ -1,5 +1,6 @@
 import { getCategories } from "@/actions/categories";
 import CategoryUpdateCard from "@/components/Cards/CategoryUpdateCard";
+import { imageSrc } from "@/utils/format";
 
 export default async function Page() {
     const categories = await getCategories()
@@ -16,7 +17,7 @@ export default async function Page() {
             <section>
                 <div className="card-container">
                     {categories.length ? categories.map((category) => {
-                        return <CategoryUpdateCard  name={category.name} id={category.id} imageUrl={category.imageUrl} key={category.id}/>
+                        return <CategoryUpdateCard  name={category.name} id={category.id} imageUrl={imageSrc(category.imageUrl)} key={category.id}/>
                     }) : <p>Nenhuma categoria disponível</p>}
                 </div>
             </section>

@@ -10,6 +10,7 @@ import { DeleteProduct, ProductById, ProductState, productUpdateForm } from "@/a
 import { useActionState } from "react";
 import ImageUploadMultiple from "@/components/inputs/imageUpload";
 import DeleteWithConfirm from "@/components/DeleteWithConfirm";
+import { imageSrc } from "@/utils/format";
 
 const initialState: ProductState = {};
 
@@ -36,7 +37,7 @@ export default function UpdateProductForm({ categories, product }: UpdateProduct
                 <ImageUploadMultiple
                     imagesImported={product.images.map((img) => ({
                         id: img.id,
-                        url: img.url,
+                        url: imageSrc(img.url),
                         order: img.order,
                         isCover: img.isCover,
                     }))}

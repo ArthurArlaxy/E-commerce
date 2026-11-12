@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Product } from "@/actions/product"
 import Image from "next/image"
+import { imageSrc } from "@/utils/format"
 
 export function ImageProductSection({ product }: { product: Product }) {
     const [selectedImage, setSelectedImage] = useState(product.images[0].url)
@@ -13,7 +14,7 @@ export function ImageProductSection({ product }: { product: Product }) {
             <div className="product-image-wrapper desktop-only">
                 <Image
                     alt="Imagem principal do produto"
-                    src={selectedImage}
+                    src={imageSrc(selectedImage)}
                     fill
                     sizes="(max-width: 1-30px) 100vw, 500px"
                     className="image-product"
@@ -25,7 +26,7 @@ export function ImageProductSection({ product }: { product: Product }) {
                     <div className="product-image-wrapper" key={image.id}>
                         <Image
                             alt={`Imagem ${image.order} do produto`}
-                            src={image.url}
+                            src={imageSrc(image.url)}
                             fill
                             sizes="100px"
                             className="image-product"
@@ -39,7 +40,7 @@ export function ImageProductSection({ product }: { product: Product }) {
                     <div className="mobile-carousel-item" key={image.id}>
                         <Image
                             alt={`Imagem ${image.order} do produto`}
-                            src={image.url}
+                            src={imageSrc(image.url)}
                             fill
                             sizes="100vw"
                             className="image-product"

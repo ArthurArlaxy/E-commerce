@@ -7,6 +7,7 @@ import ImageUploadMultiple from "@/components/inputs/imageUpload";
 import { categoryUpdateForm, Category, CategoryState, DeleteCategory } from "@/actions/categories";
 import styles from "./style.module.css"
 import DeleteWithConfirm from "@/components/DeleteWithConfirm";
+import { imageSrc } from "@/utils/format";
 
 const initialState: CategoryState = {};
 
@@ -21,7 +22,7 @@ export default function UpdateCategoryForm({ category }: { category: Category })
                 <input type="hidden" name="id" value={category.id} />
                 <FormInputLabel type="text" inputName="name" label="Nome" placeholder="Nome da Categoria" value={category.name} />
                 <FormInputLabel type="text" inputName="slug" label="Slug" placeholder="Slug do Produto" value={category.slug} />
-                <ImageUploadMultiple imagesImported={[{ id: category.id, url: category.imageUrl, order: 0, isCover: true }]} />
+                <ImageUploadMultiple imagesImported={[{ id: category.id, url: imageSrc(category.imageUrl), order: 0, isCover: true }]} />
                 {state?.error && <p className={styles.errorText}>{state.error}</p>}
                 <Button text={isPending ? "...Aguarde" : "Atualizar Categoria"} />
             </form>

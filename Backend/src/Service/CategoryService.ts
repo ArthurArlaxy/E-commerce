@@ -1,53 +1,31 @@
 import { HttpError } from "../Error/HttpError.js";
+import { processImage } from "../helpers/processImage.js";
 import { slugCreator, uniqueSlug } from "../helpers/slugFunctions.js";
 import type { CategoryRepository } from "../Repository/CategoryRepository.js";
 import type { CreateCategoryInput, UpdateCategoryInput } from "../Schema/CategorySchema.js";
-import fs from "node:fs"
 
 export class CategoryService {
     constructor(private categoryRepository: CategoryRepository) { }
 
     async createCategory(data: CreateCategoryInput, files: Express.Multer.File[]) {
-
-        const baseSlug = slugCreator(data.slug ?? data.name);
-
-        data.slug = await uniqueSlug(baseSlug, async (slug) => {
-            return Boolean(await this.categoryRepository.getCategoryBySlug(slug))
-        })
-
-        if (!files[0]) {
+        if (!files?.[0]) {
             throw new HttpError("Uma imagem precisa ser enviada para criar a categoria", 400)
         }
 
-        const buffer = fs.readFileSync(files[0].path)
-        fs.rmSync(files[0].path)
-        const base64Image = buffer.toString("base64")
-        const formData = new FormData()
-        formData.append('image', base64Image)
+        const baseSlug = slugCreator(data.slug ?? data.name)
 
-        let imageUrl: string
-        try {
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
-                method: "POST",
-                body: formData
-            })
+        const slug = await uniqueSlug(baseSlug, async (candidateSlug) => {
+            return Boolean(await this.categoryRepository.getCategoryBySlug(candidateSlug))
+        })
 
-            if (!response.ok) {
-                throw new Error(`Erro no ImgBB: ${response.statusText}`)
-            }
+        const { url: imageUrl, ...imageFile } = await processImage(files[0].buffer)
 
-            const result = await response.json()
-
-            imageUrl = result.data.image.url
-
-        } catch (error) {
-            console.error("Falha no ImgBB:", error, (error as any)?.cause)
-            throw new HttpError("Falha ao enviar imagem para o ImgBB", 502)
-        }
-
-        data.imageUrl = imageUrl
-
-        return this.categoryRepository.createCategory(data)
+        return this.categoryRepository.createCategory({
+            ...data,
+            slug,
+            imageUrl,
+            file: imageFile
+        })
     }
 
     async getCategories() {
@@ -75,58 +53,35 @@ export class CategoryService {
 
         if (!category) throw new HttpError("Category not found", 404)
 
+        if (!files?.[0]) {
+            throw new HttpError("Uma imagem precisa ser enviada para atualizar a categoria", 400)
+        }
+
+        let slug = data.slug
 
         if (data.name) {
-            const valueForSlug = data.slug ?? data.name;
+            const valueForSlug = data.slug ?? data.name
 
             if (!valueForSlug) {
                 throw new HttpError("Slug or name must be provided", 400)
             }
 
-            const baseSlug = slugCreator(valueForSlug);
+            const baseSlug = slugCreator(valueForSlug)
 
-            data.slug = await uniqueSlug(baseSlug, async (slug) => {
-                let category = await this.categoryRepository.getCategoryBySlug(slug)
-                if (!category || category.id === id) {
-                    return false
-                }
-                return true
+            slug = await uniqueSlug(baseSlug, async (candidateSlug) => {
+                const categoryWithSameSlug = await this.categoryRepository.getCategoryBySlug(candidateSlug)
+                return Boolean(categoryWithSameSlug && categoryWithSameSlug.id !== id)
             })
         }
 
-        if (!files?.[0]) {
-            throw new HttpError("Uma imagem precisa ser enviada para atualizar a categoria", 400)
-        }
+        const { url: imageUrl, ...imageFile } = await processImage(files[0].buffer)
 
-        const buffer = fs.readFileSync(files[0].path)
-        fs.rmSync(files[0].path)
-        const base64Image = buffer.toString("base64")
-        const formData = new FormData()
-        formData.append('image', base64Image)
-
-        let imageUrl: string
-        try {
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${process.env.IMGBB_KEY}`, {
-                method: "POST",
-                body: formData
-            })
-
-            if (!response.ok) {
-                throw new Error(`Erro no ImgBB: ${response.statusText}`)
-            }
-
-            const result = await response.json()
-
-            imageUrl = result.data.image.url
-
-        } catch (error) {
-            console.error("Falha no ImgBB:", error, (error as any)?.cause)
-            throw new HttpError("Falha ao enviar imagem para o ImgBB", 502)
-        }
-
-        data.imageUrl = imageUrl
-
-        return this.categoryRepository.updateCategory(id, data)
+        return this.categoryRepository.updateCategory(id, {
+            ...data,
+            slug,
+            imageUrl,
+            file: imageFile
+        })
     }
 
     async deleteCategory(id: string) {

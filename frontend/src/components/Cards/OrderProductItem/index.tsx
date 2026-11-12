@@ -1,5 +1,5 @@
 import { OrderProductImage } from '@/actions/orders'
-import { formatCurrency } from '@/utils/format'
+import { formatCurrency, imageSrc } from '@/utils/format'
 import styles from "./style.module.css"
 import Image from "next/image"
 import Link from "next/link"
@@ -23,7 +23,7 @@ export function OrderProductItem({ slug, name, images, quantity, price, categori
                     <Image
                         fill
                         alt={`Imagem de ${name}`}
-                        src={cover.url}
+                        src={imageSrc(cover.url)}
                         className={styles.itemImage}
                         sizes="(max-width: 640px) 25vw, 15vw"
                     />

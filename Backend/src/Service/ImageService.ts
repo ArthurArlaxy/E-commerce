@@ -1,9 +1,9 @@
 // Service/ImageService.ts
 import { HttpError } from "../Error/HttpError.js"
-import type { ImageRepository } from "../Repository/prisma/ImagePrisma.js"
+import type { ImagePrisma } from "../Repository/prisma/ImagePrisma.js"
 
 export class ImageService {
-    constructor(private imageRepository: ImageRepository) { }
+    constructor(private imageRepository: ImagePrisma) { }
 
     async getImageData(imageFileId: string) {
         const imageFile = await this.imageRepository.getImageFileById(imageFileId)

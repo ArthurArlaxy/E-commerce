@@ -4,6 +4,7 @@ import ProductUpdateCard from "@/components/Cards/ProductUpdateCard";
 import { SearchProductForm } from "@/components/forms/searchForm";
 import SearchInput from "@/components/inputs/searchInput";
 import Pagination from "@/components/Pagination";
+import { imageSrc } from "@/utils/format";
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
     const search = await searchParams
@@ -24,7 +25,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ [
                 <section>
                     <div className="card-container">
                         {products.items.length ? products.items.map((product) => {
-                            return <ProductUpdateCard name={product.name} imageUrl={product.images[0].url} price={product.price.toString()} id={product.id} key={product.id} />
+                            return <ProductUpdateCard name={product.name} imageUrl={imageSrc(product.images[0].url)} price={product.price.toString()} id={product.id} key={product.id} />
                         }) : <p>Nenhum produto como esse disponível</p>}
                     </div>
                 </section>

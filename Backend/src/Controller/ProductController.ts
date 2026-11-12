@@ -20,7 +20,7 @@ export class ProductController {
         const body = createProductSchema.parse(req.body)
 
         if(!req.files){
-            return new HttpError("Erro ao receber imagens", 400)
+            throw new HttpError("Erro ao receber imagens", 400)
         }
 
         const files = req.files as Express.Multer.File[]

@@ -1,4 +1,4 @@
-import { formatCurrency } from "@/utils/format"
+import { formatCurrency, imageSrc } from "@/utils/format"
 import styles from "./style.module.css"
 import Image from "next/image"
 
@@ -16,7 +16,7 @@ export default function ProductCard({ slug, name, price, imageUrl }: ProductCard
                 <Image
                     fill
                     alt={`Imagem de ${name}`}
-                    src={imageUrl}
+                    src={imageSrc(imageUrl)}
                     className={styles.imageCard}
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                 />
