@@ -3,6 +3,7 @@ import { getProducts, searchProducts } from "@/actions/product";
 import CategoryCard from "@/components/Cards/CategoryCard";
 import ProductCard from "@/components/Cards/ProductCard";
 import SearchInput from "@/components/inputs/searchInput";
+import { imageSrc } from "@/utils/format";
 import Image from "next/image";
 
 export default async function Page() {
@@ -10,11 +11,14 @@ export default async function Page() {
   const categories = await getCategories()
 
   if ("error" in products) {
-    throw new Error("Falha ao tentar buscar o produtos")
+    console.log("Falha ao tentar buscar o produtos")
   }
+
   if (!categories.length) {
-    throw new Error("Falha ao tentar buscar o categorias")
+    console.log("Falha ao tentar buscar o categorias")
   }
+
+  console.log(imageSrc(categories[0].imageUrl))
 
   return (
     <main>
@@ -33,7 +37,7 @@ export default async function Page() {
         />
         <section>
           <h2 className="sectionTitle">Categorias</h2>
-          <div className="category-card-container">
+          {!categories.length ? <p>Nenhuma cartegoria disponível</p> : <div className="category-card-container">
             {categories.map((category) => (
               <CategoryCard
                 slug={category.slug}
@@ -42,11 +46,11 @@ export default async function Page() {
                 key={category.id}
               />
             ))}
-          </div>
+          </div>}
         </section>
         <section>
           <h2 className="sectionTitle">Ultimos lançamentos</h2>
-          <div className="card-container">
+          {"error" in products ? <p>Nenhum produto disponível</p> : <div className="card-container">
             {products.items.map((product) => (
               <ProductCard
                 name={product.name}
@@ -56,7 +60,7 @@ export default async function Page() {
                 key={product.id}
               />
             ))}
-          </div>
+          </div>}
         </section>
       </div>
     </main>

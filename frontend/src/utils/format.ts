@@ -44,5 +44,5 @@ export function groupByDay(
 }
 
 export function imageSrc(url: string){
-    return `${process.env.API_URL}/image/${url}`
+    return `${process.env.NEXT_PUBLIC_API_URL}${url}`
 }
