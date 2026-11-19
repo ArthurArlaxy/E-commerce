@@ -18,8 +18,6 @@ export default async function Page() {
     console.log("Falha ao tentar buscar o categorias")
   }
 
-  console.log(imageSrc(categories[0].imageUrl))
-
   return (
     <main>
       <div className="pageContainer">

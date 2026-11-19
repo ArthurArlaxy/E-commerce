@@ -5,6 +5,7 @@ import { OrderShippingAddress } from "@/components/Cards/OrderShippingAddress"
 import { OrderShippingMethod } from "@/components/Cards/OrderShippingMethod"
 import styles from "./styles.module.css"
 import { ReviewForm } from "@/components/forms/reviewForm"
+import { MdPending } from "react-icons/md"
 
 interface OrderDetailPageProps {
     params: Promise<{ id: string }>
@@ -66,6 +67,13 @@ export default async function Page({ params }: OrderDetailPageProps) {
                 <p className={styles.totalLabel}>Total do pedido</p>
                 <p className={styles.totalValue}>{formatCurrency(Number(order.total))}</p>
             </section>
+
+            {order.status === "pending" ?
+                <a className={styles.paymentRow} href={`/orders/${id}/payment`}>
+                    Realizar Pagamento
+                </a> : null
+            }
+
         </main>
     )
 }

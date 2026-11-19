@@ -5,7 +5,6 @@ import { SearchProductForm } from "@/components/forms/searchForm"
 import SearchInput from "@/components/inputs/searchInput"
 import Pagination from "@/components/Pagination"
 import { imageSrc } from "@/utils/format"
-import { SlowBuffer } from "buffer"
 import Image from "next/image"
 
 
@@ -34,7 +33,7 @@ export default async function Page({
     return (
         <main className="pageContainer">
             <Image
-                src={category?.imageUrl}
+                src={imageSrc(category?.imageUrl)}
                 alt={`Imagem da categoria ${category?.name}`}
                 width={1321}
                 height={350}
@@ -50,7 +49,7 @@ export default async function Page({
             <section>
                 <div className="card-container">
                     {products.items.length ? products.items.map((product) => {
-                        return <ProductCard name={product.name} imageUrl={imageSrc(product.images[0].url)} price={product.price.toString()} slug={product.slug} key={product.id} />
+                        return <ProductCard name={product.name} imageUrl={product.images[0].url} price={product.price.toString()} slug={product.slug} key={product.id} />
                     }) : <p>Nenhum produto como esse disponível</p>}
                 </div>
             </section>

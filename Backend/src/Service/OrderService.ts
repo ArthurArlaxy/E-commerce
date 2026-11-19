@@ -6,7 +6,6 @@ import type { AddressRepository } from "../Repository/AddressRepository.js";
 import type { OrderQueryInput, UpdateOrderStatusInput } from "../Schema/OrderSchema.js";
 import type { Order, Prisma } from "@prisma/client";
 import type { ShippingRepository } from "../Repository/ShippingRepository.js";
-import type { string } from "zod";
 import { paymentQueue } from "../queue.js";
 
 const PAYMENT_WINDOW_MS = 30 * 60 * 1000
@@ -96,7 +95,6 @@ export class OrderService {
         }
 
         let priceInCents = Number(total.toFixed(2).replace(".", ""))
-        console.log(priceInCents)
 
         let payment
 
@@ -120,8 +118,6 @@ export class OrderService {
 
             const response = await fetch('https://api.abacatepay.com/v2/transparents/create', options)
 
-            console.log(response)
-
             if (!response.ok) {
                 throw new HttpError("Erro ao criar a cobrança", 500)
             }
@@ -129,8 +125,6 @@ export class OrderService {
             const body = await response.json()
 
             payment = body.data
-
-            console.log(payment)
 
         } catch (error) {
             await this.orderRepository.cancelIfUnpaid(order.id).catch(console.error)

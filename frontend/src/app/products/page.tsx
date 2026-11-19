@@ -26,7 +26,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ [
         <section>
           <div className="card-container">
             {products.items.length ? products.items.map((product) => {
-              return <ProductCard name={product.name} imageUrl={imageSrc(product.images[0].url)} price={product.price.toString()} slug={product.slug} key={product.id} />
+              return <ProductCard name={product.name} imageUrl={product.images[0].url} price={product.price.toString()} slug={product.slug} key={product.id} />
             }) : <p>Nenhum produto como esse disponível</p>}
           </div>
         </section>

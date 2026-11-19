@@ -20,28 +20,29 @@ export default async function Page() {
 
     return (
         <main>
-            
-                <h1 className="title">Carrinho</h1>
-                <CartForm shippings={shippings} total={cart.total} selectedTotal={cart.selectedTotal} addresses={addresses}>
 
-                <ul className="cartItemsContainer">
-                    {items.length ? items.map((product) => (
-                        <ProductCartCard
-                            id={product.id}
-                            name={product.name}
-                            image={product.image}
-                            category={product.category}
-                            price={product.price}
-                            quantity={product.quantity}
-                            selected={product.selected}
-                            slug={product.slug}
-                            maxStock={product.maxStock}
-                            unavailable={product.unavailable}
-                            key={product.id}
-                        />
-                    )) : <p>Nenhum produto no carrinho!</p>}
-                </ul>
-            </CartForm>
+            <h1 className="title">Carrinho</h1>
+            <CartForm shippings={shippings} total={cart.total} selectedTotal={cart.selectedTotal} addresses={addresses}>
+            
+
+                    <ul className="cartItemsContainer">
+                        {items.length ? items.map((product) => (
+                            <ProductCartCard
+                                id={product.id}
+                                name={product.name}
+                                image={product.image}
+                                category={product.category}
+                                price={product.price}
+                                quantity={product.quantity}
+                                selected={product.selected}
+                                slug={product.slug}
+                                maxStock={product.maxStock}
+                                unavailable={product.unavailable}
+                                key={product.id}
+                            />
+                        )) : <p>Nenhum produto no carrinho!</p>}
+                    </ul>
+                </CartForm>
         </main>
     )
 }

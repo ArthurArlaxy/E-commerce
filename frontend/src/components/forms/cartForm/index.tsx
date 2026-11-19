@@ -33,13 +33,16 @@ export function CartForm({
 
     return (
         <form className={`cartContainer ${styles.cartForm}`} action={formAction}>
+
             <section className={styles.selectDeliverySection}>
-                <SelectAddress addresses={addresses} />
-                <SelectShipping
+                {addresses.length > 0 ? <SelectAddress addresses={addresses} /> : <a href="/profile">Adicione um endereço antes de realizar a compra</a>}
+                {!shippings.length ? <SelectShipping
                     shippings={shippings}
                     selectedShipping={selectedShipping}
                     onSelect={setSelectedShipping}
-                />
+                /> :
+                    <p>É necessário ter um formato de frete</p>
+                }
             </section>
 
             {children}
