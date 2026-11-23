@@ -31,15 +31,22 @@ export function SelectAddress({ addresses }: { addresses: AddressesProps[] }) {
 
     if (!selectedAddress) {
         return (
-            <>
-                <p>Cadastre um endereço agora</p>
-            </>
+
+            <a href="/profile" className={styles.addressCardContainer} onClick={openModal}>
+                <strong className={styles.addressCardLabel}>
+                    <p>Endereço:</p>
+                </strong>
+                <div className={styles.addressCardContent}>
+                    <p className={styles.addressCardTextAlert}>Adicione um endereço para entrega</p>
+                </div>
+                <ChevronRight className={styles.addressCardIcon} />
+            </a>
         )
     }
 
     return (
         <>
-            <input type="hidden" name="addressId" required value={selectedAddress?.id}/>
+            <input type="hidden" name="addressId" required value={selectedAddress?.id} />
 
             <button type="button" className={styles.addressCardContainer} onClick={openModal}>
                 <strong className={styles.addressCardLabel}>

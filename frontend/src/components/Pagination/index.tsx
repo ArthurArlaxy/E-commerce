@@ -6,14 +6,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface PaginationProps {
     currentPage: number;
     totalPages: number;
-    nextRoute?: "products" | "categories"
+    nextRoute?: "products" | "categories" | "update-product" | "update-category"
     category?: string
 }
 
 export default function Pagination({
     currentPage,
     totalPages,
-    nextRoute="products",
+    nextRoute = "products",
     category
 }: PaginationProps) {
     const router = useRouter();
@@ -23,9 +23,13 @@ export default function Pagination({
         const params = new URLSearchParams(searchParams.toString());
         params.set("page", String(page));
 
-        if(nextRoute === "categories"){
+        if (nextRoute === "categories") {
             router.push(`/categories/${category}?${params.toString()}`);
-        }else{
+        } if (nextRoute === "update-category") {
+            router.push(`/admin/update-category?${params.toString()}`);
+        } if (nextRoute === "update-product") {
+            router.push(`/admin/update-product?${params.toString()}`);
+        } else {
             router.push(`/products?${params.toString()}`)
         }
     }

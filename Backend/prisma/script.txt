@@ -1,0 +1,5 @@
+docker compose up -d
+
+npx prisma migrate deploy
+
+docker compose exec -T postgres psql -U postgres -d e-commerce < backup.sql

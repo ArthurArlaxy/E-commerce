@@ -22,6 +22,11 @@
     color: #92400e;
 }
 
+.paid {
+    background-color: #01bb11;
+    color: #a7fcae;
+}
+
 .processing {
     background-color: #dbeafe;
     color: #1e40af;

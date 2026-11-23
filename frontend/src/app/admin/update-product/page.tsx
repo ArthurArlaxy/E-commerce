@@ -30,6 +30,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ [
                     </div>
                 </section>
                 <Pagination
+                    nextRoute="update-product"
                     currentPage={Number(search.page) || 1}
                     totalPages={Math.ceil(products.total / (Number(search.limit) || 10))}
                 />

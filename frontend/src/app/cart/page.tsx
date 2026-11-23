@@ -17,6 +17,7 @@ export default async function Page() {
     }
 
     const shippings = await getShippings()
+    console.log(shippings)
 
     return (
         <main>

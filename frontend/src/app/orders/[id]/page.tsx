@@ -13,6 +13,7 @@ interface OrderDetailPageProps {
 
 const statusLabel: Record<string, string> = {
     pending: "Pendente",
+    paid: "Pago",
     processing: "Em processamento",
     shipped: "Enviado",
     delivered: "Entregue",
