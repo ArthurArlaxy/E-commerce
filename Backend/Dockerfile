@@ -14,4 +14,4 @@ COPY . .
 
 EXPOSE 3333
 
-CMD ["npm", "run", "dev"]
+CMD ["sh", "-c", "npx prisma generate && exec npm run dev"]

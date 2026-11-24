@@ -310,7 +310,7 @@ export async function getProducts({
 }
 
 export async function searchProducts(
-    target: { type: "products" } | { type: "categories"; slug: string },
+    target: { type: "products" } | { type: "categories"; slug: string } | {type: "admin-product"} | {type: "admin-category"},
     formData: FormData
 ) {
     const name = formData.get("name")
@@ -370,7 +370,17 @@ export async function searchProducts(
         params.set("limit", String(limit))
     }
 
-    const basePath = target.type === "categories" ? `/categories/${target.slug}` : "/products"
+    let basePath: string = ""
+
+    if(target.type === "categories"){
+        basePath = `/categories/${target.slug}`
+    } else if (target.type === "admin-product") {
+        basePath = "/admin/update-product"
+    } else if (target.type === "admin-category"){
+        basePath = "/admin/update-category"
+    } else {
+        basePath = "/products" 
+    }
 
     redirect(`${basePath}?${params.toString()}`)
 }
@@ -424,7 +434,7 @@ export async function productUpdateForm(
     })
 
     if (!response.ok) {
-        return { error: "Erro o criar o produto" }
+        return { error: "Erro ao atualizar o produto" }
     }
 
     const data = await response.json()

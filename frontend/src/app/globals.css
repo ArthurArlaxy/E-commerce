@@ -7,6 +7,8 @@
   --foreground: #171717;
   --tertiary: #5f5f5f;
   --fourth: #c4c3c3;
+  --alert: #e4ba00;
+  --green: #16bb00;
 }
 
 [data-theme="dark"] {
@@ -14,14 +16,17 @@
   --foreground: #ededed;
   --tertiary: #5e5e5e;
   --fourth: #c4c3c3;
-
+  --alert: #c2ae00;
+  --green: #22fd05;
 }
 
 [data-theme="contrast"] {
   --background: #000000;
   --foreground: #ffffff;
-  --tertiary: #ffff00;
+  --tertiary: #cccc00;
   --fourth: #ffffff;
+  --alert: #fde934;
+  --green: #1eff00;
 }
 
 @media (prefers-color-scheme: dark) {
