@@ -3,14 +3,21 @@ import { connection, paymentQueue } from "./queue.js"
 import { OrderPrisma } from "./Repository/prisma/OrderPrisma.js"
 
 const orders = new OrderPrisma()
-const CHECK_INTERVAL_MS = 20_000
+
+// O Worker só fica ativo em janelas curtas para economizar comandos no Redis.
+// O BullMQ limita a espera bloqueante a 10 s, então um Worker contínuo gasta ~2M comandos/mês.
+const WINDOW_MS = 25_000    // tempo ativo por ciclo
+const CYCLE_MS = 600_000    // um ciclo a cada 10 min
+
+// Menor que o ciclo, para o job sempre estar vencido quando a próxima janela abrir
+const CHECK_INTERVAL_MS = CYCLE_MS - 60_000
 
 async function getPixStatus(paymentId: string): Promise<string> {
     const response = await fetch(
         `https://api.abacatepay.com/v2/transparents/check?id=${encodeURIComponent(paymentId)}`,
         {
             headers: { Authorization: `Bearer ${process.env.ABACATEPAY_API_KEY}` },
-            signal: AbortSignal.timeout(10_000)
+            signal: AbortSignal.timeout(30_000)
         }
     )
 
@@ -69,7 +76,7 @@ async function sweepExpired() {
 
 await paymentQueue.upsertJobScheduler(
     'sweep-expired',
-    { every: 60_000 },
+    { every: CYCLE_MS },
     { name: 'sweep-expired', opts: { removeOnComplete: true, removeOnFail: 20 } }
 )
 
@@ -95,15 +102,56 @@ const worker = new Worker('payment', async (job) => {
         default:
             console.warn(`Job desconhecido: ${job.name}`)
     }
-}, { connection })
+}, {
+    connection,
+    autorun: false,           // só roda quando o cycleLoop mandar
+    skipStalledCheck: true,   // checkPayment é idempotente
+    lockDuration: 120_000,
+    concurrency: 1
+})
 
 worker.on('failed', (job, err) => console.error(`Job ${job?.name} (${job?.id}) falhou:`, err.message))
+worker.on('error', (err) => console.error('Erro no worker:', err.message))
 
-const shutdown = async () => {
-    await worker.close()
-    process.exit(0)
+const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms))
+
+let closing = false
+let started = false
+
+async function cycleLoop() {
+    while (!closing) {
+        try {
+            if (!started) {
+                started = true
+                worker.run().catch(err => console.error('Worker parou', err))
+            } else {
+                await worker.resume()
+            }
+
+            await sleep(WINDOW_MS)
+            await worker.pause()                // espera o job em andamento terminar
+            await sleep(CYCLE_MS - WINDOW_MS)
+        } catch (error) {
+            console.error('Falha no ciclo do worker', error)
+            await sleep(CYCLE_MS)
+        }
+    }
 }
-process.on('SIGTERM', shutdown)
-process.on('SIGINT', shutdown)
 
-console.log('Worker iniciado')
+cycleLoop()
+
+export async function closeWorker() {
+    closing = true
+    await worker.close()
+    await paymentQueue.close()
+}
+
+if (process.env.RUN_WORKER_INSIDE_API !== "true") {
+    const shutdown = async () => {
+        await closeWorker()
+        process.exit(0)
+    }
+    process.on("SIGTERM", shutdown)
+    process.on("SIGINT", shutdown)
+}
+console.log('Worker iniciado', process.pid)

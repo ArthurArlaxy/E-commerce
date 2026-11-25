@@ -1,0 +1,15 @@
+import z from "zod";
+export const addProductToCartSchema = z.object({
+    productId: z.string().min(1),
+    quantity: z.coerce.number().int().min(1).optional().default(1),
+});
+export const updateCartItemSchema = z.object({
+    quantity: z.number().int().min(1),
+});
+export const cartItemIdParamSchema = z.object({
+    id: z.string().min(1),
+});
+export const updateCartItemSelectionSchema = z.object({
+    selected: z.boolean(),
+});
+//# sourceMappingURL=CartSchema.js.map
