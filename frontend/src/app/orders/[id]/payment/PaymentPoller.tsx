@@ -8,7 +8,7 @@ export function PaymentPoller() {
     const router = useRouter()
 
     useEffect(() => {
-        const timer = setInterval(() => router.refresh(), 5000)
+        const timer = setInterval(() => router.refresh(), 60000)
         return () => clearInterval(timer)
     }, [router])
 
