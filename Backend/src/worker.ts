@@ -6,8 +6,8 @@ const orders = new OrderPrisma()
 
 // O Worker só fica ativo em janelas curtas para economizar comandos no Redis.
 // O BullMQ limita a espera bloqueante a 10 s, então um Worker contínuo gasta ~2M comandos/mês.
-const WINDOW_MS = 25_000    // tempo ativo por ciclo
-const CYCLE_MS = 600_000    // um ciclo a cada 10 min
+const WINDOW_MS = 25_000
+const CYCLE_MS = 180_000 
 
 // Menor que o ciclo, para o job sempre estar vencido quando a próxima janela abrir
 const CHECK_INTERVAL_MS = CYCLE_MS - 60_000
@@ -104,8 +104,8 @@ const worker = new Worker('payment', async (job) => {
     }
 }, {
     connection,
-    autorun: false,           // só roda quando o cycleLoop mandar
-    skipStalledCheck: true,   // checkPayment é idempotente
+    autorun: false,           
+    skipStalledCheck: true,   
     lockDuration: 120_000,
     concurrency: 1
 })
