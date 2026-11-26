@@ -1,0 +1,1 @@
+{"version":3,"file":"ShippingSchema.d.ts","sourceRoot":"","sources":["../../../src/Schema/ShippingSchema.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,MAAM,KAAK,CAAC;AAEpB,eAAO,MAAM,oBAAoB;;;;mBAI/B,CAAA;AAEF,eAAO,MAAM,oBAAoB;;;;mBAI/B,CAAA;AAEF,MAAM,MAAM,oBAAoB,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,oBAAoB,CAAC,CAAA;AACvE,MAAM,MAAM,oBAAoB,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,oBAAoB,CAAC,CAAA"}

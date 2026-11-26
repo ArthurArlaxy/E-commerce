@@ -1,0 +1,57 @@
+import { addProductToCartSchema, updateCartItemSchema, cartItemIdParamSchema, updateCartItemSelectionSchema } from "../Schema/CartSchema.js";
+import { HttpError } from "../Error/HttpError.js";
+export class CartController {
+    cartService;
+    constructor(cartService) {
+        this.cartService = cartService;
+    }
+    getCart = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const response = await this.cartService.getCart(req.user.id);
+        return res.json(response);
+    };
+    addProductToCart = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const body = addProductToCartSchema.parse(req.body);
+        const response = await this.cartService.addProductToCart(req.user.id, body);
+        return res.status(201).json(response);
+    };
+    updateCartItem = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const { id } = cartItemIdParamSchema.parse(req.params);
+        const body = updateCartItemSchema.parse(req.body);
+        const response = await this.cartService.updateCartItem(req.user.id, id, body);
+        return res.json(response);
+    };
+    updateCartItemSelection = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const { id } = cartItemIdParamSchema.parse(req.params);
+        const { selected } = updateCartItemSelectionSchema.parse(req.body);
+        const response = await this.cartService.updateCartItemSelection(req.user.id, id, selected);
+        return res.json(response);
+    };
+    removeProductFromCart = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const id = String(req.params.id);
+        const response = await this.cartService.removeProductFromCart(req.user.id, id);
+        return res.json(response);
+    };
+    clearCart = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        await this.cartService.clearCart(req.user.id);
+        return res.status(204).send();
+    };
+}
+//# sourceMappingURL=CartController.js.map

@@ -12,6 +12,10 @@ RUN npx prisma generate
 
 COPY . .
 
-EXPOSE 3333
+EXPOSE 10000
 
+<<<<<<< HEAD
 CMD ["sh", "-c", "npx prisma generate && exec npm run dev"]
+=======
+CMD ["npm", "run", "start"]
+>>>>>>> 4d47feef0fc0fe74399d5ebabebd390acc31b89c

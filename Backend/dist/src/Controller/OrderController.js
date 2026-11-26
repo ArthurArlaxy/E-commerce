@@ -1,0 +1,52 @@
+import { createOrderSchema, updateOrderStatusSchema, orderQuerySchema, idParamSchema } from "../Schema/OrderSchema.js";
+import { HttpError } from "../Error/HttpError.js";
+export class OrderController {
+    orderService;
+    constructor(orderService) {
+        this.orderService = orderService;
+    }
+    createOrder = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const { addressId, shippingId } = createOrderSchema.parse(req.body);
+        const response = await this.orderService.createOrder(req.user.id, addressId, shippingId);
+        return res.status(201).json(response);
+    };
+    getOrders = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const query = orderQuerySchema.parse(req.query);
+        const isAdmin = req.user.role === "admin";
+        const response = await this.orderService.getOrders(query, req.user.id, isAdmin);
+        return res.json(response);
+    };
+    getDashboardInfo = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const isAdmin = req.user.role === "admin";
+        if (!isAdmin) {
+            throw new HttpError("Not Authorized", 401);
+        }
+        const response = await this.orderService.getDashboardInfo();
+        return res.json(response);
+    };
+    getOrderById = async (req, res, next) => {
+        if (!req.user) {
+            throw new HttpError("Not Authenticated", 401);
+        }
+        const { id } = idParamSchema.parse(req.params);
+        const isAdmin = req.user.role === "admin";
+        const response = await this.orderService.getOrderById(id, req.user.id, isAdmin);
+        return res.json(response);
+    };
+    updateOrderStatus = async (req, res, next) => {
+        const { id } = idParamSchema.parse(req.params);
+        const { status } = updateOrderStatusSchema.parse(req.body);
+        const response = await this.orderService.updateOrderStatus(id, status);
+        return res.json(response);
+    };
+}
+//# sourceMappingURL=OrderController.js.map

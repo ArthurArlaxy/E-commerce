@@ -1,0 +1,97 @@
+import { createUserSchema, loginSchema, updateUserSchema } from "../Schema/UserSchema.js";
+import { HttpError } from "../Error/HttpError.js";
+import cookieParser from "cookie-parser";
+export class UserController {
+    userService;
+    constructor(userService) {
+        this.userService = userService;
+    }
+    login = async (req, res, next) => {
+        const data = loginSchema.parse(req.body);
+        try {
+            const response = await this.userService.login(data);
+            res.cookie("token", response, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+            });
+            return res.json({ token: response });
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+    register = async (req, res, next) => {
+        const data = createUserSchema.parse(req.body);
+        try {
+            const response = await this.userService.createUser(data);
+            res.cookie("token", response, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+            });
+            return res.json({ token: response });
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+    getAllUsers = async (req, res, next) => {
+        try {
+            const users = await this.userService.getAllUsers();
+            return res.json(users);
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+    getUserByEmail = async (req, res, next) => {
+        if (!req.user)
+            throw new HttpError("Invalid token", 401);
+        try {
+            const user = await this.userService.getUserByEmail(req.user.email);
+            return res.json(user);
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+    getUserById = async (req, res, next) => {
+        if (!req.params.id)
+            throw new HttpError("Invalid id", 401);
+        const id = String(req.params.id);
+        try {
+            const user = await this.userService.getUserById(id);
+            return res.json(user);
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+    updateUser = async (req, res, next) => {
+        if (!req.user)
+            throw new HttpError("Invalid token", 401);
+        const data = updateUserSchema.parse(req.body);
+        try {
+            const updatedUser = await this.userService.updateUser(req.user.email, data);
+            res.status(200).json(updatedUser);
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+    deleteUser = async (req, res, next) => {
+        if (!req.user)
+            throw new HttpError("Invalid token", 401);
+        try {
+            await this.userService.deleteUser(req.user.id);
+            res.status(200).json("User deleted sussecsfuly");
+        }
+        catch (error) {
+            next(error);
+        }
+    };
+}
+//# sourceMappingURL=UserController.js.map

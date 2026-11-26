@@ -1,0 +1,24 @@
+import type { Prisma, Product, ProductImages } from "@prisma/client";
+import type { ImagesProductInput, ProductCreateData, ProductUpdateData, UpdateImagesProductInput } from "../../Schema/ProductSchema.js";
+export declare class ProductPrisma {
+    constructor();
+    createProduct(serviceData: ProductCreateData): Promise<Product | null>;
+    getProducts(filter: Prisma.ProductWhereInput, orderBy: string, order: string, take: number, skip: number): Promise<{
+        items: Product[];
+        total: number;
+    }>;
+    getProductById(id: string): Promise<Product | null>;
+    getProductBySlug(slug: string): Promise<{
+        product: Product;
+        totalReview: number;
+    } | null>;
+    deleteProduct(id: string): Promise<Product>;
+    updateProduct(id: string, serviceData: ProductUpdateData): Promise<Product | null>;
+    addCategoriesToProduct(productId: string, categoryIds: string[]): Promise<void>;
+    deleteCategoryFromProduct(productId: string, categoryId: string): Promise<void>;
+    addImagesToProduct(productId: string, data: ImagesProductInput[]): Promise<void>;
+    deleteImageFromProduct(id: string): Promise<ProductImages>;
+    updateImagesFromProduct(updates: UpdateImagesProductInput[]): Promise<void>;
+    hardDeleteProduct(id: string): Promise<Product>;
+}
+//# sourceMappingURL=ProductPrisma.d.ts.map

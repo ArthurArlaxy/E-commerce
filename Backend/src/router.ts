@@ -136,3 +136,7 @@ router.get("/orders", AuthMiddleware.authenticate, orderController.getOrders)
 router.get("/orders/:id", AuthMiddleware.authenticate, orderController.getOrderById)
 router.put("/orders/:id/status", AuthMiddleware.authenticate, AuthMiddleware.admin, orderController.updateOrderStatus)
 router.get("/admin/dashboardInfo", AuthMiddleware.authenticate, AuthMiddleware.admin, orderController.getDashboardInfo)
+
+// Rota de health check
+router.get('/healthz', (_req, res) => { res.status(200).json({ status: 'ok' })})
+

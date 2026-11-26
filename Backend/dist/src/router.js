@@ -1,0 +1,124 @@
+import { Router } from "express";
+import { UserController } from "./Controller/UserController.js";
+import { UserService } from "./Service/UserService.js";
+import { UserPrisma } from "./Repository/prisma/UserPrisma.js";
+import { AddressPrisma } from "./Repository/prisma/AddressPrisma.js";
+import { AuthMiddleware } from "./Middleware/AuthMiddleware.js";
+import { AddressService } from "./Service/AddressService.js";
+import { AddressController } from "./Controller/AddressController.js";
+import { CategoryPrisma } from "./Repository/prisma/CategoryPrisma.js";
+import { CategoryService } from "./Service/CategoryService.js";
+import { CategoryController } from "./Controller/CategoryController.js";
+import { ProductPrisma } from "./Repository/prisma/ProductPrisma.js";
+import { ProductService } from "./Service/ProductService.js";
+import { ProductController } from "./Controller/ProductController.js";
+import { ReviewPrisma } from "./Repository/prisma/ReviewPrisma.js";
+import { ReviewService } from "./Service/ReviewService.js";
+import { ReviewController } from "./Controller/ReviewController.js";
+import { CartPrisma } from "./Repository/prisma/CartPrisma.js";
+import { CartService } from "./Service/CartService.js";
+import { CartController } from "./Controller/CartController.js";
+import { OrderPrisma } from "./Repository/prisma/OrderPrisma.js";
+import { OrderService } from "./Service/OrderService.js";
+import { OrderController } from "./Controller/OrderController.js";
+import { imageMiddleware } from "./Middleware/ImageMiddleware.js";
+import { ShippingPrisma } from "./Repository/prisma/ShippingPrisma.js";
+import { ShippingService } from "./Service/ShippingService.js";
+import { ShippingController } from "./Controller/ShippingController.js";
+import { ImageController } from "./Controller/imageController.js";
+import { ImagePrisma } from "./Repository/prisma/ImagePrisma.js";
+import { ImageService } from "./Service/ImageService.js";
+export const router = Router();
+// Instancias do repository Prisma
+const userPrisma = new UserPrisma();
+const addressPrisma = new AddressPrisma();
+const categoryPrisma = new CategoryPrisma();
+const productPrisma = new ProductPrisma();
+const imagePrisma = new ImagePrisma();
+const reviewPrisma = new ReviewPrisma();
+const cartPrisma = new CartPrisma();
+const orderPrisma = new OrderPrisma();
+const shippingPrisma = new ShippingPrisma();
+// Instancias do Service
+const userService = new UserService(userPrisma);
+const addressService = new AddressService(addressPrisma);
+const categoryService = new CategoryService(categoryPrisma);
+const productService = new ProductService(productPrisma);
+const reviewService = new ReviewService(reviewPrisma);
+const imageService = new ImageService(imagePrisma);
+const cartService = new CartService(cartPrisma, productPrisma);
+const orderService = new OrderService(orderPrisma, cartPrisma, addressPrisma, shippingPrisma);
+const shippingService = new ShippingService(shippingPrisma);
+// Instancias do Controller
+const userController = new UserController(userService);
+const addressController = new AddressController(addressService);
+const categoryController = new CategoryController(categoryService);
+const productController = new ProductController(productService);
+const reviewController = new ReviewController(reviewService);
+const imageController = new ImageController(imageService);
+const cartController = new CartController(cartService);
+const orderController = new OrderController(orderService);
+const shippingController = new ShippingController(shippingService);
+// Rotas de Autenticação
+router.post("/register", userController.register);
+router.post("/login", userController.login);
+// Rotas de Usuários
+router.get("/users", AuthMiddleware.authenticate, AuthMiddleware.admin, userController.getAllUsers);
+router.get("/users/me", AuthMiddleware.authenticate, userController.getUserByEmail);
+router.get("/users/:id", AuthMiddleware.authenticate, userController.getUserById);
+router.put("/users/me", AuthMiddleware.authenticate, userController.updateUser);
+router.delete("/users/me", AuthMiddleware.authenticate, userController.deleteUser);
+// Rotas de Endereços
+router.get("/addresses/all", AuthMiddleware.authenticate, AuthMiddleware.admin, addressController.getAllAddresses);
+router.get("/addresses", AuthMiddleware.authenticate, addressController.getUserAddresses);
+router.get("/addresses/:id", AuthMiddleware.authenticate, addressController.getAddress);
+router.post("/addresses", AuthMiddleware.authenticate, addressController.createAddress);
+router.put("/addresses/:id", AuthMiddleware.authenticate, addressController.updateAddress);
+router.delete("/addresses/:id", AuthMiddleware.authenticate, addressController.deleteAddress);
+// Rotas de Categorias
+router.get("/categories", categoryController.getCategories);
+router.get("/categories/id/:id", AuthMiddleware.authenticate, categoryController.getCategoryById);
+router.get("/categories/:slug", AuthMiddleware.authenticate, categoryController.getCategoryBySlug);
+router.post("/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array("images", 1), categoryController.createCategory);
+router.put("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array("images", 1), categoryController.updateCategory);
+router.delete("/categories/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, categoryController.deleteCategory);
+// Rotas de Produtos
+router.get("/products", productController.getProducts);
+router.get("/products/id/:id", AuthMiddleware.authenticate, productController.getProductById);
+router.get("/products/:slug", AuthMiddleware.authenticate, productController.getProductBySlug);
+router.post("/products", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images', 8), productController.createProducts);
+router.put("/products/images", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.updateImagesFromProduct);
+router.put("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, imageMiddleware.array('images', 8), productController.updateProduct);
+router.delete("/products/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteProduct);
+router.post("/products/:id/categories", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addCategoriesToProduct);
+router.delete("/products/:productId/categories/:categoryId", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteCategoryFromProduct);
+router.post("/products/:id/images", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.addImagesToProduct);
+router.delete("/products/images/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, productController.deleteImagesFromProduct);
+// Rotas de Images
+router.get("/images/:id", imageController.getImage);
+// Rotas de Reviews
+router.get("/reviews", AuthMiddleware.authenticate, reviewController.getReviews);
+router.get("/reviews/:id", AuthMiddleware.authenticate, reviewController.getReviewById);
+router.post("/products/:productId/reviews", AuthMiddleware.authenticate, reviewController.createReview);
+router.put("/reviews/:id", AuthMiddleware.authenticate, reviewController.updateReview);
+router.delete("/reviews/:id", AuthMiddleware.authenticate, reviewController.deleteReview);
+// Rotas de Carrinho
+router.get("/cart", AuthMiddleware.authenticate, cartController.getCart);
+router.post("/cart", AuthMiddleware.authenticate, cartController.addProductToCart);
+router.put("/cart/items/:id", AuthMiddleware.authenticate, cartController.updateCartItem);
+router.patch("/cart/items/:id/selection", AuthMiddleware.authenticate, cartController.updateCartItemSelection);
+router.delete("/cart/items/:id", AuthMiddleware.authenticate, cartController.removeProductFromCart);
+router.delete("/cart", AuthMiddleware.authenticate, cartController.clearCart);
+//Rotas de Fretes
+router.get("/shippings", AuthMiddleware.authenticate, shippingController.getShippings);
+router.post("/shippings", AuthMiddleware.authenticate, AuthMiddleware.admin, shippingController.createShipping);
+router.get("/shippings/:id", AuthMiddleware.authenticate, shippingController.getShippindById);
+router.put("/shippings/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, shippingController.updateShipping);
+router.delete("/shippings/:id", AuthMiddleware.authenticate, AuthMiddleware.admin, shippingController.deleteShipping);
+// Rotas de Pedidos
+router.post("/orders", AuthMiddleware.authenticate, orderController.createOrder);
+router.get("/orders", AuthMiddleware.authenticate, orderController.getOrders);
+router.get("/orders/:id", AuthMiddleware.authenticate, orderController.getOrderById);
+router.put("/orders/:id/status", AuthMiddleware.authenticate, AuthMiddleware.admin, orderController.updateOrderStatus);
+router.get("/admin/dashboardInfo", AuthMiddleware.authenticate, AuthMiddleware.admin, orderController.getDashboardInfo);
+//# sourceMappingURL=router.js.map
